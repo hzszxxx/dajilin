@@ -1,0 +1,16 @@
+---
+import ThemeDetailPage from '@/pages/themes/[slug].astro';
+import { supportedLocales } from '@/lib/i18n';
+import { themePages } from '@/lib/content-pages';
+
+export const getStaticPaths = () =>
+  supportedLocales
+    .filter((locale) => locale !== 'zh')
+    .flatMap((lang) =>
+      themePages.map((page) => ({
+        params: { lang, slug: page.slug },
+      })),
+    );
+---
+
+<ThemeDetailPage />

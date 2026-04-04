@@ -1,0 +1,396 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { getLocaleFromPathname, type Locale } from '@/lib/i18n';
+import { buildCollectionPageSchema, buildWebPageSchema } from '@/lib/schema';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+
+const localized: Record<Locale, {
+  title: string;
+  description: string;
+  pageTitle: string;
+  pageDesc: string;
+  routeHighlights: string;
+  routeContent: string;
+  selfDriveTips: string;
+  seasonalAdvice: string;
+  audienceTitle: string;
+  audienceItems: string[];
+  highlightsTitle: string;
+  highlightsItems: string[];
+  routePlanning: string;
+  routePlanningItems: string[];
+  notesTitle: string;
+  notesItems: string[];
+  faqTitle: string;
+  faqs: { q: string; a: string }[];
+  ctaTitle: string;
+  ctaItems: { label: string; href: string }[];
+}> = {
+  zh: {
+    title: '吉林自驾攻略怎么玩 | dajilin.net',
+    description: '围绕吉林自驾攻略的玩法逻辑、适合人群、时长建议和季节差异，提供完整的自驾出行决策参考。',
+    pageTitle: '吉林自驾攻略怎么玩',
+    pageDesc: '自驾攻略的价值不在于单一景点，而在于连续线路、边境文化、景观变化和服务节点的组织。本页帮助用户先理解玩法逻辑，再规划具体行程。',
+    routeHighlights: '路线看点',
+    routeContent: '吉林自驾攻略途经延边地区，沿着中朝边境蜿蜒前行，沿途可见界河、公路、森林和乡村景观的连续变换。核心看点包括：图们口岸边境线、珲春防川风景区、延吉城市美食、图们江沿岸风光、四季分明的自然景观。',
+    selfDriveTips: '自驾攻略',
+    selfDriveTipsItems: [
+      '建议从长春或延吉出发，沿G331公路向东行进',
+      '全程约600公里，建议安排3-5天深度游览',
+      '沿途加油站在主要城镇均有分布，提前做好油量规划',
+      '部分路段信号较差，建议提前下载离线地图',
+      '春秋季路面状况最佳，夏季注意防雨，冬季需关注路况',
+    ],
+    seasonalAdvice: '季节建议',
+    seasonalAdviceItems: [
+      '春季（4-5月）：气温回升，冰雪融化，适合拍摄边境春色',
+      '夏季（6-8月）：凉爽宜人，是避暑好去处，注意防雨',
+      '秋季（9-10月）：五花山色，摄影最佳季节',
+      '冬季（11-3月）：雪景壮美，需关注路况和车辆准备',
+    ],
+    audienceTitle: '适合人群',
+    audienceItems: [
+      '自驾旅行爱好者与摄影用户',
+      '边境文化与美食体验型游客',
+      '多日行程规划者与深度游用户',
+      '家庭自驾与团队出行用户',
+    ],
+    highlightsTitle: '核心看点',
+    highlightsItems: [
+      '中朝边境公路体验与边境文化',
+      '延边地区朝鲜族美食与人文',
+      '图们、珲春等边境城市风貌',
+      '四季变换的自然与乡村景观',
+    ],
+    routePlanning: '行程规划建议',
+    routePlanningItems: [
+      '半日体验：延吉周边短途游，品尝美食',
+      '2-3日行程：延吉+图们+珲春边境线深度',
+      '4-5日行程：完整G331吉林段+长白山联动',
+    ],
+    notesTitle: '注意事项',
+    notesItems: [
+      '边境地区需携带身份证，部分区域需办理通行证',
+      '部分路段为山区公路，请注意安全驾驶',
+      '旅游旺季需提前预订住宿',
+      '尊重当地民族风俗习惯',
+    ],
+    faqTitle: '常见问题',
+    faqs: [
+      { q: '吉林自驾攻略全程大约多长？', a: 'G331吉林段约600公里，从延边地区的延吉到珲春防川，途经多个县市。' },
+      { q: '沿途加油和补给方便吗？', a: '主要城镇如延吉、图们、珲春都有加油站和基本补给设施，但部分路段间隔较长，建议提前规划。' },
+      { q: '冬季自驾需要注意什么？', a: '冬季部分路段可能有积雪结冰，建议使用冬季胎或四驱车辆，并关注实时路况信息。' },
+      { q: '需要办理边境通行证吗？', a: '前往珲春防川等边境敏感区域需要携带身份证，部分区域可能需要提前办理通行证。' },
+    ],
+    ctaTitle: '继续了解',
+    ctaItems: [
+      { label: '查看驿站服务', href: '/self-drive/stations' },
+      { label: '查看补给与住宿', href: '/self-drive/supplies' },
+      { label: '咨询路线安排', href: '/cooperation' },
+    ],
+  },
+  en: {
+    title: 'How to Travel Self-Drive in Jilin | dajilin.net',
+    description: 'A practical guide to self-drive travel in Jilin, covering route logic, suitable visitors, duration suggestions, and seasonal differences.',
+    pageTitle: 'How to Travel Self-Drive in Jilin',
+    pageDesc: 'The value of self-drive lies not in single attractions, but in continuous routes, border culture, landscape changes, and service node organization. This page helps users understand the travel logic before planning specific itineraries.',
+    routeHighlights: 'Route Highlights',
+    routeContent: 'Self-drive routes in Jilin pass through Yanbian area, winding along the China-North Korea border. You will see continuous changes of border rivers, highways, forests, and rural landscapes. Key highlights include: Tumen border crossing, Hunchun Fangchuan scenic area, Yanji city and food culture, Tumen River scenery, and four-season natural landscapes.',
+    selfDriveTips: 'Self-drive Tips',
+    selfDriveTipsItems: [
+      'Recommended starting from Changchun or Yanji, heading east along G331',
+      'Total distance approximately 600km, recommended 3-5 days for in-depth exploration',
+      'Gas stations available in major towns along the route',
+      'Some sections have poor signal, download offline maps in advance',
+      'Best road conditions in spring and autumn; summer needs rain protection; winter requires attention to road conditions',
+    ],
+    seasonalAdvice: 'Seasonal Advice',
+    seasonalAdviceItems: [
+      'Spring (Apr-May): Temperature rising, ice melting, suitable for border spring photography',
+      'Summer (Jun-Aug): Cool and pleasant, good for escaping heat, rain protection needed',
+      'Autumn (Sep-Oct): Colorful mountains, best season for photography',
+      'Winter (Nov-Mar): Magnificent snow scenery, attention needed to road conditions and vehicle preparation',
+    ],
+    audienceTitle: 'Suitable For',
+    audienceItems: [
+      'Self-drive travelers and photography enthusiasts',
+      'Border culture and culinary experience tourists',
+      'Multi-day itinerary planners and deep travel users',
+      'Family road trips and group travel users',
+    ],
+    highlightsTitle: 'Core Highlights',
+    highlightsItems: [
+      'China-North Korea border road experience and border culture',
+      'Korean ethnic food and culture in Yanbian area',
+      'Border city scenery of Tumen and Hunchun',
+      'Four-season natural and rural landscapes',
+    ],
+    routePlanning: 'Itinerary Planning',
+    routePlanningItems: [
+      'Half-day: Short trip around Yanji, food tasting',
+      '2-3 days: Yanji + Tumen + Hunchun border line in-depth',
+      '4-5 days: Complete G331 Jilin section + Changbai Mountain connection',
+    ],
+    notesTitle: 'Important Notes',
+    notesItems: [
+      'Border areas require ID card; some areas need border passage permit',
+      'Some sections are mountain roads, drive safely',
+      'Book accommodation in advance during peak season',
+      'Respect local ethnic customs and habits',
+    ],
+    faqTitle: 'FAQ',
+    faqs: [
+      { q: 'How long is the Jilin self-drive route?', a: 'The route is approximately 600km, from Yanji to Hunchun Fangchuan in Yanbian area, passing through multiple counties and cities.' },
+      { q: 'Is fuel and supplies convenient along the route?', a: 'Gas stations and basic supplies are available in major towns like Yanji, Tumen, and Hunchun, but some sections have longer gaps, plan ahead.' },
+      { q: 'What should I pay attention to in winter?', a: 'Some sections may have snow and ice in winter. It is recommended to use winter tires or 4WD vehicles and check real-time road conditions.' },
+      { q: 'Do I need a border passage permit?', a: 'Visiting sensitive border areas like Hunchun Fangchuan requires ID card, and some areas may require advance permit applications.' },
+    ],
+    ctaTitle: 'Continue Exploring',
+    ctaItems: [
+      { label: 'View Station Services', href: '/self-drive/stations' },
+      { label: 'View Supplies & Stays', href: '/self-drive/supplies' },
+      { label: 'Consult Route Planning', href: '/cooperation' },
+    ],
+  },
+  ja: {
+    title: '吉林自驾攻略の回り方 | dajilin.net',
+    description: '吉林自驾攻略の回り方、適合人群、日数提案、季節差異を解説します。',
+    pageTitle: '吉林 自驾攻略の回り方',
+    pageDesc: '自驾攻略の価値は单一景点ではなく、連続ルート、国境文化、景観変化とサービス节点の組織にあります。本ページではユーザーは回り方の論理を理解し、具体的な旅程を計画するための参考情報を提供します。',
+    routeHighlights: 'ルートの見どころ',
+    routeContent: '吉林自驾攻略は延辺地区を通り、中朝国境沿いに曲がりくねっています。沿道では界河、公路、森林、乡村の景观が次々と変化します。主な見どころは図們口岸、国境線、琿春の防川风景区、延吉の都市グルメ、图们江沿岸の風景、四季bian 自然경관です。',
+    selfDriveTips: 'ドライブのコツ',
+    selfDriveTipsItems: [
+      '長春または延吉からの出発を推奨、G331を東に向かって走行',
+      '全区間約600キロ、3-5日間の深度観光を推奨',
+      '主要集落では加油站あり、燃料の事前計画的重要性',
+      '一部の区間は信号が悪い、オフラインマップを事前にダウンロード',
+      '春秋の路面状態が最も良い、夏は雨対策、冬は路况に注意',
+    ],
+    seasonalAdvice: '季節ごとの提案',
+    seasonalAdviceItems: [
+      '春（4-5月）：気温上昇、雪山融化、国境の春景色撮影に最適',
+      '夏（6-8月）：涼しく過ごし易い、避暑に最適、雨対策が必要',
+      '秋（9-10月）：色の変化に富んだ山々、写真撮影に最適な季節',
+      '冬（11-3月）：雄大な雪景色路况と車の準備に注意が必要',
+    ],
+    audienceTitle: 'こんな方におすすめ',
+    audienceItems: [
+      'ドライブ旅行愛好家と写真ユーザー',
+      '国境文化とグルメ体験型 관광객',
+      '複数日旅程を計画する深度観光ユーザー',
+      '家族旅行とグループ出行ユーザー',
+    ],
+    highlightsTitle: 'コアとなる見どころ',
+    highlightsItems: [
+      '中朝国境道路体験と国境文化',
+      '延辺地区の朝鮮族グルメと人文',
+      '図們、琿春などの国境都市の風景',
+      '四季変化する自然・乡村景觀',
+    ],
+    routePlanning: '旅程計画の提案',
+    routePlanningItems: [
+      '半日体験：延吉周辺の近距離旅、グルメ堪能',
+      '2-3日行程：延吉+図們+琿春国境線を深度的に',
+      '4-5日行程：G331吉林区間全体+長白山連携',
+    ],
+    notesTitle: '注意事項',
+    notesItems: [
+      '国境地域では身分証明書が必要、一部の地域では通行证の申請が必要',
+      '山間部の公路では安全運転に注意',
+      '旅游旺季には事前に宿泊を予約',
+      '現地の民族的风俗习惯を尊重',
+    ],
+    faqTitle: 'よくある質問',
+    faqs: [
+      { q: '吉林自驾攻略の全長は？', a: 'G331吉林区間は約600キロで、延辺地区の延吉から琿春防川まで、複数の县市を通過します。' },
+      { q: '沿線の給油と補給は便利？', a: '延吉、図們、琿春などの主要集落には加油站と基本補給施設がありますが、一部の区間は間隔が長いため，事前の計画が必要です。' },
+      { q: '冬に自驾する注意点は？', a: '冬は一部の区間で積雪や凍結の可能性があります。冬用タイヤや四輪駆動車の使用、リアルタイム路况情報の確認を推奨します。' },
+      { q: '国境通行证の申請が必要？', a: '琿春防川などの国境敏感区域への訪問には身分証明書が必要で、一部は事前に通行证を申請する必要があります。' },
+    ],
+    ctaTitle: '引続き了解更多',
+    ctaItems: [
+      { label: '驛站サービスを查看', href: '/self-drive/stations' },
+      { label: '補給・宿泊を查看', href: '/self-drive/supplies' },
+      { label: '旅程について相談', href: '/cooperation' },
+    ],
+  },
+  ko: {
+    title: '지린 자가운전 가이드 여행 방법 | dajilin.net',
+    description: '지린 자가운전 가이드의 여행 로직, 적합한 관광객, 체류 기간 제안, 계절 차이를 안내합니다.',
+    pageTitle: '지린 자가운전 가이드 여행 방법',
+    pageDesc: '자가운전 가이드의 가치는 단일 관광지가 아니라 연속된 노선, 국경 문화, 경관 변화, 서비스 결절의 조직에 있습니다. 본 페이지는 사용자가 여행 로직을 이해하고 구체적인 일정을 계획할 수 있도록 돕습니다.',
+    routeHighlights: '노선 하이라이트',
+    routeContent: '자가운전 가이드 노선은 연변 지역을 지나며 중국-북조선 국경을 따라 구불구불 이어집니다。沿途에는 계류, 도로, 삼림, 농촌 경관이 연속적으로 변화합니다. 핵심 하이라이트는 투먼(三門) 국경 요새, 훔친(珲春) 방천(防川) 풍경 지구, 연길(延吉) 도시 미식, 투먼江(豆滿江) 연안 풍경, 사계절 자연 경관입니다.',
+    selfDriveTips: '자가운전 팁',
+    selfDriveTipsItems: [
+      '창춘(長春) 또는 연길(延吉)에서 출발하여 G331을 동쪽으로行进',
+      '전구간 약 600km, 3-5일 깊이 있는 여행 권장',
+      '주요 마을에는 주유소가 있어 연료 계획 필요',
+      '일부 구간은 신호가 약해 오프라인 지도 사전 다운로드 권장',
+      '춘추季 노면 상태가 가장 좋음, 여름은 호우 대비, 겨울은路况 주의',
+    ],
+    seasonalAdvice: '계절별 제안',
+    seasonalAdviceItems: [
+      '봄(4-5월): 기온 상승, 눈 녹음, 국경 봄景色 촬영에 적합',
+      '여름(6-8월): 시원하고 쾌적, 피서지, 호우 대비 필요',
+      '가을(9-10월): 단풍 구경, 사진 촬영 최적 시즌',
+      '겨울(11-3월): 위엄 있는 설경,路况 및 차량 준비 필요',
+    ],
+    audienceTitle: '이런 분들께 추천',
+    audienceItems: [
+      '자가운전 여행 애호가와 사진 촬영 사용자',
+      '국경 문화와 미식 체험형 관광객',
+      '複数일 일정 계획하는 심층 여행 사용자',
+      '가족 자가운전과 그룹 여행 사용자',
+    ],
+    highlightsTitle: '핵심 하이라이트',
+    highlightsItems: [
+      '중국-북조선 국경 도로 경험과 국경 문화',
+      '연변 지역 조선족 미식과的人文',
+      '투먼, 훔친 등 국경 도시风貌',
+      '사계절 변화하는 자연과 농촌 경관',
+    ],
+    routePlanning: '일정 계획 제안',
+    routePlanningItems: [
+      '반일 체험: 연길 주변 단거리 여행, 미식',
+      '2-3일 일정: 연길+투먼+훔친 국경선 깊이 탐방',
+      '4-5일 일정: G331 지린 구간 전체+장백산 연계',
+    ],
+    notesTitle: '주의사항',
+    notesItems: [
+      '국경 지역은 신분증 필수, 일부 지역은 국경 통과증 필요',
+      '산간 도로 구간은 안전 운전 주의',
+      '여행 성수기에는 사전 숙박 예약 필요',
+      '현지 민족 풍속 습관 존중',
+    ],
+    faqTitle: '자주 묻는 질문',
+    faqs: [
+      { q: '자가운전 가이드 전체 길이는?', a: 'G331 지린 구간은 약 600km로, 연변 지역 연길에서 훔친 방천까지, 여러 현시를 지나갑니다.' },
+      { q: '沿선 주유와 보급이 편리한가요?', a: '연길, 투먼, 훔친 등 주요 마을에는 주유소와 기본 보급 시설이 있으나, 일부 구간은 간격이 길어 사전 계획이 필요합니다.' },
+      { q: '겨울에自驾 주의점은?', a: '겨울에는 일부 구간에 눈과 결빙이 있을 수 있어 겨울용 타이어나 사륜駆動 차량 사용, 실시간路况 확인을 권장합니다.' },
+      { q: '국경 통과증이 필요한가요?', a: '훔친 방천 등 국경 민감区域 방문 시 신분증이 필요하며, 일부는 사전 통과증 신청이 필요합니다.' },
+    ],
+    ctaTitle: '계속 알아보기',
+    ctaItems: [
+      { label: '거점 서비스 보기', href: '/self-drive/stations' },
+      { label: '보급·숙박 보기', href: '/self-drive/supplies' },
+      { label: '노선 상담하기', href: '/cooperation' },
+    ],
+  },
+};
+
+const t = localized[locale];
+const thisPath = '/self-drive/play';
+const schemas = [
+  buildWebPageSchema(thisPath, t.pageTitle, t.description, locale),
+  buildCollectionPageSchema(thisPath, t.pageTitle, t.description, locale),
+];
+---
+
+<BaseLayout title={t.title} description={t.description} schemas={schemas} locale={locale}>
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-hero">
+          <div class="page-copy">
+            <div class="eyebrow">Self-Drive Guide</div>
+            <h1>{t.pageTitle}</h1>
+            <p>{t.pageDesc}</p>
+          </div>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.routeHighlights}</h2>
+          <p>{t.routeContent}</p>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.highlightsTitle}</h2>
+          <ul>
+            {t.highlightsItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.selfDriveTips}</h2>
+          <ul>
+            {t.selfDriveTipsItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.seasonalAdvice}</h2>
+          <ul>
+            {t.seasonalAdviceItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.audienceTitle}</h2>
+          <ul>
+            {t.audienceItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.routePlanning}</h2>
+          <ul>
+            {t.routePlanningItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.notesTitle}</h2>
+          <ul>
+            {t.notesItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.faqTitle}</h2>
+          <div class="faq-list">
+            {t.faqs.map((faq) => (
+              <article class="faq-item">
+                <h3>{faq.q}</h3>
+                <p>{faq.a}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <aside class="page-card">
+        <h3>{t.ctaTitle}</h3>
+        <ul class="page-list">
+          {t.ctaItems.map((cta) => (
+            <li><a href={cta.href}>{cta.label}</a></li>
+          ))}
+        </ul>
+
+        <div class="detail-side-card">
+          <h3>{locale === 'zh' ? '快速咨询' : locale === 'ja' ? '快速相談' : locale === 'ko' ? '빠른 상담' : 'Quick Consultation'}</h3>
+          <div class="cta-row">
+            <button
+              class="button"
+              type="button"
+              data-open-ai-widget
+              data-ai-page-url={thisPath}
+            >
+              {locale === 'zh' ? '先问 AI 助手' : locale === 'ja' ? '先に AIアシスタントへ' : locale === 'ko' ? 'AI 도우미 먼저' : 'Ask AI Assistant'}
+            </button>
+            <a class="button-secondary" href="/cooperation">
+              {locale === 'zh' ? '提交咨询' : locale === 'ja' ? '相談を送信' : locale === 'ko' ? '상담 제출' : 'Submit Consultation'}
+            </a>
+          </div>
+        </div>
+
+</aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

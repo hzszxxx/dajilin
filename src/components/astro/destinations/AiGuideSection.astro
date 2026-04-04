@@ -1,0 +1,59 @@
+---
+import SectionTitle from '@/components/astro/destinations/SectionTitle.astro';
+import { getLocaleFromPathname, type Locale } from '@/lib/i18n';
+
+interface Props {
+  questions: string[];
+}
+
+const { questions } = Astro.props;
+const locale = getLocaleFromPathname(Astro.url.pathname);
+const copy: Record<Locale, { eyebrow: string; title: string; description: string; cta: string }> = {
+  zh: {
+    eyebrow: 'AI 导览',
+    title: '不知道怎么玩？让 AI 帮你规划',
+    description: 'AI 导览会根据你关注的目的地和问题，推荐更合适的浏览顺序与后续咨询入口。',
+    cta: '进入 AI 导览',
+  },
+  en: {
+    eyebrow: 'AI Guide',
+    title: 'Not sure where to start? Let AI guide you',
+    description: 'AI guide suggests a better browsing path and next consultation steps.',
+    cta: 'Open AI guide',
+  },
+  ja: {
+    eyebrow: 'AIガイド',
+    title: 'どこから始めるか迷ったらAIへ',
+    description: 'AIガイドが閲覧順序と次の相談導線を提案します。',
+    cta: 'AIガイドへ',
+  },
+  ko: {
+    eyebrow: 'AI 가이드',
+    title: '어디서 시작할지 모르겠다면 AI에게',
+    description: 'AI 가이드가 탐색 순서와 다음 상담 동선을 추천합니다.',
+    cta: 'AI 가이드 열기',
+  },
+};
+---
+
+<section class="dst-section">
+  <div class="container">
+    <div class="dst-ai-block">
+      <SectionTitle
+        eyebrow={copy[locale].eyebrow}
+        title={copy[locale].title}
+        description={copy[locale].description}
+      />
+      <div class="dst-ai-question-row">
+        {questions.map((question) => (
+          <button type="button" class="button-secondary" data-open-ai-widget data-ai-question={question}>
+            {question}
+          </button>
+        ))}
+      </div>
+      <div class="dst-ai-cta">
+        <button class="button" type="button" data-open-ai-widget>{copy[locale].cta}</button>
+      </div>
+    </div>
+  </div>
+</section>

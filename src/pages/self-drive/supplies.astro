@@ -1,0 +1,432 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { getLocaleFromPathname, type Locale } from '@/lib/i18n';
+import { buildCollectionPageSchema, buildWebPageSchema } from '@/lib/schema';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+
+const localized: Record<Locale, {
+  title: string;
+  description: string;
+  pageTitle: string;
+  pageDesc: string;
+  preTripPrep: string;
+  preTripItems: string[];
+  alongRoute: string;
+  alongRouteItems: string[];
+  teamNotes: string;
+  teamItems: string[];
+  accommodationAdvice: string;
+  accommodationItems: string[];
+  audienceTitle: string;
+  audienceItems: string[];
+  highlightsTitle: string;
+  highlightsItems: string[];
+  notesTitle: string;
+  notesItems: string[];
+  faqTitle: string;
+  faqs: { q: string; a: string }[];
+  ctaTitle: string;
+  ctaItems: { label: string; href: string }[];
+}> = {
+  zh: {
+    title: '自驾补给与住宿建议 | dajilin.net',
+    description: '围绕自驾攻略出发准备、沿线补给、住宿判断和团队注意事项，提供实用的自驾出行参考信息。',
+    pageTitle: '自驾补给与住宿建议',
+    pageDesc: '本页更偏实用信息，帮助用户把路线理解延伸到出发准备、补给和住宿判断。对于准备自驾出行的用户来说，这些信息可以降低出行准备成本。',
+    preTripPrep: '出发前准备建议',
+    preTripItems: [
+      '车辆检查：刹车、轮胎、油量、冷却液、备胎和急救包',
+      '证件准备：身份证、驾驶证、行驶证、边境通行证（如需要）',
+      '物资准备：足够的饮用水、干粮、常备药品、防寒防雨装备',
+      '电子设备：手机、充电宝、离线地图下载、对讲机（可选）',
+      '保险确认：确认车辆保险和意外保险在有效期内',
+    ],
+    alongRoute: '沿线补给考虑',
+    alongRouteItems: [
+      '延吉：补给条件最完善，可以进行较全面的物资补充',
+      '图们：小型补给站，可补充基础物资和饮用水',
+      '珲春：俄式商品丰富，可购买特色商品作为补给',
+      '沿途乡镇：小型商店和农家乐可提供基本补给',
+      '建议在主要城镇进行集中补给，避免在偏远路段等待',
+    ],
+    teamNotes: '团队与车队注意事项',
+    teamItems: [
+      '统一安排停留节点，避免车队分散',
+      '提前确认各驿站停车位和团队餐饮承接能力',
+      '保持通讯畅通，建议配备对讲机或车载电台',
+      '车队出行需安排前导车和收尾车',
+      '注意各车辆油量保持同步，避免掉队',
+    ],
+    accommodationAdvice: '住宿建议',
+    accommodationItems: [
+      '延吉：酒店选择丰富，从经济型到高端都有',
+      '图们：经济型酒店和家庭旅馆为主',
+      '珲春：商务酒店和边境特色住宿可选',
+      '沿途乡镇：农家乐和民宿体验当地生活',
+      '旅游旺季需提前预订，冬季淡季价格较优惠',
+      '可根据路线节奏选择城市或乡镇住宿体验不同',
+    ],
+    audienceTitle: '本页适合',
+    audienceItems: [
+      '准备自驾出行的游客',
+      '团队与车队组织者',
+      '希望降低准备成本的实用型用户',
+    ],
+    highlightsTitle: '核心建议',
+    highlightsItems: [
+      '更接近真实出行问题',
+      '适合提高保存与咨询意愿',
+      '与驿站服务形成互补',
+    ],
+    notesTitle: '注意事项',
+    notesItems: [
+      '偏远路段手机信号可能不稳定',
+      '冬季出行需特别关注车辆防冻和路面结冰',
+      '尊重当地民族风俗习惯',
+      '保护环境，不乱扔垃圾',
+    ],
+    faqTitle: '常见问题',
+    faqs: [
+      { q: '自驾需要重点准备哪些方面？', a: '建议优先理解路线、季节、停留节奏、补给方式和住宿安排。出发前车辆检查和基本物资准备也非常重要。' },
+      { q: '团队出行和个人自驾有什么不同？', a: '团队更需要关注停留节点、统一补给、住宿组织和连续服务。建议提前与驿站和住宿点确认团队接待能力。' },
+      { q: '沿线住宿条件如何？', a: '延吉住宿条件最好，珲春和图们有基本选择，沿途乡镇以民宿和农家乐为主。建议根据路线节奏选择。' },
+      { q: '加油站在沿线分布情况？', a: '主要城镇都有加油站，但部分路段间隔较长，建议在有加油站时及时补充，不要等油量过低才加油。' },
+    ],
+    ctaTitle: '继续了解',
+    ctaItems: [
+      { label: '查看驿站服务', href: '/self-drive/stations' },
+      { label: '查看自驾攻略怎么玩', href: '/self-drive/play' },
+      { label: '提交路线咨询', href: '/cooperation' },
+    ],
+  },
+  en: {
+    title: 'Self-Drive Supplies & Stays | dajilin.net',
+    description: 'Practical self-drive travel information covering pre-trip preparation, route supplies, accommodation, and team considerations.',
+    pageTitle: 'Self-Drive Supplies & Stays',
+    pageDesc: 'This page focuses on practical information, helping users extend route understanding to pre-trip preparation, supplies, and accommodation decisions. For users preparing self-drive trips, this information can reduce travel preparation costs.',
+    preTripPrep: 'Pre-trip Preparation Suggestions',
+    preTripItems: [
+      'Vehicle inspection: brakes, tires, fuel, coolant, spare tire, first aid kit',
+      'Document preparation: ID card, driver license, vehicle registration, border passage permit (if needed)',
+      'Supplies: sufficient drinking water, dry food, regular medicine, cold/rain gear',
+      'Electronic devices: mobile phone, power bank, offline maps, walkie-talkie (optional)',
+      'Insurance confirmation: ensure vehicle and accident insurance are valid',
+    ],
+    alongRoute: 'Route Supply Considerations',
+    alongRouteItems: [
+      'Yanji: Most complete supply conditions, can do comprehensive supply replenishment',
+      'Tumen: Small supply stations, can replenish basic supplies and drinking water',
+      'Hunchun: Rich Russian products, can purchase special products as supplies',
+      'Villages along the route: small shops and farm stays can provide basic supplies',
+      'It is recommended to concentrate supplies in major towns and avoid waiting in remote sections',
+    ],
+    teamNotes: 'Team & Fleet Notes',
+    teamItems: [
+      'Unified stop arrangements, avoid fleet dispersion',
+      'Confirm parking spaces and team dining capacity at stations in advance',
+      'Maintain communication, walkie-talkies or vehicle radios recommended',
+      'Fleet travel requires lead and rear vehicles',
+      'Keep all vehicles at similar fuel levels to avoid falling behind',
+    ],
+    accommodationAdvice: 'Accommodation Advice',
+    accommodationItems: [
+      'Yanji: Rich hotel choices, from economy to high-end',
+      'Tumen: Economy hotels and family inns',
+      'Hunchun: Business hotels and border specialty accommodation available',
+      'Villages along route: Farm stays and homestays for local experience',
+      'Book in advance during peak season; winter off-season has better prices',
+      'Choose city or village accommodation based on route rhythm for different experiences',
+    ],
+    audienceTitle: 'Who This Page Is For',
+    audienceItems: [
+      'Tourists preparing self-drive trips',
+      'Team and fleet organizers',
+      'Practical users who want to reduce preparation costs',
+    ],
+    highlightsTitle: 'Core Suggestions',
+    highlightsItems: [
+      'Closer to real travel problems',
+      'Suitable for increasing bookmark and consultation willingness',
+      'Complementary with station services',
+    ],
+    notesTitle: 'Important Notes',
+    notesItems: [
+      'Mobile signal may be unstable in remote sections',
+      'Winter travel requires special attention to vehicle antifreeze and road icing',
+      'Respect local ethnic customs and habits',
+      'Protect the environment, do not litter',
+    ],
+    faqTitle: 'FAQ',
+    faqs: [
+      { q: 'What aspects need key preparation for self-drive?', a: 'It is recommended to prioritize understanding route, season, stop rhythm, supply methods, and accommodation arrangements. Pre-trip vehicle inspection and basic supplies preparation are also very important.' },
+      { q: 'What is different about team travel vs. individual self-drive?', a: 'Teams need more attention to stop nodes, unified supplies, accommodation organization, and continuous services. It is recommended to confirm team reception capacity with stations and accommodations in advance.' },
+      { q: 'What are the accommodation conditions along the route?', a: 'Yanji has the best accommodation conditions, Hunchun and Tumen have basic options, and villages along the route mainly offer homestays and farm stays. It is recommended to choose based on route rhythm.' },
+      { q: 'How are gas stations distributed along the route?', a: 'There are gas stations in major towns, but some sections have longer gaps. It is recommended to replenish in time when passing gas stations and not wait until fuel is too low.' },
+    ],
+    ctaTitle: 'Continue Exploring',
+    ctaItems: [
+      { label: 'View Station Services', href: '/self-drive/stations' },
+      { label: 'View How to Travel Self-Drive', href: '/self-drive/play' },
+      { label: 'Submit Route Consultation', href: '/cooperation' },
+    ],
+  },
+  ja: {
+    title: 'ドライブ補給・宿泊提案 | dajilin.net',
+    description: '自驾攻略の出発準備、沿線補給、宿泊判断と团体注意事項をカバーする実践的な情報をお届けします。',
+    pageTitle: 'ドライブ補給・宿泊提案',
+    pageDesc: '本ページは実用情報により重点を置き、ユーザーのルート理解を出発準備、補給、宿泊判断に扩展支援します。レンタカーでの旅行を準備するユーザーにとって、これらの情報は旅行準備コストを削減できます。',
+    preTripPrep: '出発前準備の提案',
+    preTripItems: [
+      '車両检查：ブレーキ、タイヤ、燃料、クーラント、スペアタイヤ、応急処置キット',
+      '書類準備：身分証明書、運転免許証、車検証、国境通行证（必要に応じて）',
+      '物資準備：十分な飲料水、乾糧、常備薬、防寒・防雨装備',
+      '電子デバイス：スマホ、モバイルバッテリー、オフラインマップ、ウォーキートーカー（任意）',
+      '保険確認：車両保険と傷害保険が有効期内であることを確認',
+    ],
+    alongRoute: '沿線補給の考慮',
+    alongRouteItems: [
+      '延吉：最も補給条件が整備されており、総合的な物資補充が可能',
+      '図們：小型補給ステーションあり、基本物資と飲料水の補充可',
+      '琿春：ロシア系商品豊富で、特産品を補給として購入可能',
+      '沿線の乡镇：小規模商店と農村民泊で基本補給が可能',
+      '主要集落での集中的な補給を推奨、偏远路での待機を避ける',
+    ],
+    teamNotes: '団体・무리車両注意事項',
+    teamItems: [
+      '統一した停留安排、무리分散を避ける',
+      '事前に各驛駅の駐車スペースと団体用餐承接能力を確認',
+      '通信の維持、ウォーキートーカー或は車種無線を推奨',
+      '무리出行は先導車と最後尾車の配置が必要',
+      '各車両の日給量を統一に維持、落ち队を避ける',
+    ],
+    accommodationAdvice: '宿泊提案',
+    accommodationItems: [
+      '延吉：ホテル選択が豊富、エコノミーから高級まで',
+      '図們：エコノミーホテルと家族経営旅馆为主',
+      '琿春：ビジネスホテルと国境特色宿泊可选',
+      '沿線の乡镇：農村民泊と民宿で地元の生活を体験',
+      '旅行旺季には事前予約が必要、冬のオフ期は価格が割安',
+      'ルート节奏に応じて都市または乡镇宿泊を選択し異なる体験を取る',
+    ],
+    audienceTitle: '本ページが似合う',
+    audienceItems: [
+      'レンタカー旅行を準備する 관광객',
+      '団体・무리車両 organizers',
+      '準備コストを削減したい実用型ユーザー',
+    ],
+    highlightsTitle: 'コア提案',
+    highlightsItems: [
+      '実際の旅行問題により近い',
+      '保存と相談意愿の向上に適合',
+      '驛站サービスと相互補完',
+    ],
+    notesTitle: '注意事項',
+    notesItems: [
+      '偏远部では手机信号が不安定な場合がある',
+      '冬の出行には車両不凍と路面凍結に特に注意',
+      '現地の民族の風俗習慣を尊重',
+      '環境を保護しゴミを捨てない',
+    ],
+    faqTitle: 'よくある質問',
+    faqs: [
+      { q: 'ドレイクにはどのような準備が必要ですか？', a: 'ルート、季節、停留节奏、補給方法、宿泊安排の理解を優先することを推奨します。出発前の車両檢查と基本物資準備も非常に重要です。' },
+      { q: '団体出行と個人レンタカーの違いは何ですか？', a: '団体では停留节点、統一補給、宿泊组织和連続サービスにより注意する必要があります。事前に関連先と団体受入能力を確認することを推奨します。' },
+      { q: '沿線の宿泊条件はどうですか？', a: '延吉の宿泊条件が最も良く、琿春と図們には基本的な選択があり、沿線の乡镇では民宿と農村民泊が主です。ルートの节奏に応じて選択することを推奨します。' },
+      { q: '加油站の沿線分布状況は？', a: '主要集落には加油站がありますが、一部の区間は間隔が長いです。加油站がある時に時給で補充し、日給量が低くなってから补充するのを避けることを推奨します。' },
+    ],
+    ctaTitle: '引続き了解更多',
+    ctaItems: [
+      { label: '驛站サービスを查看', href: '/self-drive/stations' },
+      { label: '自驾攻略の回り方を查看', href: '/self-drive/play' },
+      { label: '旅程相談を提出', href: '/cooperation' },
+    ],
+  },
+  ko: {
+    title: '자가운전 보급·숙박 제안 | dajilin.net',
+    description: '자가운전 가이드의 출발 준비,沿선 보급, 숙박 판단,团体 주의사항을 다루는実践적인 정보를 제공합니다.',
+    pageTitle: '자가운전 보급·숙박 제안',
+    pageDesc: '본 페이지는実用 정보에 초점을 맞춰 사용자의 노선 이해를 출발 준비, 보급, 숙박 판단으로 확장합니다. 자가운전 여행을 준비하는 사용자에게 이러한 정보는 여행 준비 비용을 절감할 수 있습니다.',
+    preTripPrep: '출발 전 준비 제안',
+    preTripItems: [
+      '차량 검사: 브레이크, 타이어, 연료, 냉각수, 비상 타이어, 구급상자',
+      '서류 준비: 신분증, 운전면허증, 차량등록증, 국경 통과증(필요시)',
+      '물자 준비: 충분한 음용수, 말린 식량, 상비약, 방한/방우 장비',
+      '전자 장비: 스마트폰, 충전지, 오프라인 지도, 무전기(선택)',
+      '보험 확인: 차량 보험과傷害 보험이 유효 기간 내인지 확인',
+    ],
+    alongRoute: '沿선 보급 고려',
+    alongRouteItems: [
+      '연길: 보급 조건이 가장 완비되어 포괄적인 물자 보충 가능',
+      '투먼: 소형 보급소, 기본 물자와 음용수 보충 가능',
+      '훔친: 러시아 상품이 풍부하여 특산품을 보급으로 구매 가능',
+      '沿線 향진: 소규모 상점과 농가 민박으로 기본 보급 가능',
+      '주요 마을에서集中的な 보급을 권장,偏远 구간에서의 대기를 피할 것',
+    ],
+    teamNotes: '단체·차량 주의사항',
+    teamItems: [
+      '통일된 정차安排, 차량 분산을 피할 것',
+      '사전에各 거점의 주차スペース와 단체 식음受入能力를 확인',
+      '통신 유지, 무전기 또는 차량 무선装备 권장',
+      '차량出行은先行차와 후속차를配备',
+      '각 차량의 연료량을 동기화하여 따르지 않도록 할 것',
+    ],
+    accommodationAdvice: '숙박 제안',
+    accommodationItems: [
+      '연길: 호텔 선택이 풍부하여 Economiqueから高級まで',
+      '투먼: Economique 호텔과 가족 경영 민박 위주',
+      '훔친: 비즈니스 호텔과 국경特色 숙박可选',
+      '沿선 향진: 농가 민박과 민박으로 현지 생활 체험',
+      '여행 성수기에는 사전 예약 필요, 겨울 비수기는 가격이 저렴',
+      '노선 리듬에 따라 도시 또는 향진 숙박을 선택하여異なる 체험',
+    ],
+    audienceTitle: '본 페이지가 적합한 분들',
+    audienceItems: [
+      '자가운전 여행을 준비하는 관광객',
+      '단체·차량 organizers',
+      '준비 비용을 절감하고 싶은 실용형 사용자',
+    ],
+    highlightsTitle: '핵심 제안',
+    highlightsItems: [
+      '실제 여행 문제에 더 가까움',
+      '저장 및 상담 의향을 높이는 데 적합',
+      '거점 서비스와 상호 보완',
+    ],
+    notesTitle: '주의사항',
+    notesItems: [
+      '偏远 구간에서는 휴대전화 신호가 불안정할 수 있음',
+      '겨울 여행에는 차량 동결 방지 と 도로 결빙에 각별한 주의',
+      '현지 민족 풍속 습관을 존중할 것',
+      '환경을 보호하고 쓰레기를 버리지 말 것',
+    ],
+    faqTitle: '자주 묻는 질문',
+    faqs: [
+      { q: '자가운전에 어떤 준비가 필요합니까?', a: '노선, 계절, 정차 리듬, 보급 방식, 숙박安排의 이해를 우선시할 것을 권장합니다. 출발 전 차량 검사 と 기본 물자 준비도 매우 중요합니다.' },
+      { q: '단체出行과 개인 자가운전의 차이는?', a: '단체는 정차 노드, 통일 보급, 숙박 조직, 연속 서비스에 더 주의를 기울여야 합니다. 사전에 관련처와 단체受入能力를 확인할 것을 권장합니다.' },
+      { q: '沿선 숙박 조건은 어떻습니까?', a: '연길의 숙박 조건이 가장 좋고, 훔친과 투먼에는 기본적인 선택이 있으며,沿선 향진에는 민박과 농가 민박이 주를 이룹니다. 노선 리듬에 따라 선택할 것을 권장합니다.' },
+      { q: '주유소의沿선 분포 상황은?', a: '주요 마을에는 주유소가 있지만 일부 구간은 간격이 길다. 주유소가 있는 곳에서时就로 보충하고 연료량이 너무 낮아서까지 기다리지 말 것을 권장합니다.' },
+    ],
+    ctaTitle: '계속 알아보기',
+    ctaItems: [
+      { label: '거점 서비스 보기', href: '/self-drive/stations' },
+      { label: '자가운전 가이드 여행 방법 보기', href: '/self-drive/play' },
+      { label: '노선 상담 제출', href: '/cooperation' },
+    ],
+  },
+};
+
+const t = localized[locale];
+const thisPath = '/self-drive/supplies';
+const schemas = [
+  buildWebPageSchema(thisPath, t.pageTitle, t.description, locale),
+  buildCollectionPageSchema(thisPath, t.pageTitle, t.description, locale),
+];
+---
+
+<BaseLayout title={t.title} description={t.description} schemas={schemas} locale={locale}>
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-hero">
+          <div class="page-copy">
+            <div class="eyebrow">Self-Drive Guide</div>
+            <h1>{t.pageTitle}</h1>
+            <p>{t.pageDesc}</p>
+          </div>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.preTripPrep}</h2>
+          <ul>
+            {t.preTripItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.alongRoute}</h2>
+          <ul>
+            {t.alongRouteItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.teamNotes}</h2>
+          <ul>
+            {t.teamItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.accommodationAdvice}</h2>
+          <ul>
+            {t.accommodationItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.audienceTitle}</h2>
+          <ul>
+            {t.audienceItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.highlightsTitle}</h2>
+          <ul>
+            {t.highlightsItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.notesTitle}</h2>
+          <ul>
+            {t.notesItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.faqTitle}</h2>
+          <div class="faq-list">
+            {t.faqs.map((faq) => (
+              <article class="faq-item">
+                <h3>{faq.q}</h3>
+                <p>{faq.a}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <aside class="page-card">
+        <h3>{t.ctaTitle}</h3>
+        <ul class="page-list">
+          {t.ctaItems.map((cta) => (
+            <li><a href={cta.href}>{cta.label}</a></li>
+          ))}
+        </ul>
+
+        <div class="detail-side-card">
+          <h3>{locale === 'zh' ? '快速咨询' : locale === 'ja' ? '快速相談' : locale === 'ko' ? '빠른 상담' : 'Quick Consultation'}</h3>
+          <div class="cta-row">
+            <button
+              class="button"
+              type="button"
+              data-open-ai-widget
+              data-ai-page-url={thisPath}
+            >
+              {locale === 'zh' ? '先问 AI 助手' : locale === 'ja' ? '先に AIアシスタントへ' : locale === 'ko' ? 'AI 도우미 먼저' : 'Ask AI Assistant'}
+            </button>
+            <a class="button-secondary" href="/cooperation">
+              {locale === 'zh' ? '提交咨询' : locale === 'ja' ? '相談を送信' : locale === 'ko' ? '상담 제출' : 'Submit Consultation'}
+            </a>
+          </div>
+        </div>
+
+</aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

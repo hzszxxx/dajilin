@@ -1,0 +1,431 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { getLocaleFromPathname, type Locale } from '@/lib/i18n';
+import { buildCollectionPageSchema, buildWebPageSchema } from '@/lib/schema';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+
+const localized: Record<Locale, {
+  title: string;
+  description: string;
+  pageTitle: string;
+  pageDesc: string;
+  serviceOverview: string;
+  serviceTypes: string;
+  serviceItems: string[];
+  stopScenarios: string;
+  scenarioItems: string[];
+  cooperationInfo: string;
+  cooperationItems: string[];
+  audienceTitle: string;
+  audienceItems: string[];
+  highlightsTitle: string;
+  highlightsItems: string[];
+  notesTitle: string;
+  notesItems: string[];
+  faqTitle: string;
+  faqs: { q: string; a: string }[];
+  ctaTitle: string;
+  ctaItems: { label: string; href: string }[];
+  applyStationCta: string;
+  viewStationsCta: string;
+  viewStationsDesc: string;
+}> = {
+  zh: {
+    title: '自驾驿站服务说明 | dajilin.net',
+    description: '围绕自驾攻略驿站资源，整理停车、休整、餐饮、住宿、补给和团队服务等核心服务能力的说明页面。',
+    pageTitle: '自驾驿站服务说明',
+    pageDesc: '驿站服务是自驾攻略内容里最有服务延展价值的一环。本页重点说明驿站能提供什么，帮助用户和合作方理解服务边界与合作方式。',
+    serviceOverview: '驿站服务概览',
+    serviceTypes: '服务类型',
+    serviceItems: [
+      '停车服务：大型停车场，适合自驾车队和团队巴士停靠',
+      '休整空间：室内休息区、卫生间、简易洗漱设施',
+      '餐饮供给：地方特色餐饮、简餐、热饮服务',
+      '住宿配套：标准间、多人间、露营区域',
+      '补给支持：油料储备、日常用品、应急物资',
+      '团队服务：会议场地、团队活动组织、导游对接',
+    ],
+    stopScenarios: '常见停留场景',
+    scenarioItems: [
+      '自驾用户中途休整，恢复体力继续前行',
+      '摄影用户定点拍摄，驿站作为基地',
+      '车队组织者安排统一停留点和补给',
+      '团队旅游的节点式服务对接',
+      '季节性路线的临时驻扎点',
+    ],
+    cooperationInfo: '合作与接入说明',
+    cooperationItems: [
+      '欢迎驿站经营方、沿线商家入驻合作',
+      '平台提供信息展示与咨询引导服务',
+      '可对接团队定制与服务产品合作',
+      '咨询与合作请联系官方渠道',
+    ],
+    audienceTitle: '驿站式服务适合',
+    audienceItems: [
+      '自驾攻略用户',
+      '车队与团队组织者',
+      '摄影与线路体验型用户',
+      '驿站合作方与沿线商家',
+    ],
+    highlightsTitle: '核心服务能力',
+    highlightsItems: [
+      '形成平台差异化服务说明能力',
+      '兼顾用户与合作方两类视角',
+      '后续可延展到合作入驻和服务转化',
+    ],
+    notesTitle: '注意事项',
+    notesItems: [
+      '驿站服务以现场实际情况为准',
+      '旅游旺季建议提前联系确认服务',
+      '不同驿站服务能力有差异',
+      '平台当前以信息说明与咨询引导为主',
+    ],
+    faqTitle: '常见问题',
+    faqs: [
+      { q: '驿站服务主要覆盖哪些需求？', a: '主要覆盖停车、休整、补给、住宿、餐饮和团队停留等需求。' },
+      { q: '现在能直接预订驿站服务吗？', a: '第一阶段以说明、理解和咨询为主，后续再视资源情况接入销售或预约。' },
+      { q: '如何成为驿站合作方？', a: '欢迎驿站经营方和沿线商家联系合作，具体方式可通过官方咨询渠道了解。' },
+      { q: '驿站之间相距多远？', a: '根据沿线分布情况，主要驿站相距约50-100公里，具体间距视路线情况而定。' },
+    ],
+    ctaTitle: '继续了解',
+    ctaItems: [
+      { label: '查看自驾攻略怎么玩', href: '/self-drive/play' },
+      { label: '查看补给与住宿建议', href: '/self-drive/supplies' },
+      { label: '咨询驿站合作', href: '/cooperation' },
+    ],
+    applyStationCta: '申请成为驿站',
+    viewStationsCta: '查看合作驿站',
+    viewStationsDesc: '浏览已入驻的优质驿站合作伙伴，找到理想的停靠点',
+  },
+  en: {
+    title: 'Self-Drive Station Services | dajilin.net',
+    description: 'Information about self-drive highway stations covering parking, rest, dining, accommodation, supplies, and team services.',
+    pageTitle: 'Self-Drive Station Services',
+    pageDesc: 'Station services are the most valuable service extension for self-drive routes. This page explains what stations can provide, helping users and partners understand service boundaries and cooperation methods.',
+    serviceOverview: 'Station Service Overview',
+    serviceTypes: 'Service Types',
+    serviceItems: [
+      'Parking: Large parking areas suitable for self-drive vehicles and team buses',
+      'Rest spaces: Indoor rest areas, restrooms, simple washing facilities',
+      'Dining: Local specialties, light meals, hot beverages',
+      'Accommodation: Standard rooms, dormitory rooms, camping areas',
+      'Supplies: Fuel reserves, daily necessities, emergency supplies',
+      'Team services: Meeting spaces, team activity organization, guide connections',
+    ],
+    stopScenarios: 'Common Stop Scenarios',
+    scenarioItems: [
+      'Self-drive users taking breaks to restore energy',
+      'Photography users setting up base at stations',
+      'Fleet organizers arranging unified stops and supplies',
+      'Team tourism node-style service connections',
+      'Seasonal route temporary camping points',
+    ],
+    cooperationInfo: 'Cooperation Information',
+    cooperationItems: [
+      'Welcome station operators and businesses along the route to cooperate',
+      'Platform provides information display and consultation services',
+      'Can connect with team customization and service product cooperation',
+      'For consultation and cooperation, please contact official channels',
+    ],
+    audienceTitle: 'Who Station Services Are For',
+    audienceItems: [
+      'Self-drive users',
+      'Fleet and team organizers',
+      'Photography and route experience users',
+      'Station partners and businesses along the route',
+    ],
+    highlightsTitle: 'Core Service Capabilities',
+    highlightsItems: [
+      'Forms platform differentiated service description capability',
+      'Serves both users and partner perspectives',
+      'Can extend to partner onboarding and service transformation',
+    ],
+    notesTitle: 'Important Notes',
+    notesItems: [
+      'Station services are subject to actual on-site conditions',
+      'It is recommended to confirm services in advance during peak season',
+      'Service capabilities vary between different stations',
+      'Platform currently focuses on information description and consultation guidance',
+    ],
+    faqTitle: 'FAQ',
+    faqs: [
+      { q: 'What needs do station services mainly cover?', a: 'Mainly covering parking, rest, supplies, accommodation, dining, and team stop needs.' },
+      { q: 'Can I book station services directly now?', a: 'The first phase focuses on explanation, understanding, and consultation. Sales or reservation access will be added based on resource conditions.' },
+      { q: 'How can I become a station partner?', a: 'Station operators and businesses along the route are welcome to contact for cooperation. Details can be learned through official consultation channels.' },
+      { q: 'How far apart are stations?', a: 'According to route distribution, main stations are approximately 50-100km apart, with specific distances depending on route conditions.' },
+    ],
+    ctaTitle: 'Continue Exploring',
+    ctaItems: [
+      { label: 'View How to Travel Self-Drive', href: '/self-drive/play' },
+      { label: 'View Supplies & Stays', href: '/self-drive/supplies' },
+      { label: 'Consult Station Cooperation', href: '/cooperation' },
+    ],
+    applyStationCta: 'Apply to Become a Station',
+    viewStationsCta: 'View Partner Stations',
+    viewStationsDesc: 'Browse quality partner stations and find ideal stops',
+  },
+  ja: {
+    title: '自驾驛站サービス説明 | dajilin.net',
+    description: '自驾攻略驛站の詳細情報、停车、休整、餐饮、宿泊、補給、団体サービスをカバーします。',
+    pageTitle: '自驾驛站サービス説明',
+    pageDesc: '驛站サービスは自驾攻略の内容として最も価値のあるサービス拡張的部分です。本ページでは驛站が提供するサービスについて説明し、ユーザーと協力パートナーのサービス境界与合作方式を理解支援します。',
+    serviceOverview: '驛站サービス概要',
+    serviceTypes: 'サービスタイプ',
+    serviceItems: [
+      '駐車サービス：大型駐車場、レンタカー车队と단체버스停車にに適する',
+      '休整スペース：室内休息エリア，洗手間簡易、清潔な施設',
+      '餐饮供給：地元特色料理、軽食、热い飲み物サービス',
+      '宿泊配套：標準部屋、多人数部屋、キャンプエリア',
+      '補給サポート：燃料備蓄、日常必需品、緊急物資',
+      '団体サービス：会議スペース、団体アクティビティ，手配ガイド接続',
+    ],
+    stopScenarios: 'よくある停留シーン',
+    scenarioItems: [
+      'レンタカー用户在中間で休息，体力を回復',
+      '写真撮影ユーザーが驛站を基地として定点撮影',
+      '무리车队 organizersが統一停留と補給を手配',
+      '단체여행のノード型サービス接続',
+      '季節性ルートの временного 定住点',
+    ],
+    cooperationInfo: '協力と接入説明',
+    cooperationItems: [
+      '驛站経営者、沿線商家との協力を歓迎',
+      'プラットフォームは情報展示と相談導線サービスを提供',
+      '团体カスタマイズ与合作商品との对接が可能',
+      '相談与合作は公式渠道を通じてご連絡ください',
+    ],
+    audienceTitle: '驛站式サービスが似合う',
+    audienceItems: [
+      '自驾攻略用户',
+      '무리车队と団体organizer',
+      '写真撮影とルート体験型用户',
+      '驛站協力パートナーと沿線商家',
+    ],
+    highlightsTitle: 'コアサービス能力',
+    highlightsItems: [
+      'プラットフォームの差別化されたサービス説明能力を形成',
+      'ユーザーと協力パートナーの両方の視点を配慮',
+      '今後の協力加盟与服务転換への展開が可能',
+    ],
+    notesTitle: '注意事項',
+    notesItems: [
+      '驛站サービスは現場の实际情况を基準とします',
+      '旅行旺季には事前に連絡してサービスを確認することを推奨',
+      '驛站によってサービス能力に差があります',
+      'プラットフォームは現在情報説明と相談導線を優先',
+    ],
+    faqTitle: 'よくある質問',
+    faqs: [
+      { q: '驛站サービスは主にどのようなニーズに対応していますか？', a: '主に駐車、休整、補給、宿泊、餐饮、団体停留などのニーズに対応しています。' },
+      { q: '今は直接驛站サービスを予約できますか？', a: '第一段階では説明、理解と相談を優先とし、今後の資源状況を見て販売または予約を開始します。' },
+      { q: '驛站協力パートナーになる方法は？', a: '驛站経営者と沿線商家は協力してお問い合わせいただくことを歓迎します。詳細は公式相談渠道でご確認ください。' },
+      { q: '驛站間の距離はどのくらいですか？', a: '沿線の状況により、主要驛站は約50-100km間隔で分布しています具体情况はルートの状況により異なります。' },
+    ],
+    ctaTitle: '引続き了解更多',
+    ctaItems: [
+      { label: '自驾攻略の回り方を查看', href: '/self-drive/play' },
+      { label: '補給・宿泊を查看', href: '/self-drive/supplies' },
+      { label: '驛站合作を相談', href: '/cooperation' },
+    ],
+    applyStationCta: '驛站成為を申請',
+    viewStationsCta: '協力驛站を見る',
+    viewStationsDesc: '上架済みの質のパートナー驛站を閲覧し、的理想停靠点を見つける',
+  },
+  ko: {
+    title: '자가운전 거점 서비스 설명 | dajilin.net',
+    description: '자가운전 가이드 거점의 상세 정보, 주차, 휴식, 식음, 숙박, 보급,団体 서비스를 안내합니다.',
+    pageTitle: '자가운전 거점 서비스 설명',
+    pageDesc: '거점 서비스는 자가운전 가이드 내용에서 가장 가치 있는 서비스 확장 부분입니다. 본 페이지에서는 거점이 제공하는 서비스에 대해 설명하여 사용자와 협력 파트너의 서비스 경계와 협력 방식을 이해하도록 돕습니다.',
+    serviceOverview: '거점 서비스 개요',
+    serviceTypes: '서비스 유형',
+    serviceItems: [
+      '주차 서비스: 대형 주차장, 자가운전 차량과 단체 버스 정차에 적합',
+      '휴식 공간: 실내 휴게 공간, 화장실, 간이 세면 시설',
+      '식음료 공급: 현지 특색 음식, 가벼운 식사, 따뜻한 음료',
+      '숙박 시설: 표준실, 다인실, 캠핑エリア',
+      '보급 지원: 연료 비축, 일상용품, 비상물자',
+      '단체 서비스: 회의 공간, 단체 활동 조직, 가이드 연결',
+    ],
+    stopScenarios: '주요 정차 상황',
+    scenarioItems: [
+      '자가운전用户在 중간에 휴식, 체력 회복',
+      '사진 촬영 사용자가 거점을 기지로定点 촬영',
+      '무리 차량 운영자가 unified 정차와 보급을 준비',
+      '단체 관광의 노드형 서비스 연결',
+      '계절성 노선의 временного 거점',
+    ],
+    cooperationInfo: '협력과接入 설명',
+    cooperationItems: [
+      '거점 운영자,沿선 상가를 통한 협력 환영',
+      '플랫폼은 정보 전시와 상담 동선 서비스를 제공',
+      '단체 맞춤화와 서비스 상품 협력과 연결 가능',
+      '상담与合作은 공식 채널을 통해 연락주세요',
+    ],
+    audienceTitle: '거점 서비스가 적합한 분들',
+    audienceItems: [
+      '자가운전 가이드 사용자',
+      '차량과 단체 운영자',
+      '사진 촬영과 노선 체험형 사용자',
+      '거점 협력 파트너와沿선 상가',
+    ],
+    highlightsTitle: '핵심 서비스 능력',
+    highlightsItems: [
+      '플랫폼 차별화 서비스 설명 능력 형성',
+      '사용자와 협력 파트너 양측의 관점을 고려',
+      '향후 협력 가입과 서비스 전환으로 확장 가능',
+    ],
+    notesTitle: '주의사항',
+    notesItems: [
+      '거점 서비스는 현장实际情况 을 기준으로 함',
+      '여행 성수기에는事前に連絡하여 서비스 확인 권장',
+      '거점마다 서비스 능력에 차이가 있음',
+      '플랫폼은 현재 정보 설명과 상담 동선을 우선',
+    ],
+    faqTitle: '자주 묻는 질문',
+    faqs: [
+      { q: '거점 서비스는主に어떤 수요를 대응하나요?', a: '주로 주차, 휴식, 보급, 숙박, 식음, 단체 정차 등의 수요를 대응합니다.' },
+      { q: '지금 바로 거점 서비스를 예약할 수 있나요?', a: '1단계에서는 설명, 이해, 상담을 우선으로 하며, 향후 자원은 상황에 따라 판매 또는 예약에 연결할 예정입니다.' },
+      { q: '거점 협력 파트너가 되는 방법은?', a: '거점 운영자와沿선 상가의 협력 문의는 환영합니다. 자세한 내용은 공식 상담 채널에서 확인할 수 있습니다.' },
+      { q: '거점 간 거리는 얼마나 되나요?', a: '沿선 분포에 따라 주요 거점은 약 50-100km 간격으로 분포해 있습니다. 구체적인 거리는 노선 상황에 따라 다릅니다.' },
+    ],
+    ctaTitle: '계속 알아보기',
+    ctaItems: [
+      { label: '자가운전 가이드 여행 방법 보기', href: '/self-drive/play' },
+      { label: '보급·숙박 보기', href: '/self-drive/supplies' },
+      { label: '거점 협력 상담', href: '/cooperation' },
+    ],
+    applyStationCta: '거점이 되고 신청',
+    viewStationsCta: '파트너 거점 보기',
+    viewStationsDesc: '上架済みの質のパートナー 거점을 검색하고的理想停靠点을 찾으세요',
+  },
+};
+
+const t = localized[locale];
+const thisPath = '/self-drive/stations';
+const schemas = [
+  buildWebPageSchema(thisPath, t.pageTitle, t.description, locale),
+  buildCollectionPageSchema(thisPath, t.pageTitle, t.description, locale),
+];
+---
+
+<BaseLayout title={t.title} description={t.description} schemas={schemas} locale={locale}>
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-hero">
+          <div class="page-copy">
+            <div class="eyebrow">Self-Drive Guide</div>
+            <h1>{t.pageTitle}</h1>
+            <p>{t.pageDesc}</p>
+          </div>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.serviceOverview}</h2>
+          <p>{locale === 'zh' ? '驿站是自驾攻略上的重要服务节点，为自驾用户和团队提供多样化的旅途支持服务。' : locale === 'ja' ? '驛站は自驾攻略上の重要なサービス节点として、レンタカー用户と団体に多种多様な旅途支援サービスを提供します。' : locale === 'ko' ? '거점은 자가운전 가이드의 중요한 서비스 노드로, 자가운전 사용자와 단체에 다양한 여행 지원을 제공합니다.' : 'Stations are important service nodes on self-drive routes, providing diverse travel support services for self-drive users and groups.'}</p>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.serviceTypes}</h2>
+          <ul>
+            {t.serviceItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.stopScenarios}</h2>
+          <ul>
+            {t.scenarioItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.cooperationInfo}</h2>
+          <ul>
+            {t.cooperationItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.audienceTitle}</h2>
+          <ul>
+            {t.audienceItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.highlightsTitle}</h2>
+          <ul>
+            {t.highlightsItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.notesTitle}</h2>
+          <ul>
+            {t.notesItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.faqTitle}</h2>
+          <div class="faq-list">
+            {t.faqs.map((faq) => (
+              <article class="faq-item">
+                <h3>{faq.q}</h3>
+                <p>{faq.a}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <aside class="page-card">
+        <h3>{t.ctaTitle}</h3>
+        <ul class="page-list">
+          {t.ctaItems.map((cta) => (
+            <li><a href={cta.href}>{cta.label}</a></li>
+          ))}
+        </ul>
+
+        <div class="detail-side-card">
+          <h3>{locale === 'zh' ? '快速咨询' : locale === 'ja' ? '快速相談' : locale === 'ko' ? '빠른 상담' : 'Quick Consultation'}</h3>
+          <div class="cta-row">
+            <button
+              class="button"
+              type="button"
+              data-open-ai-widget
+              data-ai-page-url={thisPath}
+            >
+              {locale === 'zh' ? '先问 AI 助手' : locale === 'ja' ? '先に AIアシスタントへ' : locale === 'ko' ? 'AI 도우미 먼저' : 'Ask AI Assistant'}
+            </button>
+            <a class="button-secondary" href="/cooperation">
+              {locale === 'zh' ? '提交咨询' : locale === 'ja' ? '相談を送信' : locale === 'ko' ? '상담 제출' : 'Submit Consultation'}
+            </a>
+          </div>
+        </div>
+
+<div class="detail-side-card station-cta-card">
+          <h3>{t.viewStationsCta}</h3>
+          <p>{t.viewStationsDesc}</p>
+          <a class="button" href="/stations">
+            {locale === 'zh' ? '查看合作驿站' : locale === 'ja' ? '驛站を見る' : locale === 'ko' ? '거점 보기' : 'View Stations'}
+          </a>
+        </div>
+
+        <div class="detail-side-card apply-cta-card">
+          <h3>{locale === 'zh' ? '成为驿站合作伙伴' : locale === 'ja' ? '驛站パートナーを目指す' : locale === 'ko' ? '거점 파트너가 되세요' : 'Become a Station Partner'}</h3>
+          <p>{locale === 'zh' ? '欢迎沿线驿站、住宿、餐饮、补给和团队服务商加入我们。' : locale === 'ja' ? '沿線の驛站、宿泊、飲食、補給、団体サービス事業者の皆様のご参加をお勧めします。' : locale === 'ko' ? '연선 거점, 숙박, 식음, 보급, 단체 서비스 사업자의 여러분의 참가를 권장합니다.' : 'Welcome station operators, accommodation, dining, supply and team service providers to join us.'}</p>
+          <a class="button" href="/stations/cooperation">
+            {t.applyStationCta}
+          </a>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

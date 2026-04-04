@@ -1,0 +1,33 @@
+---
+import { getLocaleFromPathname, type Locale } from '@/lib/i18n';
+
+interface Props {
+  title: string;
+  description: string;
+  tag: string;
+  href: string;
+  image: string;
+  imageAlt: string;
+}
+
+const { title, description, tag, href, image, imageAlt } = Astro.props;
+const locale = getLocaleFromPathname(Astro.url.pathname);
+const cta: Record<Locale, string> = {
+  zh: '查看目的地',
+  en: 'View destination',
+  ja: '目的地を見る',
+  ko: '목적지 보기',
+};
+---
+
+<article class="dst-destination-card">
+  <div class="dst-destination-visual">
+    <img src={image} alt={imageAlt} loading="lazy" />
+  </div>
+  <div class="dst-destination-body">
+    <p class="dst-card-tag">{tag}</p>
+    <h3>{title}</h3>
+    <p>{description}</p>
+    <a class="button-secondary" href={href}>{cta[locale]}</a>
+  </div>
+</article>

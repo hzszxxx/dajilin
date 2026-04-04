@@ -1,0 +1,74 @@
+# dajilin-ghost Docker Compose
+# Dedicated Ghost CMS instance for dajilin.net
+#
+# Usage:
+#   cd ghost
+#   docker-compose up -d
+#   docker-compose logs -f ghost  # view logs
+#   docker-compose down            # stop services
+
+version: '3.8'
+
+services:
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
+    container_name: dajilin-mailhog
+    restart: always
+    platform: linux/amd64
+    ports:
+      - "1025:1025"   # SMTP server for Ghost to send mail
+      - "8025:8025"   # Web UI to view captured emails
+
+  ghost:
+    image: ghost:5-alpine
+    container_name: dajilin-ghost
+    restart: always
+    ports:
+      - "${GHOST_PORT:-2368}:2368"
+    environment:
+      url: ${GHOST_URL:-http://localhost:2368}
+      NODE_ENV: ${NODE_ENV:-production}
+      database__client: ${GHOST_DB_CLIENT:-mysql}
+      database__connection__host: ${GHOST_DB_HOST:-db}
+      database__connection__port: ${GHOST_DB_PORT:-3306}
+      database__connection__user: ${GHOST_DB_USER:-ghost}
+      database__connection__password: ${GHOST_DB_PASSWORD:-ghost_dajilin_password}
+      database__connection__database: ${GHOST_DB_NAME:-dajilin_ghost}
+      mail__transport: SMTP
+      mail__options__host: mailhog
+      mail__options__port: 1025
+      mail__options__auth__method: ""
+      mail__options__auth__user: ""
+      mail__options__auth__pass: ""
+    volumes:
+      - ./content:/var/lib/ghost/content
+      - ./logs:/var/lib/ghost/content/logs
+    depends_on:
+      - db
+      - mailhog
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:2368/ghost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  db:
+    image: mysql:8.0
+    container_name: dajilin-ghost-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_dajilin_password}
+      MYSQL_DATABASE: ${GHOST_DB_NAME:-dajilin_ghost}
+      MYSQL_USER: ${GHOST_DB_USER:-ghost}
+      MYSQL_PASSWORD: ${GHOST_DB_PASSWORD:-ghost_dajilin_password}
+    volumes:
+      - ./db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+networks:
+  default:
+    name: dajilin-ghost-network

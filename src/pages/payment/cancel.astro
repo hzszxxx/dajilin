@@ -1,0 +1,265 @@
+---
+export const prerender = false;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { getLocaleFromPathname } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+
+const orderId = Astro.url.searchParams.get('orderId');
+
+const t = {
+  zh: {
+    title: '支付取消 | dajilin.net',
+    heading: '支付已取消',
+    message: '您已取消支付，订单将保留待处理状态。',
+    orderNumber: '订单号',
+    nextSteps: '下一步',
+    nextStepsDesc: '您可以返回商城继续购物，或在订单页面查看您的待支付订单。',
+    retryPayment: '重新支付',
+    backToShop: '返回商城',
+    viewOrders: '查看订单',
+  },
+  en: {
+    title: 'Payment Cancelled | dajilin.net',
+    heading: 'Payment Cancelled',
+    message: 'You have cancelled the payment. Your order remains pending.',
+    orderNumber: 'Order Number',
+    nextSteps: 'Next Steps',
+    nextStepsDesc: 'You can return to the shop to continue shopping, or view your pending orders.',
+    retryPayment: 'Retry Payment',
+    backToShop: 'Back to Shop',
+    viewOrders: 'View Orders',
+  },
+  ja: {
+    title: '支払いキャンセル | dajilin.net',
+    heading: 'お支払いキャンセル',
+    message: 'お支払いがキャンセルされました。注文は保留中のままです。',
+    orderNumber: '注文番号',
+    nextSteps: '次のステップ',
+    nextStepsDesc: 'ショップに戻って買い物を続けるか、または保留中の注文を確認できます。',
+    retryPayment: '支払い再試行',
+    backToShop: 'ショップに戻る',
+    viewOrders: '注文を見る',
+  },
+  ko: {
+    title: '결제 취소 | dajilin.net',
+    heading: '결제 취소됨',
+    message: '결제가 취소되었습니다. 주문은 대기 중 상태로 유지됩니다.',
+    orderNumber: '주문번호',
+    nextSteps: '다음 단계',
+    nextStepsDesc: '샵으로 돌아가서 쇼핑을 계속하거나, 대기 중인 주문을 확인할 수 있습니다.',
+    retryPayment: '결제 다시 시도',
+    backToShop: '샵으로 돌아가기',
+    viewOrders: '주문 보기',
+  },
+};
+
+const text = t[locale] || t.zh;
+---
+
+<BaseLayout title={text.title} description={text.message} locale={locale}>
+  <Header />
+  <main class="page-shell payment-cancel-shell">
+    <div class="container">
+      <div class="cancel-card">
+        <div class="cancel-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M15 9l-6 6M9 9l6 6" />
+          </svg>
+        </div>
+
+        <h1>{text.heading}</h1>
+        <p class="message">{text.message}</p>
+
+        {orderId && (
+          <div class="order-info">
+            <div class="info-row">
+              <span class="info-label">{text.orderNumber}</span>
+              <span class="info-value order-id">{orderId}</span>
+            </div>
+          </div>
+        )}
+
+        <div class="next-steps">
+          <h2>{text.nextSteps}</h2>
+          <p>{text.nextStepsDesc}</p>
+        </div>
+
+        <div class="actions">
+          {orderId && (
+            <a href={locale === 'zh' ? `/orders/${orderId}` : `/${locale}/orders/${orderId}`} class="btn btn-secondary">
+              {text.retryPayment}
+            </a>
+          )}
+          <a href={locale === 'zh' ? '/orders/list' : `/${locale}/orders/list`} class="btn btn-secondary">
+            {text.viewOrders}
+          </a>
+          <a href={locale === 'zh' ? '/shop' : `/${locale}/shop`} class="btn btn-primary">
+            {text.backToShop}
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+  <Footer />
+
+  <style>
+    .payment-cancel-shell {
+      padding: 60px 0 100px;
+      background: linear-gradient(180deg, #f8fbfb 0%, #eef4f3 48%, #f8fbfc 100%);
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+    }
+
+    .cancel-card {
+      max-width: 500px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 48px 40px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .cancel-icon {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      color: #ef4444;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 1.8rem;
+      color: var(--text-strong);
+    }
+
+    .message {
+      margin: 0 0 32px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .order-info {
+      background: #f8fafb;
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+    }
+
+    .info-label {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .info-value {
+      color: var(--text-strong);
+      font-weight: 600;
+    }
+
+    .order-id {
+      font-family: monospace;
+      font-size: 0.85rem;
+      background: #fff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+    }
+
+    .next-steps {
+      text-align: left;
+      margin-bottom: 32px;
+      padding: 20px 24px;
+      background: #fef3f3;
+      border-radius: 16px;
+      border: 1px solid rgba(239, 68, 68, 0.1);
+    }
+
+    .next-steps h2 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      color: #dc2626;
+    }
+
+    .next-steps p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 28px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.35);
+    }
+
+    .btn-secondary {
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: #fff;
+    }
+
+    .btn-secondary:hover {
+      border-color: rgba(15, 118, 110, 0.32);
+      color: var(--primary);
+    }
+
+    @media (max-width: 560px) {
+      .cancel-card {
+        padding: 32px 24px;
+        margin: 0 16px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</BaseLayout>

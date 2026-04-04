@@ -1,0 +1,16 @@
+---
+import OrderConfirmationPage from '@/pages/orders/[id].astro';
+import { supportedLocales } from '@/lib/i18n';
+import { shopPages } from '@/lib/content-pages';
+
+export const getStaticPaths = () =>
+  supportedLocales
+    .filter((locale) => locale !== 'zh')
+    .flatMap((lang) =>
+      shopPages.map((page) => ({
+        params: { lang, id: page.slug },
+      })),
+    );
+---
+
+<OrderConfirmationPage />

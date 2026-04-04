@@ -1,0 +1,16 @@
+---
+import AIWidget from '@/components/astro/AIWidget.astro';
+import { inferAIWidgetContext } from '@/lib/ai-context';
+
+interface Props {
+  pageUrl: string;
+  module?: string;
+}
+
+const { pageUrl, module = '' } = Astro.props;
+const aiContext = inferAIWidgetContext(pageUrl);
+const resolvedModule = module || aiContext.module;
+const resolvedTitle = aiContext.title;
+---
+
+<AIWidget siteId="dajilin" pageUrl={pageUrl} module={resolvedModule} title={resolvedTitle} />

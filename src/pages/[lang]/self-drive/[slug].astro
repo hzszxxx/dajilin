@@ -1,0 +1,16 @@
+---
+import SelfDriveDetailPage from '@/pages/self-drive/[slug].astro';
+import { supportedLocales } from '@/lib/i18n';
+import { selfDrivePages } from '@/lib/content-pages';
+
+export const getStaticPaths = () =>
+  supportedLocales
+    .filter((locale) => locale !== 'zh')
+    .flatMap((lang) =>
+      selfDrivePages.map((page) => ({
+        params: { lang, slug: page.slug },
+      })),
+    );
+---
+
+<SelfDriveDetailPage />

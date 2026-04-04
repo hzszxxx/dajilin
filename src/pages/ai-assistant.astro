@@ -1,0 +1,203 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { buildWebPageSchema } from '@/lib/schema';
+import { getQuestionsByLocale, getKnowledgeDomains } from '@/lib/ai-questions';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+const recommendedItems = getQuestionsByLocale(locale).map((q) => q.question);
+const domains = getKnowledgeDomains();
+
+const domainLabelMap: Record<string, Record<string, string>> = {
+  zh: {
+    destinations: '吉林文旅导览',
+    'study-tours': '工业研学咨询',
+    'self-drive': '自驾攻略咨询',
+    'official-services': '官方服务入口说明',
+    cooperation: '合作咨询引导',
+  },
+  en: {
+    destinations: 'Jilin Travel Guide',
+    'study-tours': 'Industrial Study Tour',
+    'self-drive': 'Self-Drive Guide',
+    'official-services': 'Official Services',
+    cooperation: 'Cooperation Inquiry',
+  },
+  ja: {
+    destinations: '吉林文旅ガイド',
+    'study-tours': '産業研修相談',
+    'self-drive': '自驾攻略相談',
+    'official-services': '公式サービス入口説明',
+    cooperation: '協業相談案内',
+  },
+  ko: {
+    destinations: '지린 관광 가이드',
+    'study-tours': '산업 연수 상담',
+    'self-drive': '자가운전 가이드 상담',
+    'official-services': '공식 서비스 입구 설명',
+    cooperation: '협업 문의 안내',
+  },
+};
+const getDomainLabel = (id: string) => domainLabelMap[locale]?.[id] ?? id;
+
+const copy: Record<
+  Locale,
+  {
+    title: string;
+    description: string;
+    schemaName: string;
+    heading: string;
+    scopeTitle: string;
+    scopeItems: string[];
+    openChat: string;
+    cooperationEntry: string;
+    recommendedTitle: string;
+    domainTitle: string;
+    answerableTitle: string;
+    handoffTitle: string;
+    outOfScopeTitle: string;
+  }
+> = {
+  zh: {
+    title: 'AI助手 | dajilin.net',
+    description: 'dajilin.net AI 文旅导览助手，用于吉林目的地、工业研学、331 国道和官方服务入口说明。',
+    schemaName: 'AI助手',
+    heading: 'AI 文旅导览助手',
+    scopeTitle: '覆盖范围',
+    scopeItems: ['吉林目的地导览', '工业研学说明', '331 国道路线与驿站说明', '官方服务入口说明', '合作咨询引导'],
+    openChat: '打开聊天浮层',
+    cooperationEntry: '合作咨询入口',
+    recommendedTitle: '推荐问题',
+    domainTitle: '知识域说明',
+    answerableTitle: '可回答',
+    handoffTitle: '需转人工',
+    outOfScopeTitle: '超出范围',
+  },
+  en: {
+    title: 'AI Assistant | dajilin.net',
+    description: 'AI travel guide for Jilin destinations, study tours, Route 331, and official service guidance.',
+    schemaName: 'AI Assistant',
+    heading: 'AI Travel Guide Assistant',
+    scopeTitle: 'Coverage',
+    scopeItems: ['Jilin destination guidance', 'Industrial study-tour explanation', 'Route 331 and station guidance', 'Official service entry guidance', 'Cooperation consultation handoff'],
+    openChat: 'Open Chat Widget',
+    cooperationEntry: 'Cooperation Entry',
+    recommendedTitle: 'Recommended Questions',
+    domainTitle: 'Knowledge Domain',
+    answerableTitle: 'Answerable',
+    handoffTitle: 'Handoff Required',
+    outOfScopeTitle: 'Out of Scope',
+  },
+  ja: {
+    title: 'AIアシスタント | dajilin.net',
+    description: '吉林の目的地、産業研修、331国道、公式サービス説明に対応するAIガイドです。',
+    schemaName: 'AIアシスタント',
+    heading: 'AI 観光ガイドアシスタント',
+    scopeTitle: '対応範囲',
+    scopeItems: ['吉林の目的地ガイド', '産業研修の説明', '331国道ルートと驛站案内', '公式サービス入口説明', '協業相談への導線'],
+    openChat: 'チャットを開く',
+    cooperationEntry: '協業相談入口',
+    recommendedTitle: '推奨質問',
+    domainTitle: '知識ドメイン',
+    answerableTitle: '回答可能',
+    handoffTitle: '人要紹介',
+    outOfScopeTitle: '範囲外',
+  },
+  ko: {
+    title: 'AI 도우미 | dajilin.net',
+    description: '지린 목적지, 산업 연수, 331 국도, 공식 서비스 안내를 지원하는 AI 여행 도우미입니다.',
+    schemaName: 'AI 도우미',
+    heading: 'AI 관광 가이드 도우미',
+    scopeTitle: '지원 범위',
+    scopeItems: ['지린 목적지 안내', '산업 연수 설명', '331 국도 루트 및 거점 안내', '공식 서비스 입구 안내', '협업 문의 전환 안내'],
+    openChat: '채팅 열기',
+    cooperationEntry: '협업 문의 입구',
+    recommendedTitle: '추천 질문',
+    domainTitle: '지식 도메인',
+    answerableTitle: '답변 가능',
+    handoffTitle: '인수 전환 필요',
+    outOfScopeTitle: '범위 외',
+  },
+};
+const t = copy[locale];
+---
+
+<BaseLayout title={t.title} description={t.description} schemas={[buildWebPageSchema('/ai-assistant', t.schemaName, t.description, locale)]} locale={locale}>
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-copy">
+          <div class="eyebrow">AI Assistant</div>
+          <h1>{t.heading}</h1>
+          <p>{t.description}</p>
+        </div>
+        <h2>{t.scopeTitle}</h2>
+        <ul>
+          {t.scopeItems.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+        <div class="cta-row">
+          <button class="button" type="button" data-open-ai-widget>{t.openChat}</button>
+          <a class="button-secondary" href={localizePath('/stations/cooperation', locale)}>{t.cooperationEntry}</a>
+        </div>
+        <details class="domain-details">
+          <summary>{t.domainTitle}</summary>
+          <div class="domain-grid">
+            {domains.map((domain) => (
+              <div class="domain-card">
+                <h4>{getDomainLabel(domain.id)}</h4>
+                <p class="domain-desc">{locale === 'zh' ? domain.description : locale === 'en' ? domain.descriptionEn : domain.description}</p>
+                <div class="domain-section">
+                  <strong>{t.answerableTitle}:</strong>
+                  <ul>
+                    {domain.answerable.slice(0, 5).map((q) => (
+                      <li>{q}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div class="domain-section">
+                  <strong>{t.handoffTitle}:</strong>
+                  <ul>
+                    {domain.handoffTriggers.slice(0, 4).map((q) => (
+                      <li>{q}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div class="domain-section">
+                  <strong>{t.outOfScopeTitle}:</strong>
+                  <ul>
+                    {domain.outOfScope.slice(0, 4).map((q) => (
+                      <li>{q}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
+        </details>
+      </section>
+      <aside class="page-card">
+        <h3>{t.recommendedTitle}</h3>
+        <ul class="page-list">
+          {recommendedItems.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<script>
+  document.querySelector('[data-open-ai-widget]')?.addEventListener('click', () => {
+    const trigger = document.querySelector('.ai-widget-trigger');
+    if (trigger instanceof HTMLButtonElement) {
+      trigger.click();
+    }
+  });
+</script>

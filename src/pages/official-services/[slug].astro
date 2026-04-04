@@ -1,0 +1,40 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import DetailPage from '@/components/astro/DetailPage.astro';
+import { buildCollectionPageSchema, buildWebPageSchema } from '@/lib/schema';
+import { findDetailPage, officialServicePages } from '@/lib/content-pages';
+import { getLocaleFromPathname, localizePath } from '@/lib/i18n';
+
+export function getStaticPaths() {
+  return officialServicePages.map((page) => ({
+    params: { slug: page.slug },
+    props: { page },
+  }));
+}
+
+const { page: staticPage } = Astro.props;
+const page = staticPage ?? findDetailPage('official-services', Astro.params.slug ?? '');
+const locale = getLocaleFromPathname(Astro.url.pathname);
+const localizedPath = localizePath(page?.pathname ?? '/official-services', locale);
+const localizedTitle = locale === 'zh' ? page?.title ?? '' : page?.eyebrow ?? '';
+const localizedDescription = locale === 'zh' ? page?.description ?? '' : `Details for ${localizedTitle}.`;
+
+if (!page) {
+  throw new Error(`Unknown official services page: ${Astro.params.slug}`);
+}
+
+const schemas = [
+  buildWebPageSchema(localizedPath, localizedTitle, localizedDescription, locale),
+  buildCollectionPageSchema(localizedPath, localizedTitle, localizedDescription, locale),
+];
+---
+
+<BaseLayout title={`${localizedTitle} | dajilin.net`} description={localizedDescription} schemas={schemas} locale={locale}>
+  <Header />
+  <main class="page-shell">
+    <DetailPage page={page} />
+  </main>
+  <Footer />
+</BaseLayout>

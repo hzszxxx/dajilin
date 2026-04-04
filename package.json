@@ -1,0 +1,32 @@
+{
+  "name": "gn-site-dajilin",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "type-check": "astro check",
+    "typecheck": "astro check && tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@astrojs/node": "^9.5.0",
+    "@astrojs/sitemap": "^3.6.0",
+    "@gn/gateway-helpers": "workspace:*",
+    "@gn/openclaw-client": "workspace:*",
+    "@gn/site-adapters": "workspace:*",
+    "@gn/site-config": "workspace:*",
+    "@gn/skill-contract": "workspace:*",
+    "@tryghost/content-api": "^1.12.2",
+    "astro": "^5.16.6",
+    "unstorage": "^1.17.5"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  }
+}

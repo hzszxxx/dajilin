@@ -1,0 +1,56 @@
+---
+import SectionTitle from '@/components/astro/destinations/SectionTitle.astro';
+import { getLocaleFromPathname, type Locale } from '@/lib/i18n';
+
+type StageItem = {
+  title: string;
+  description: string;
+};
+
+interface Props {
+  items: StageItem[];
+}
+
+const { items } = Astro.props;
+const locale = getLocaleFromPathname(Astro.url.pathname);
+const copy: Record<Locale, { eyebrow: string; title: string; description: string }> = {
+  zh: {
+    eyebrow: '第一阶段重点',
+    title: '第一阶段重点',
+    description: '当前优先建设四个核心目的地方向，形成可浏览、可咨询、可持续扩展的内容骨架。',
+  },
+  en: {
+    eyebrow: 'Phase One Focus',
+    title: 'Phase one focus',
+    description: 'Build four core destination directions first, then expand.',
+  },
+  ja: {
+    eyebrow: '第一段階の重点',
+    title: '第一段階の重点',
+    description: 'まず4つの主要目的地方向を整備し、段階的に拡張します。',
+  },
+  ko: {
+    eyebrow: '1단계 핵심',
+    title: '1단계 핵심',
+    description: '우선 4개 핵심 목적지 방향을 구축하고 단계적으로 확장합니다.',
+  },
+};
+---
+
+<section class="dst-section">
+  <div class="container">
+    <SectionTitle
+      eyebrow={copy[locale].eyebrow}
+      title={copy[locale].title}
+      description={copy[locale].description}
+    />
+    <div class="dst-mini-grid">
+      {items.map((item) => (
+        <article class="dst-mini-card">
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

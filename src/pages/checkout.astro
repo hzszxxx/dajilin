@@ -1,0 +1,491 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { getLocaleFromPathname, localizePath } from '@/lib/i18n';
+import { getCart, getCartTotal, clearCart } from '@/lib/cart';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+
+// For static generation, we'll use a default cart state
+// The actual cart data will be loaded client-side
+---
+
+<BaseLayout title={locale === 'zh' ? '结算 | dajilin.net' : 'Checkout | dajilin.net'} description={locale === 'zh' ? '完成订单结算' : 'Complete your order'} locale={locale}>
+  <Header />
+  <main class="page-shell checkout-shell">
+    <div class="container">
+      <div class="page-header">
+        <h1>{locale === 'zh' ? '确认订单' : 'Order Confirmation'}</h1>
+        <p>{locale === 'zh' ? '请填写您的联系信息并确认订单' : 'Please fill in your contact information and confirm your order'}</p>
+      </div>
+
+      <div class="checkout-grid">
+        <section class="checkout-form-section">
+          <form id="checkout-form" class="checkout-form">
+            <div class="form-section">
+              <h2>{locale === 'zh' ? '联系人信息' : 'Contact Information'}</h2>
+
+              <div class="form-group">
+                <label for="name">{locale === 'zh' ? '姓名 *' : 'Name *'}</label>
+                <input type="text" id="name" name="name" required placeholder={locale === 'zh' ? '请输入您的姓名' : 'Enter your name'} />
+              </div>
+
+              <div class="form-group">
+                <label for="phone">{locale === 'zh' ? '手机号码 *' : 'Phone *'}</label>
+                <input type="tel" id="phone" name="phone" required placeholder={locale === 'zh' ? '请输入手机号码' : 'Enter your phone number'} pattern="[0-9]{11}" />
+              </div>
+
+              <div class="form-group">
+                <label for="email">{locale === 'zh' ? '电子邮箱' : 'Email'}</label>
+                <input type="email" id="email" name="email" placeholder={locale === 'zh' ? '请输入电子邮箱（可选）' : 'Enter your email (optional)'} />
+              </div>
+
+              <div class="form-group">
+                <label for="address">{locale === 'zh' ? '地址' : 'Address'}</label>
+                <input type="text" id="address" name="address" placeholder={locale === 'zh' ? '请输入收货地址（可选）' : 'Enter your address (optional)'} />
+              </div>
+
+              <div class="form-group">
+                <label for="notes">{locale === 'zh' ? '备注' : 'Notes'}</label>
+                <textarea id="notes" name="notes" rows="3" placeholder={locale === 'zh' ? '如有特殊需求请在此说明' : 'Special requests or notes'}></textarea>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h2>{locale === 'zh' ? '支付方式' : 'Payment Method'}</h2>
+
+              <div class="payment-options">
+                <label class="payment-option">
+                  <input type="radio" name="paymentMethod" value="wechat" checked />
+                  <span class="payment-label">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.722.722 0 0 1 .598.082l1.584.926a.272.272 0 0 0 .14.047c.134 0 .24-.111.24-.247 0-.06-.023-.12-.038-.177l-.327-1.233a.582.582 0 0 1-.023-.156.49.49 0 0 1 .201-.398C23.024 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-6.656-6.088V8.87c-.135-.004-.272-.012-.407-.012zm-2.53 3.274c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982zm4.844 0c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.969-.982z"/>
+                    </svg>
+                    {locale === 'zh' ? '微信支付' : 'WeChat Pay'}
+                  </span>
+                </label>
+
+                <label class="payment-option">
+                  <input type="radio" name="paymentMethod" value="alipay" />
+                  <span class="payment-label">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M2.122 12.225a.732.732 0 0 1-.054-.022.697.697 0 0 1-.11-.06.71.71 0 0 1-.097-.089.744.744 0 0 1-.076-.118.757.757 0 0 1-.051-.138.756.756 0 0 1-.024-.146.732.732 0 0 1 0-.153.697.697 0 0 1 .023-.15.697.697 0 0 1 .06-.11.71.71 0 0 1 .088-.097.744.744 0 0 1 .118-.076.757.757 0 0 1 .138-.05.756.756 0 0 1 .146-.023h11.756a.732.732 0 0 1 .153 0 .697.697 0 0 1 .15.023.697.697 0 0 1 .11.06.71.71 0 0 1 .097.088.744.744 0 0 1 .076.118.757.757 0 0 1 .05.138.756.756 0 0 1 .023.146.732.732 0 0 1 0 .153.697.697 0 0 1-.023.15.697.697 0 0 1-.06.11.71.71 0 0 1-.088.097.744.744 0 0 1-.118.076.757.757 0 0 1-.138.05.756.756 0 0 1-.146.023H9.18l-1.14 1.12a.732.732 0 0 1-.118.076.757.757 0 0 1-.138.051.756.756 0 0 1-.146.023.732.732 0 0 1-.153 0H5.866a.732.732 0 0 1-.153 0 .697.697 0 0 1-.15-.023.697.697 0 0 1-.11-.06.71.71 0 0 1-.097-.088.744.744 0 0 1-.076-.118.757.757 0 0 1-.05-.138.756.756 0 0 1-.023-.146zm-1.44-3.158a.732.732 0 0 1-.054-.022.697.697 0 0 1-.11-.06.71.71 0 0 1-.097-.088.744.744 0 0 1-.076-.118.757.757 0 0 1-.051-.138.756.756 0 0 1-.024-.146.732.732 0 0 1 0-.153.697.697 0 0 1 .023-.15.697.697 0 0 1 .06-.11.71.71 0 0 1 .088-.097.744.744 0 0 1 .118-.076.757.757 0 0 1 .138-.05.756.756 0 0 1 .146-.023h11.756a.732.732 0 0 1 .153 0 .697.697 0 0 1 .15.023.697.697 0 0 1 .11.06.71.71 0 0 1 .097.088.744.744 0 0 1 .076.118.757.757 0 0 1 .05.138.756.756 0 0 1 .023.146.732.732 0 0 1 0 .153.697.697 0 0 1-.023.15.697.697 0 0 1-.06.11.71.71 0 0 1-.088.097.744.744 0 0 1-.118.076.757.757 0 0 1-.138.05.756.756 0 0 1-.146.023H9.18L8.04 10.25a.732.732 0 0 1-.118.076.757.757 0 0 1-.138.051.756.756 0 0 1-.146.023.732.732 0 0 1-.153 0H5.866a.732.732 0 0 1-.153 0 .697.697 0 0 1-.15-.023.697.697 0 0 1-.11-.06.71.71 0 0 1-.097-.088.744.744 0 0 1-.076-.118.757.757 0 0 1-.05-.138.756.756 0 0 1-.023-.146zm19.56 1.97a.732.732 0 0 1-.054.023.697.697 0 0 1-.11.06.71.71 0 0 1-.097.088.744.744 0 0 1-.118.076.757.757 0 0 1-.138.05.756.756 0 0 1-.146.024.732.732 0 0 1-.153 0H15.73a.732.732 0 0 1-.153 0 .697.697 0 0 1-.15-.023.697.697 0 0 1-.11-.06.71.71 0 0 1-.097-.088.744.744 0 0 1-.076-.118.757.757 0 0 1-.05-.138.756.756 0 0 1-.023-.146.732.732 0 0 1 0-.153.697.697 0 0 1 .023-.15.697.697 0 0 1 .06-.11.71.71 0 0 1 .088-.097.744.744 0 0 1 .118-.076.757.757 0 0 1 .138-.05.756.756 0 0 1 .146-.023h11.756a.732.732 0 0 1 .153 0 .697.697 0 0 1 .15.023.697.697 0 0 1 .11.06.71.71 0 0 1 .097.088.744.744 0 0 1 .076.118.757.757 0 0 1 .05.138.756.756 0 0 1 .023.146.732.732 0 0 1 0 .153.697.697 0 0 1-.023.15.697.697 0 0 1-.06.11.71.71 0 0 1-.088.097.744.744 0 0 1-.118.076.757.757 0 0 1-.138.05.756.756 0 0 1-.146.024zm-2.64-1.97a.732.732 0 0 1-.054.023.697.697 0 0 1-.11.06.71.71 0 0 1-.097.088.744.744 0 0 1-.118.076.757.757 0 0 1-.138.05.756.756 0 0 1-.146.024.732.732 0 0 1-.153 0H13.09a.732.732 0 0 1-.153 0 .697.697 0 0 1-.15-.023.697.697 0 0 1-.11-.06.71.71 0 0 1-.097-.088.744.744 0 0 1-.076-.118.757.757 0 0 1-.05-.138.756.756 0 0 1-.023-.146.732.732 0 0 1 0-.153.697.697 0 0 1 .023-.15.697.697 0 0 1 .06-.11.71.71 0 0 1 .088-.097.744.744 0 0 1 .118-.076.757.757 0 0 1 .138-.05.756.756 0 0 1 .146-.023h11.756a.732.732 0 0 1 .153 0 .697.697 0 0 1 .15.023.697.697 0 0 1 .11.06.71.71 0 0 1 .097.088.744.744 0 0 1 .076.118.757.757 0 0 1 .05.138.756.756 0 0 1 .023.146.732.732 0 0 1 0 .153.697.697 0 0 1-.023.15.697.697 0 0 1-.06.11.71.71 0 0 1-.088.097.744.744 0 0 1-.118.076.757.757 0 0 1-.138.05.756.756 0 0 1-.146.024z"/>
+                    </svg>
+                    {locale === 'zh' ? '支付宝' : 'Alipay'}
+                  </span>
+                </label>
+
+                <label class="payment-option">
+                  <input type="radio" name="paymentMethod" value="banktransfer" />
+                  <span class="payment-label">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="1" y="4" width="22" height="16" rx="2" />
+                      <path d="M1 10h22" />
+                    </svg>
+                    {locale === 'zh' ? '银行转账' : 'Bank Transfer'}
+                  </span>
+                </label>
+
+                <label class="payment-option">
+                  <input type="radio" name="paymentMethod" value="cod" />
+                  <span class="payment-label">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6z" />
+                      <path d="M12 12v5M9 15l3-3 3 3" />
+                    </svg>
+                    {locale === 'zh' ? '货到付款' : 'Cash on Delivery'}
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <button type="submit" class="submit-order-btn">
+              {locale === 'zh' ? '提交订单' : 'Submit Order'}
+            </button>
+          </form>
+        </section>
+
+        <aside class="order-summary">
+          <h2>{locale === 'zh' ? '订单摘要' : 'Order Summary'}</h2>
+          <div id="cart-items" class="cart-items">
+            <div class="cart-loading">{locale === 'zh' ? '加载中...' : 'Loading...'}</div>
+          </div>
+          <div class="cart-summary">
+            <div class="summary-row">
+              <span>{locale === 'zh' ? '商品件数' : 'Items'}</span>
+              <span id="item-count">0</span>
+            </div>
+            <div class="summary-row total">
+              <span>{locale === 'zh' ? '合计' : 'Total'}</span>
+              <span id="order-total">¥0.00</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+  <Footer />
+
+  <script>
+    import { getCart, getCartTotal, createOrder, clearCart, type CartItem } from '@/lib/cart';
+
+    const locale = document.documentElement.lang?.startsWith('zh') ? 'zh' :
+                   document.documentElement.lang?.startsWith('ja') ? 'ja' :
+                   document.documentElement.lang?.startsWith('ko') ? 'ko' : 'en';
+
+    function loadCart() {
+      const cart = getCart();
+      const cartItemsEl = document.getElementById('cart-items');
+      const itemCountEl = document.getElementById('item-count');
+      const orderTotalEl = document.getElementById('order-total');
+
+      if (!cartItemsEl || !itemCountEl || !orderTotalEl) return;
+
+      if (cart.items.length === 0) {
+        cartItemsEl.innerHTML = `
+          <div class="cart-empty">
+            <p>${locale === 'zh' ? '购物车是空的' : 'Your cart is empty'}</p>
+            <a href="${locale === 'zh' ? '/shop' : `/${locale}/shop`}" class="back-to-shop-btn">
+              ${locale === 'zh' ? '返回商城' : 'Back to Shop'}
+            </a>
+          </div>
+        `;
+        itemCountEl.textContent = '0';
+        orderTotalEl.textContent = locale === 'zh' ? '价格待定' : 'Price TBD';
+        return;
+      }
+
+      const total = getCartTotal(cart);
+      const itemCount = cart.items.reduce((sum: number, item: CartItem) => sum + item.quantity, 0);
+
+      cartItemsEl.innerHTML = cart.items.map((item: CartItem) => `
+        <div class="cart-item">
+          <div class="cart-item-info">
+            <h3>${item.name}</h3>
+            <p>${locale === 'zh' ? '数量' : 'Qty'}: ${item.quantity}</p>
+          </div>
+          <div class="cart-item-price">
+            ${item.price === 0 ? (locale === 'zh' ? '价格待定' : 'TBD') : `¥${(item.price * item.quantity).toFixed(2)}`}
+          </div>
+        </div>
+      `).join('');
+
+      itemCountEl.textContent = String(itemCount);
+      orderTotalEl.textContent = total === 0 ? (locale === 'zh' ? '价格待定' : 'Price TBD') : `¥${total.toFixed(2)}`;
+    }
+
+    // Load cart on page load
+    document.addEventListener('DOMContentLoaded', loadCart);
+
+    // Handle form submission
+    const form = document.getElementById('checkout-form') as HTMLFormElement;
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const cart = getCart();
+        if (cart.items.length === 0) {
+          alert(locale === 'zh' ? '购物车是空的' : 'Your cart is empty');
+          return;
+        }
+
+        const formData = new FormData(form);
+        const contact = {
+          name: formData.get('name') as string,
+          phone: formData.get('phone') as string,
+          email: formData.get('email') as string || undefined,
+          address: formData.get('address') as string || undefined,
+          notes: formData.get('notes') as string || undefined,
+        };
+
+        const paymentMethod = formData.get('paymentMethod') as 'wechat' | 'alipay' | 'banktransfer' | 'cod' | undefined;
+        const total = getCartTotal(cart);
+
+        const items = cart.items.map((item: CartItem) => ({
+          productId: item.productId,
+          slug: item.slug,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          category: item.category,
+        }));
+
+        try {
+          const order = createOrder(items, contact, total, paymentMethod);
+          clearCart();
+          window.dispatchEvent(new Event('cart_updated'));
+
+          // Redirect to mock payment success page (simulating successful payment)
+          // In production, this would redirect to WeChat/Alipay payment gateway
+          const paymentMethodParam = paymentMethod || 'mock';
+          const redirectUrl = `/payment/success?orderId=${encodeURIComponent(order.id)}&method=${encodeURIComponent(paymentMethodParam)}`;
+          window.location.href = redirectUrl;
+        } catch (err) {
+          console.error('Order creation failed:', err);
+          alert(locale === 'zh' ? '订单创建失败，请重试' : 'Failed to create order, please try again');
+        }
+      });
+    }
+  </script>
+
+  <style>
+    .checkout-shell {
+      padding-bottom: 80px;
+      background: linear-gradient(180deg, #f8fbfb 0%, #eef4f3 48%, #f8fbfc 100%);
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .page-header h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+      color: var(--text-strong);
+    }
+
+    .page-header p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .checkout-form-section {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .form-section {
+      margin-bottom: 28px;
+    }
+
+    .form-section:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .form-section h2 {
+      margin: 0 0 18px;
+      font-size: 1.2rem;
+      color: var(--text-strong);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #334155;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .payment-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .payment-option {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .payment-option:hover {
+      border-color: rgba(15, 118, 110, 0.3);
+      background: rgba(15, 118, 110, 0.02);
+    }
+
+    .payment-option:has(input:checked) {
+      border-color: var(--primary);
+      background: rgba(15, 118, 110, 0.06);
+    }
+
+    .payment-option input {
+      margin-right: 12px;
+      accent-color: var(--primary);
+    }
+
+    .payment-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: #334155;
+    }
+
+    .submit-order-btn {
+      width: 100%;
+      margin-top: 24px;
+      padding: 16px 24px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%);
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .submit-order-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(15, 118, 110, 0.35);
+    }
+
+    .order-summary {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 100px;
+    }
+
+    .order-summary h2 {
+      margin: 0 0 18px;
+      font-size: 1.2rem;
+      color: var(--text-strong);
+    }
+
+    .cart-items {
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .cart-loading,
+    .cart-empty {
+      text-align: center;
+      padding: 24px;
+      color: var(--muted);
+    }
+
+    .cart-empty p {
+      margin: 0 0 12px;
+    }
+
+    .back-to-shop-btn {
+      display: inline-flex;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%);
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+
+    .cart-item-info h3 {
+      margin: 0 0 4px;
+      font-size: 0.95rem;
+      color: var(--text-strong);
+    }
+
+    .cart-item-info p {
+      margin: 0;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .cart-item-price {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .cart-summary {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .summary-row.total {
+      margin-top: 8px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--line);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-strong);
+    }
+
+    .summary-row.total span:last-child {
+      color: var(--primary);
+    }
+
+    @media (max-width: 900px) {
+      .checkout-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .order-summary {
+        position: static;
+      }
+
+      .payment-options {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</BaseLayout>

@@ -1,0 +1,583 @@
+---
+import { getLocaleFromPathname, type Locale } from '@/lib/i18n';
+
+interface Props {
+  locale?: Locale;
+  formTitle?: string;
+  submitLabel?: string;
+}
+
+const {
+  locale = 'zh',
+  formTitle = '',
+  submitLabel = ''
+} = Astro.props;
+
+const labels = {
+  zh: {
+    stationName: '驿站名称',
+    stationNamePlaceholder: '请输入驿站或场所名称',
+    stationType: '驿站类型',
+    stationTypeOptions: ['停车场', '休息站', '餐饮店', '住宿', '补给站', '综合服务', '其他'],
+    location: '所在位置',
+    locationPlaceholder: '请选择所在省份/城市',
+    locationDetail: '详细地址',
+    locationDetailPlaceholder: '请输入详细地址或地标描述',
+    services: '提供的服务（可多选）',
+    serviceOptions: ['停车服务', '休息空间', '餐饮服务', '住宿服务', '补给支持', '团队服务', '其他'],
+    serviceOtherPlaceholder: '请输入其他服务内容',
+    contactName: '联系人姓名',
+    contactNamePlaceholder: '请输入负责人姓名',
+    contactPhone: '联系电话',
+    contactPhonePlaceholder: '请输入手机号码',
+    contactEmail: '电子邮箱',
+    contactEmailPlaceholder: '请输入邮箱地址',
+    businessLicense: '营业执照/资质证明',
+    businessLicensePlaceholder: '请填写注册号或上传证件',
+    description: '驿站介绍',
+    descriptionPlaceholder: '请简要介绍驿站位置、特色服务、接待能力等',
+    photos: '场所照片',
+    photosPlaceholder: '请输入照片链接或简要描述',
+    agreeTerms: '我已阅读并同意《驿站合作协议》及《平台服务条款》',
+    submit: '提交申请',
+    submitting: '提交中...',
+    success: '申请已提交！我们将在3个工作日内与您联系。',
+    error: '提交失败，请稍后重试或联系客服。',
+    required: '此项为必填项',
+    invalidPhone: '请输入有效的手机号码',
+    invalidEmail: '请输入有效的邮箱地址',
+    termsRequired: '请勾选同意条款',
+    selectOption: '请选择',
+  },
+  en: {
+    stationName: 'Station Name',
+    stationNamePlaceholder: 'Enter station or venue name',
+    stationType: 'Station Type',
+    stationTypeOptions: ['Parking', 'Rest Stop', 'Restaurant', 'Accommodation', 'Supply Station', 'Full Service', 'Other'],
+    location: 'Location',
+    locationPlaceholder: 'Select province/city',
+    locationDetail: 'Detailed Address',
+    locationDetailPlaceholder: 'Enter detailed address or landmark description',
+    services: 'Services Provided (multiple choice)',
+    serviceOptions: ['Parking', 'Rest Space', 'Dining', 'Accommodation', 'Supply Support', 'Team Services', 'Other'],
+    serviceOtherPlaceholder: 'Enter other services',
+    contactName: 'Contact Name',
+    contactNamePlaceholder: 'Enter contact person name',
+    contactPhone: 'Phone Number',
+    contactPhonePlaceholder: 'Enter mobile number',
+    contactEmail: 'Email',
+    contactEmailPlaceholder: 'Enter email address',
+    businessLicense: 'Business License',
+    businessLicensePlaceholder: 'Enter registration number or upload certificate',
+    description: 'Station Description',
+    descriptionPlaceholder: 'Briefly introduce station location, features, capacity, etc.',
+    photos: 'Venue Photos',
+    photosPlaceholder: 'Enter photo links or describe',
+    agreeTerms: 'I have read and agree to the Station Partnership Agreement and Platform Terms',
+    submit: 'Submit Application',
+    submitting: 'Submitting...',
+    success: 'Application submitted! We will contact you within 3 business days.',
+    error: 'Submission failed. Please try again or contact customer service.',
+    required: 'This field is required',
+    invalidPhone: 'Please enter a valid phone number',
+    invalidEmail: 'Please enter a valid email address',
+    termsRequired: 'Please agree to the terms',
+    selectOption: 'Select',
+  },
+  ja: {
+    stationName: '驛站名称',
+    stationNamePlaceholder: '驛站または施設名を入力',
+    stationType: '驛站タイプ',
+    stationTypeOptions: ['駐車場', '休憩所', '飲食店', '宿泊', '補給ステーション', '総合サービス', '其他'],
+    location: '所在地',
+    locationPlaceholder: '省份/都市を選択',
+    locationDetail: '詳細な住所',
+    locationDetailPlaceholder: '詳細な住所またはランドマークの説明を入力',
+    services: '提供するサービス（複数選択可）',
+    serviceOptions: ['駐車サービス', '休整スペース', '餐饮サービス', '宿泊サービス', '補給サポート', '団体サービス', '其他'],
+    serviceOtherPlaceholder: '他のサービス内容を入力',
+    contactName: '担当者名',
+    contactNamePlaceholder: '責任者名を入力',
+    contactPhone: '連絡先電話番号',
+    contactPhonePlaceholder: '携帯番号を入力',
+    contactEmail: 'メールアドレス',
+    contactEmailPlaceholder: 'メールアドレスを入力',
+    businessLicense: '营业执照/資格証明',
+    businessLicensePlaceholder: '登録番号を入力または証書をアップロード',
+    description: '驛站紹介',
+    descriptionPlaceholder: '驛站の位置、特色サービス、受付能力などを簡単に紹介',
+    photos: '施設写真',
+    photosPlaceholder: '写真のリンクを入力または説明',
+    agreeTerms: '《驛站協力協定》及び《プラットフォームサービス条款》を読んだ上で同意します',
+    submit: '申請を提出',
+    submitting: '提交中...',
+    success: '申請が提出されました！3工作日以内に連絡します。',
+    error: '提出に失敗しました。しばらくしてから再試行するか、カスタマーサービスにお問い合わせください。',
+    required: 'この項目は必須です',
+    invalidPhone: '有効な携帯番号を入力してください',
+    invalidEmail: '有効なメールアドレスを入力してください',
+    termsRequired: '条款に同意する必要があります',
+    selectOption: '選択',
+  },
+  ko: {
+    stationName: '거점명',
+    stationNamePlaceholder: '거점 또는 시설명을 입력하세요',
+    stationType: '거점 유형',
+    stationTypeOptions: ['주차장', '휴게소', '음식점', '숙박', '보급소', '종합 서비스', '기타'],
+    location: '소재지',
+    locationPlaceholder: '성/시를 선택하세요',
+    locationDetail: '상세 주소',
+    locationDetailPlaceholder: '상세 주소 또는 랜드마크 설명을 입력하세요',
+    services: '제공하는 서비스 (복수 선택 가능)',
+    serviceOptions: ['주차 서비스', '휴식 공간', '식음 서비스', '숙박 서비스', '보급 지원', '단체 서비스', '기타'],
+    serviceOtherPlaceholder: '기타 서비스 내용을 입력하세요',
+    contactName: '담당자명',
+    contactNamePlaceholder: '책임자 이름을 입력하세요',
+    contactPhone: '연락처 전화번호',
+    contactPhonePlaceholder: '휴대폰 번호를 입력하세요',
+    contactEmail: '이메일',
+    contactEmailPlaceholder: '이메일 주소를 입력하세요',
+    businessLicense: '영업면허/자격증',
+    businessLicensePlaceholder: '등록번호를 입력하거나 증서를 업로드하세요',
+    description: '거점 소개',
+    descriptionPlaceholder: '거점 위치, 특색 서비스, 수용 능력 등을 간략히 소개하세요',
+    photos: '시설 사진',
+    photosPlaceholder: '사진 링크를 입력하거나 설명하세요',
+    agreeTerms: '«거점 협력协定» 및 «플랫폼 서비스 약관»을 읽고 동의합니다',
+    submit: '신청 제출',
+    submitting: '제출 중...',
+    success: '신청이 제출되었습니다! 3 영업일 이내에 연락드리겠습니다.',
+    error: '제출에 실패했습니다. 잠시 후 다시 시도하거나 고객 서비스에 문의하세요.',
+    required: '이 항목은 필수입니다',
+    invalidPhone: '유효한 휴대폰 번호를 입력하세요',
+    invalidEmail: '유효한 이메일 주소를 입력하세요',
+    termsRequired: '약관에 동의해야 합니다',
+    selectOption: '선택',
+  },
+};
+
+const t = labels[locale];
+const typeOptions = labels[locale].stationTypeOptions;
+const serviceOptions = labels[locale].serviceOptions;
+---
+
+<form id="station-apply-form" class="station-apply-form">
+  <div class="form-success" id="form-success" style="display: none;">
+    <p>{t.success}</p>
+  </div>
+
+  <div class="form-error" id="form-error" style="display: none;">
+    <p>{t.error}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="stationName">{t.stationName} <span class="required">*</span></label>
+    <input
+      type="text"
+      id="stationName"
+      name="stationName"
+      placeholder={t.stationNamePlaceholder}
+      required
+    />
+    <span class="error-text" data-error="stationName"></span>
+  </div>
+
+  <div class="form-group">
+    <label for="stationType">{t.stationType}</label>
+    <select id="stationType" name="stationType">
+      <option value="">-- {t.selectOption} --</option>
+      {typeOptions.map((opt) => (
+        <option value={opt}>{opt}</option>
+      ))}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="location">{t.location} <span class="required">*</span></label>
+    <input
+      type="text"
+      id="location"
+      name="location"
+      placeholder={t.locationPlaceholder}
+      required
+    />
+    <span class="error-text" data-error="location"></span>
+  </div>
+
+  <div class="form-group">
+    <label for="locationDetail">{t.locationDetail}</label>
+    <input
+      type="text"
+      id="locationDetail"
+      name="locationDetail"
+      placeholder={t.locationDetailPlaceholder}
+    />
+  </div>
+
+  <div class="form-group">
+    <label>{t.services} <span class="required">*</span></label>
+    <div class="checkbox-group">
+      {serviceOptions.map((service) => (
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            name="services"
+            value={service}
+          />
+          <span>{service}</span>
+        </label>
+      ))}
+    </div>
+    <span class="error-text" data-error="services"></span>
+  </div>
+
+  <div class="form-group" id="serviceOtherGroup" style="display: none;">
+    <label for="serviceOther">{t.serviceOtherPlaceholder}</label>
+    <input
+      type="text"
+      id="serviceOther"
+      name="serviceOther"
+      placeholder={t.serviceOtherPlaceholder}
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="contactName">{t.contactName} <span class="required">*</span></label>
+    <input
+      type="text"
+      id="contactName"
+      name="contactName"
+      placeholder={t.contactNamePlaceholder}
+      required
+    />
+    <span class="error-text" data-error="contactName"></span>
+  </div>
+
+  <div class="form-group">
+    <label for="contactPhone">{t.contactPhone} <span class="required">*</span></label>
+    <input
+      type="tel"
+      id="contactPhone"
+      name="contactPhone"
+      placeholder={t.contactPhonePlaceholder}
+      required
+    />
+    <span class="error-text" data-error="contactPhone"></span>
+  </div>
+
+  <div class="form-group">
+    <label for="contactEmail">{t.contactEmail} <span class="required">*</span></label>
+    <input
+      type="email"
+      id="contactEmail"
+      name="contactEmail"
+      placeholder={t.contactEmailPlaceholder}
+      required
+    />
+    <span class="error-text" data-error="contactEmail"></span>
+  </div>
+
+  <div class="form-group">
+    <label for="businessLicense">{t.businessLicense}</label>
+    <input
+      type="text"
+      id="businessLicense"
+      name="businessLicense"
+      placeholder={t.businessLicensePlaceholder}
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="description">{t.description}</label>
+    <textarea
+      id="description"
+      name="description"
+      placeholder={t.descriptionPlaceholder}
+      rows="4"
+    ></textarea>
+  </div>
+
+  <div class="form-group">
+    <label for="photos">{t.photos}</label>
+    <input
+      type="text"
+      id="photos"
+      name="photos"
+      placeholder={t.photosPlaceholder}
+    />
+  </div>
+
+  <div class="form-group checkbox-terms">
+    <label class="checkbox-label">
+      <input
+        type="checkbox"
+        id="agreeTerms"
+        name="agreeTerms"
+        required
+      />
+      <span>{t.agreeTerms}</span>
+    </label>
+    <span class="error-text" data-error="agreeTerms"></span>
+  </div>
+
+  <button type="submit" class="submit-button" id="submitBtn">{t.submit}</button>
+</form>
+
+<style>
+  .station-apply-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .form-group label {
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  .required {
+    color: #dc2626;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  select,
+  textarea {
+    padding: 0.625rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(11, 79, 108, 0.1);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    cursor: pointer;
+    font-weight: normal;
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+  }
+
+  .checkbox-terms {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .error-text {
+    color: #dc2626;
+    font-size: 0.8rem;
+    display: none;
+  }
+
+  .form-success {
+    padding: 1rem;
+    background-color: #dcfce7;
+    border: 1px solid #86efac;
+    border-radius: 6px;
+    color: #166534;
+  }
+
+  .form-error {
+    padding: 1rem;
+    background-color: #fee2e2;
+    border: 1px solid #fca5a5;
+    border-radius: 6px;
+    color: #991b1b;
+  }
+
+  .submit-button {
+    margin-top: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s;
+  }
+
+  .submit-button:hover:not(:disabled) {
+    background-color: var(--primary-strong);
+  }
+
+  .submit-button:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+  }
+</style>
+
+<script define:vars={{ t }}>
+  const form = document.getElementById('station-apply-form');
+  const submitBtn = document.getElementById('submitBtn');
+  const successDiv = document.getElementById('form-success');
+  const errorDiv = document.getElementById('form-error');
+  const serviceOtherGroup = document.getElementById('serviceOtherGroup');
+  const servicesCheckboxes = form.querySelectorAll('input[name="services"]');
+
+  // Show/hide other service input when "其他" is checked
+  servicesCheckboxes.forEach((checkbox) => {
+    checkbox.addEventListener('change', () => {
+      const otherService = Array.from(servicesCheckboxes).find(
+        (cb) => cb.value === t.serviceOptions[t.serviceOptions.length - 1]
+      );
+      if (otherService && otherService.checked) {
+        serviceOtherGroup.style.display = 'flex';
+      } else {
+        serviceOtherGroup.style.display = 'none';
+      }
+    });
+  });
+
+  // Clear error when user types
+  form.querySelectorAll('input, textarea, select').forEach((input) => {
+    input.addEventListener('input', () => {
+      const errorEl = form.querySelector(`[data-error="${input.name}"]`);
+      if (errorEl) errorEl.style.display = 'none';
+    });
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Clear all errors
+    form.querySelectorAll('.error-text').forEach((el) => (el.style.display = 'none'));
+    successDiv.style.display = 'none';
+    errorDiv.style.display = 'none';
+
+    // Validate
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    // Get selected services
+    const selectedServices = Array.from(form.querySelectorAll('input[name="services"]:checked')).map(
+      (cb) => cb.value
+    );
+    data.services = selectedServices;
+
+    // Validate required fields
+    let hasErrors = false;
+
+    if (!data.stationName || !data.stationName.trim()) {
+      showError('stationName', t.required);
+      hasErrors = true;
+    }
+
+    if (!data.location || !data.location.trim()) {
+      showError('location', t.required);
+      hasErrors = true;
+    }
+
+    if (!data.contactName || !data.contactName.trim()) {
+      showError('contactName', t.required);
+      hasErrors = true;
+    }
+
+    if (!data.contactPhone || !data.contactPhone.trim()) {
+      showError('contactPhone', t.required);
+      hasErrors = true;
+    } else if (!/^1[3-9]\d{9}$/.test(data.contactPhone.trim())) {
+      showError('contactPhone', t.invalidPhone);
+      hasErrors = true;
+    }
+
+    if (!data.contactEmail || !data.contactEmail.trim()) {
+      showError('contactEmail', t.required);
+      hasErrors = true;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.contactEmail.trim())) {
+      showError('contactEmail', t.invalidEmail);
+      hasErrors = true;
+    }
+
+    if (selectedServices.length === 0) {
+      showError('services', t.required);
+      hasErrors = true;
+    }
+
+    if (!form.querySelector('#agreeTerms').checked) {
+      showError('agreeTerms', t.termsRequired);
+      hasErrors = true;
+    }
+
+    if (hasErrors) return;
+
+    // Submit
+    submitBtn.disabled = true;
+    submitBtn.textContent = t.submitting;
+
+    try {
+      const webhookUrl = import.meta.env.PUBLIC_GN_N8N_STATION_APPLY_WEBHOOK_URL || '';
+
+      if (webhookUrl) {
+        const response = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            source: 'dajilin-website',
+            stationApplication: {
+              ...data,
+              submittedAt: new Date().toISOString(),
+            },
+          }),
+        });
+
+        if (!response.ok) throw new Error('Webhook request failed');
+      } else {
+        // Mock submission when webhook is not configured
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+      }
+
+      successDiv.style.display = 'block';
+      form.reset();
+    } catch (err) {
+      errorDiv.style.display = 'block';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = t.submit;
+    }
+  });
+
+  function showError(fieldName, message) {
+    const errorEl = form.querySelector(`[data-error="${fieldName}"]`);
+    if (errorEl) {
+      errorEl.textContent = message;
+      errorEl.style.display = 'block';
+    }
+  }
+</script>

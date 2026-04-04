@@ -1,0 +1,509 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { getLocaleFromPathname, localizePath } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+---
+
+<BaseLayout
+  title={locale === 'zh' ? '我的订单 | dajilin.net' : 'My Orders | dajilin.net'}
+  description={locale === 'zh' ? '查看您的订单历史' : 'View your order history'}
+  locale={locale}
+>
+  <Header />
+  <main class="page-shell orders-shell">
+    <div class="container">
+      <div class="page-header">
+        <h1>{locale === 'zh' ? '我的订单' : 'My Orders'}</h1>
+        <p>{locale === 'zh' ? '查看您的所有订单记录' : 'View all your order records'}</p>
+      </div>
+
+      <div id="orders-content" class="orders-content">
+        <div class="loading-state">
+          <div class="loading-spinner"></div>
+          <p>{locale === 'zh' ? '加载订单列表...' : 'Loading orders...'}</p>
+        </div>
+      </div>
+    </div>
+  </main>
+  <Footer />
+
+  <script>
+    import { getOrders, type Order } from '@/lib/cart';
+
+    const locale = document.documentElement.lang?.startsWith('zh') ? 'zh' :
+                   document.documentElement.lang?.startsWith('ja') ? 'ja' :
+                   document.documentElement.lang?.startsWith('ko') ? 'ko' : 'en';
+
+    const translations: Record<string, any> = {
+      zh: {
+        title: '我的订单 | dajilin.net',
+        heading: '我的订单',
+        subtitle: '查看您的所有订单记录',
+        empty: '暂无订单',
+        emptyDesc: '您还没有创建任何订单',
+        viewOrder: '查看详情',
+        items: '件商品',
+        statusLabels: {
+          pending: '待处理',
+          confirmed: '已确认',
+          processing: '处理中',
+          completed: '已完成',
+          cancelled: '已取消',
+        },
+        paymentStatus: {
+          unpaid: '未支付',
+          paid: '已支付',
+          refunded: '已退款',
+        },
+        backToShop: '返回商城',
+        orderDate: '下单时间',
+        total: '合计',
+      },
+      en: {
+        title: 'My Orders | dajilin.net',
+        heading: 'My Orders',
+        subtitle: 'View all your order records',
+        empty: 'No Orders',
+        emptyDesc: 'You have not placed any orders yet',
+        viewOrder: 'View Details',
+        items: 'item(s)',
+        statusLabels: {
+          pending: 'Pending',
+          confirmed: 'Confirmed',
+          processing: 'Processing',
+          completed: 'Completed',
+          cancelled: 'Cancelled',
+        },
+        paymentStatus: {
+          unpaid: 'Unpaid',
+          paid: 'Paid',
+          refunded: 'Refunded',
+        },
+        backToShop: 'Back to Shop',
+        orderDate: 'Order Date',
+        total: 'Total',
+      },
+      ja: {
+        title: '私の注文 | dajilin.net',
+        heading: '私の注文',
+        subtitle: 'すべての注文記録を見る',
+        empty: '注文なし',
+        emptyDesc: 'まだ注文がありません',
+        viewOrder: '詳細を見る',
+        items: '点',
+        statusLabels: {
+          pending: '保留中',
+          confirmed: '確認済み',
+          processing: '處理中',
+          completed: '完了',
+          cancelled: 'キャンセル',
+        },
+        paymentStatus: {
+          unpaid: '未払い',
+          paid: '支払い済み',
+          refunded: '返金済み',
+        },
+        backToShop: 'ショップに戻る',
+        orderDate: '注文日時',
+        total: '合計',
+      },
+      ko: {
+        title: '내 주문 | dajilin.net',
+        heading: '내 주문',
+        subtitle: '모든 주문 기록 보기',
+        empty: '주문 없음',
+        emptyDesc: '아직 주문이 없습니다',
+        viewOrder: '상세 보기',
+        items: '개',
+        statusLabels: {
+          pending: '대기중',
+          confirmed: '확인됨',
+          processing: '처리중',
+          completed: '완료',
+          cancelled: '취소',
+        },
+        paymentStatus: {
+          unpaid: '미결제',
+          paid: '결제완료',
+          refunded: '환불완료',
+        },
+        backToShop: '샵으로 돌아가기',
+        orderDate: '주문일시',
+        total: '합계',
+      },
+    };
+
+    const t = translations[locale] || translations.zh;
+
+    function renderOrders(orders: Order[]) {
+      if (orders.length === 0) {
+        return `
+          <div class="empty-state">
+            <div class="empty-icon">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4">
+                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+                <rect x="9" y="3" width="6" height="4" rx="2" />
+                <path d="M9 14l2 2 4-4" />
+              </svg>
+            </div>
+            <h2>${t.empty}</h2>
+            <p>${t.emptyDesc}</p>
+            <a href="${locale === 'zh' ? '/shop' : `/${locale}/shop`}" class="back-btn">
+              ${t.backToShop}
+            </a>
+          </div>
+        `;
+      }
+
+      const orderCards = orders.map(order => {
+        const statusClass = order.status === 'pending' ? 'status-pending' :
+                            order.status === 'confirmed' ? 'status-confirmed' :
+                            order.status === 'completed' ? 'status-completed' :
+                            order.status === 'cancelled' ? 'status-cancelled' : '';
+
+        const statusLabel = t.statusLabels[order.status] || order.status;
+        const paymentStatusLabel = t.paymentStatus[order.paymentStatus] || order.paymentStatus;
+        const orderDate = new Date(order.createdAt).toLocaleDateString(
+          locale === 'zh' ? 'zh-CN' : locale === 'ja' ? 'ja-JP' : locale === 'ko' ? 'ko-KR' : 'en-US'
+        );
+        const itemCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
+
+        return `
+          <article class="order-card">
+            <div class="order-card-header">
+              <div class="order-meta">
+                <span class="order-id">${order.id}</span>
+                <span class="order-date">${orderDate}</span>
+              </div>
+              <div class="order-status ${statusClass}">${statusLabel}</div>
+            </div>
+            <div class="order-card-body">
+              <div class="order-items-preview">
+                ${order.items.slice(0, 2).map(item => `
+                  <div class="item-preview">
+                    <span class="item-name">${item.name}</span>
+                    <span class="item-qty">x${item.quantity}</span>
+                  </div>
+                `).join('')}
+                ${order.items.length > 2 ? `<span class="more-items">+${order.items.length - 2} ${t.items}</span>` : ''}
+              </div>
+              <div class="order-summary">
+                <div class="order-info">
+                  <span class="info-label">${t.items}</span>
+                  <span class="info-value">${itemCount}</span>
+                </div>
+                <div class="order-info">
+                  <span class="info-label">${t.total}</span>
+                  <span class="info-value total">${order.total === 0 ? (locale === 'zh' ? '价格待定' : 'TBD') : `¥${order.total.toFixed(2)}`}</span>
+                </div>
+                <div class="order-info">
+                  <span class="info-label">${locale === 'zh' ? '支付状态' : 'Payment'}</span>
+                  <span class="info-value">${paymentStatusLabel}</span>
+                </div>
+              </div>
+            </div>
+            <div class="order-card-footer">
+              <a href="${locale === 'zh' ? `/orders/${order.id}` : `/${locale}/orders/${order.id}`}" class="view-order-btn">
+                ${t.viewOrder}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </a>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      return `
+        <div class="orders-list">
+          ${orderCards}
+        </div>
+      `;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const contentEl = document.getElementById('orders-content');
+      if (!contentEl) return;
+
+      const orders = getOrders();
+      contentEl.innerHTML = renderOrders(orders);
+    });
+  </script>
+
+  <style>
+    .orders-shell {
+      padding-bottom: 80px;
+      background: linear-gradient(180deg, #f8fbfb 0%, #eef4f3 48%, #f8fbfc 100%);
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .page-header h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+      color: var(--text-strong);
+    }
+
+    .page-header p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .orders-content {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: 80px 24px;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(15, 118, 110, 0.2);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 24px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .empty-icon {
+      margin-bottom: 20px;
+      color: var(--muted);
+    }
+
+    .empty-state h2 {
+      margin: 0 0 8px;
+      font-size: 1.5rem;
+      color: var(--text-strong);
+    }
+
+    .empty-state p {
+      margin: 0 0 24px;
+      color: var(--muted);
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 12px 24px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%);
+      color: #fff;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.35);
+    }
+
+    .orders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .order-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .order-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+    }
+
+    .order-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: #f8fafb;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .order-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .order-id {
+      font-family: monospace;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-strong);
+    }
+
+    .order-date {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .order-status {
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-confirmed {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .status-processing {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+
+    .status-completed {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-cancelled {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .order-card-body {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 18px 20px;
+      gap: 20px;
+    }
+
+    .order-items-preview {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .item-preview {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .item-name {
+      font-size: 0.95rem;
+      color: #334155;
+    }
+
+    .item-qty {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .more-items {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .order-summary {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 140px;
+    }
+
+    .order-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .info-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .info-value {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #334155;
+    }
+
+    .info-value.total {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .order-card-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--line);
+      background: #fafbfb;
+    }
+
+    .view-order-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--primary);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: gap 0.2s ease;
+    }
+
+    .view-order-btn:hover {
+      gap: 10px;
+    }
+
+    @media (max-width: 640px) {
+      .order-card-body {
+        flex-direction: column;
+      }
+
+      .order-summary {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .order-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+      }
+    }
+  </style>
+</BaseLayout>

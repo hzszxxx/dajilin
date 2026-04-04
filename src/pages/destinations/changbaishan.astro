@@ -1,0 +1,234 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { buildWebPageSchema, buildTouristDestinationSchema } from '@/lib/schema';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname) as Locale;
+const isZh = locale === 'zh';
+
+const pageTitle = '长白山旅游与四季玩法指南';
+const pageDescription = '围绕长白山的四季差异、适合人群、官方预约说明和行程时长，建立吉林代表性目的地的说明入口。';
+const pagePath = '/destinations/changbaishan';
+
+const copy: Record<Locale, {
+  eyebrow: string;
+  intro: string;
+  whatIsThis: string;
+  whatIsThisBody: string;
+  audience: string;
+  audienceList: string[];
+  highlights: string;
+  highlightsList: string[];
+  howToPlan: string;
+  howToPlanBody: string;
+  howToPlanList: string[];
+  officialEntry: string;
+  officialEntryBody: string;
+  notes: string;
+  notesList: string[];
+  consultEntry: string;
+  faqTitle: string;
+  faqs: { q: string; a: string }[];
+}> = {
+  zh: {
+    eyebrow: '长白山',
+    intro: '长白山是吉林最具代表性的自然型目的地之一，用户更关心的是四季差异、预约规则和适合安排几天。',
+    whatIsThis: '什么是长白山玩法',
+    whatIsThisBody: '长白山不是单一景点，而是一个四季都有不同打开方式的自然型目的地。它的核心体验围绕天池、火山地貌、垂直自然带、温泉和滑雪资源展开。不同季节玩法差异明显，理解这种季节差异比选景点更重要。',
+    audience: '适合哪些用户',
+    audienceList: ['自然景观与户外体验爱好者', '冰雪季滑雪和温泉体验追求者', '避暑与山地度假需求的用户', '摄影、自驾与线路型深度旅行者', '需要了解官方预约规则的出行者'],
+    highlights: '有哪些看点',
+    highlightsList: ['天池：长白山标志性景观，火山口湖泊，景色随季节变化', '北坡景区：主体景区，设施完善，游览路线成熟', '西坡景区：视角不同，适合摄影和深度游览', '南坡景区：靠近边境线，景观原始', '地下森林：火山口森林景观，独特地质风貌', '滑雪场：冬季主要体验内容，多个滑雪场选择', '温泉：长白山温泉群，冰雪季体验尤佳'],
+    howToPlan: '如何安排',
+    howToPlanBody: '长白山的安排逻辑以季节和时长为核心：',
+    howToPlanList: ['一日精华：北坡或西坡单坡游览，适合时间紧张者', '两日深度：北坡 + 西坡双坡联游，覆盖主要景观', '三日及以上：加入滑雪、温泉和周边延展线路', '四季差异：冬季专注冰雪体验，夏季避暑自然，秋季适合摄影和自驾'],
+    officialEntry: '官方入口与说明',
+    officialEntryBody: '长白山景区实行预约制，官方门票和景区内交通需要通过官方平台提前预约。高峰期（节假日、雪季）预约紧张，建议提前了解官方平台的预约规则和放票时间。平台不替代官方预约渠道，主要提供说明和引导。',
+    notes: '注意事项',
+    notesList: ['长白山天气多变，建议携带防雨和保暖装备', '天池景观高度依赖天气，晴天可见度最佳', '雪季和节假日预约紧张，务必提前规划', '高山海拔较高，注意高原反应', '景区内环保车换乘次数多，需注意游览节奏'],
+    consultEntry: '咨询入口',
+    faqTitle: '常见问题',
+    faqs: [
+      { q: '长白山适合玩几天？', a: '通常需要根据季节和出行方式决定。一日可游精华，两日可深度联游，三日及以上可加入滑雪、温泉和周边延展。' },
+      { q: '需要提前多久预约？', a: '建议提前3-7天预约，节假日和雪季建议更早。官方平台通常提前放票。' },
+      { q: '平台能直接代替官方预约吗？', a: '当前不替代官方入口，主要提供说明、引导和问题梳理。预约和购票以官方平台为准。' },
+      { q: '冬季去长白山需要准备什么？', a: '需要防寒保暖装备、防滑鞋、墨镜（雪地反光），以及提前预约的门票和住宿。' },
+    ],
+  },
+  en: {
+    eyebrow: 'Changbai Mountain',
+    intro: 'Changbai Mountain is one of Jilins most representative natural destinations. Visitors are most concerned about seasonal differences, booking rules, and how many days to plan.',
+    whatIsThis: 'What is Changbai Mountain',
+    whatIsThisBody: 'Changbai Mountain is not a single attraction but a nature destination with different experiences across four seasons. Its core experiences center on Tianchi (Heavenly Lake), volcanic landforms, vertical natural zones, hot springs, and ski resources.',
+    audience: 'Who is it suitable for',
+    audienceList: ['Nature and outdoor experience enthusiasts', 'Snow season skiing and hot spring seekers', 'Summer cool-weather and mountain resort visitors', 'Photography, self-drive, and route-based deep travelers', 'Travelers needing to understand official booking rules'],
+    highlights: 'Key Highlights',
+    highlightsList: ['Tianchi: The iconic crater lake with scenery that changes with seasons', 'North Slope: Main scenic area with complete facilities', 'West Slope: Different perspective, great for photography', 'South Slope: Near border, more primitive landscapes', 'Underground Forest: Volcanic crater forest, unique geological features', 'Ski Resorts: Main winter experience with multiple options', 'Hot Springs: Changbai hot spring groups, especially good in winter'],
+    howToPlan: 'How to Plan',
+    howToPlanBody: 'Planning Changbai Mountain centers on season and duration:',
+    howToPlanList: ['One-day highlight: Single slope (North or West), suitable for tight schedules', 'Two-day deep tour: North + West slopes combined', 'Three-plus days: Add skiing, hot springs, and surrounding extensions', 'Seasonal differences: Winter focuses on ice/snow, summer for cool nature, autumn for photography and self-drive'],
+    officialEntry: 'Official Entry Points',
+    officialEntryBody: 'Changbai Mountain scenic area operates on a reservation system. Official tickets and internal transportation must be booked in advance through the official platform. Peak seasons (holidays, snow season) have tight reservations.',
+    notes: 'Important Notes',
+    notesList: ['Weather is changeable; bring rain and warm gear', 'Tianchi visibility depends highly on weather', 'Reservations are tight during holidays and snow season', 'High altitude may cause reactions', 'Multiple park bus transfers; mind your pace'],
+    consultEntry: 'Consultation',
+    faqTitle: 'FAQ',
+    faqs: [
+      { q: 'How many days for Changbai Mountain?', a: 'Depends on season and travel style. One day for highlights, two for combined slopes, three-plus for skiing, hot springs, and extensions.' },
+      { q: 'How far in advance should I book?', a: 'Recommend 3-7 days advance, earlier for holidays and snow season.' },
+      { q: 'Can the platform book for me?', a: 'Currently provides guidance only. Official booking takes precedence.' },
+      { q: 'What to prepare for winter visits?', a: 'Warm clothing, anti-slip shoes, sunglasses (snow reflection), plus advance ticket and accommodation bookings.' },
+    ],
+  },
+  ja: {
+    eyebrow: '長白山',
+    intro: '長白山は吉林最具代表性のある自然型目的地のひとつです。訪問者が最も関心を持つのは四季の違い、予約規則、そして何日間過ごすべきかということです。',
+    whatIsThis: '長白山とは',
+    whatIsThisBody: '長白山は单一観光地ではなく、四季で不同的過ごし方がある自然型目的地です。核心体験は天池、火山地形、垂直自然帯、温泉、ス키資源を中心に展開します。',
+    audience: 'こんなユーザーに最適',
+    audienceList: ['自然景色とアウトドア体験愛好家', '雪季の滑雪と温泉体験追求者', '避暑と山地休假ニーズのユーザー', '写真撮影、ドライブ、ルート型深度旅行者', '公式予約規則を理解する必要がある旅行者'],
+    highlights: '見どころ',
+    highlightsList: ['天池：長白山の标志性景観，火口湖，景色は季節で変化', '北坡景区：主要景区，施設整っている', '西坡景区：视角が異なり、写真と深度観光に適切', '南坡景区：国境線に近く、景色が原始的', '地下森林：火口森林景观，独特な地質风貌', '滑雪場：冬季主要体験内容，複数の滑雪場選択', '温泉：長白山温泉群，雪季体験が特に良い'],
+    howToPlan: '周り方',
+    howToPlanBody: '長白山の日程計画は季節と日数を中心に構成されます：',
+    howToPlanList: ['一日精华：北坡または西坡单一観光，時間がない人に適切', '二日深度：北坡＋西坡連泊，主要景観をカバー', '三日以上：滑雪、温泉、周辺延伸コースを追加', '四季差：冬季は冰雪体験，夏天は避暑自然，秋は写真撮影と自驾に適切'],
+    officialEntry: '公式入口と説明',
+    officialEntryBody: '長白山景区は予約制を実施しています。公式チケットと景区内交通は公式プラットフォームを通じて事前予約が必要です。繁忙期（祝日、雪季）は予約が雰囲ため、早めに公式platformの予約規則と発売時間を確認してください。',
+    notes: '注意事項',
+    notesList: ['長白山、天気は変わりやすいく、。雨と保暖装備をお持ちください', '天池の景色は天気に大きく依存します', '雪季と祝日の予約は雰囲気を避け、事前計画をお勧めします', '高地では高山反応に注意してください', '景区内の环保Bus是多段運行，観光リズムに注意する必要があります'],
+    consultEntry: '相談入口',
+    faqTitle: 'よくある質問',
+    faqs: [
+      { q: '長白山は几日間に過ごすのが適切ですか？', a: '通常は季節と出行方式によって決まります。一日で精华、二日で深度、三日以上は滑雪、温泉、周辺延伸を追加できます。' },
+      { q: '事前にどの程度予約が必要ですか？', a: '3-7日前の事前予約をお勧めします。祝日と雪季はそれよりも前に確認してください。' },
+      { q: 'プラットフォームで直接予約できますか？', a: '現在、公式入口の置換ではなく、主として説明、誘導、質問整理を提供しています。' },
+      { q: '冬季の長白山には何を持ち必要がありますか？', a: '防寒、保暖装備、滑り止め靴、サングラス（雪の反射対策）、そして事前予約のチケットと宿泊が必要です。' },
+    ],
+  },
+  ko: {
+    eyebrow: '장백산',
+    intro: '장백산은 지린最具대표적인 자연 목적지입니다. 방문객들이 가장 관심 있는 것은 사계절 차이, 예약 규칙, 며칠을安排하는 것이 좋습니다.',
+    whatIsThis: '장백산이란',
+    whatIsThisBody: '장백산은 단일 관광지가 아니라 사계절에 따라 다른 방식으로 즐길 수 있는 자연형 목적지입니다. 핵심 체험은 천지（火口호수）, 화산 지형, 수직 자연 대, 온천, 스키 자원 중심으로 전개됩니다.',
+    audience: '이런 사용자에게 적합',
+    audienceList: ['자연 풍경과 아웃도어 체험 애호가', '설빙 시즌 스키와 온천 체험 추구자', '피서와 산악 휴가 필요 사용자', '사진 촬영, 드라이브, 노선형 심층 여행자', '공식 예약 규칙을 이해해야 하는 여행자'],
+    highlights: '주요 볼거리',
+    highlightsList: ['천지: 장백산의 상징적 풍경, 화산호, 계절에 따라 모습이 변함', '북사면: 주요 관광지, 시설 완비', '서사면: 다른 시각, 사진 촬영과 심층 관광에 적합', '남사면: 국경线和 가깝고, 경관이 원시적', '지하삼림: 화산호 숲 풍경, 독특한 지질风貌', '스키장: 겨울 주요 체험 콘텐츠, 여러 스키장 선택', '온천: 장백산 온천群, 설빙 시즌 체험이 특히 좋음'],
+    howToPlan: '일정 잡기',
+    howToPlanBody: '장백산 일정 계획은 계절과 기간을 중심으로 구성됩니다:',
+    howToPlanList: ['하루精华: 북사면 또는 서사면 단일 관광, 시간 부족한 경우에 적합', '이틀 심층: 북사면 + 서사면聯合 관광, 주요 풍경 커버', '삼일 이상: 스키, 온천, 주변 확장을 추가', '사계절 차이: 겨울은 빙설 체험, 여름은 피서 자연, 가을은 사진 촬영과自驾에 적합'],
+    officialEntry: '공식 입구와 설명',
+    officialEntryBody: '장백산 관광지는 예약제를 시행하고 있습니다. 공식 티켓과 관광지 내 교통은 공식 플랫폼을 통해 사전 예약해야 합니다. 성수기(휴일, 설빙 시즌)는 예약이緊張되어，提前了解官方平台的预约规则和放票时间를 확인하는 것이 좋습니다.',
+    notes: '주의사항',
+    notesList: ['장백산 날씨는 변화가 많으니，雨 대비와保暖装備를 가져가세요', '천지 풍경은 날씨에 크게 좌우됩니다', '설빙 시즌과 휴일 예약은 부족하니 사전 계획을 권장합니다', '고도 tinggi에서는 고산 반응에 주의해야 합니다', '관광지 내 환경버스는 다단계로 운영되어 관광 리듬에 주의해야 합니다'],
+    consultEntry: '상담 입구',
+    faqTitle: '자주 묻는 질문',
+    faqs: [
+      { q: '장백산은 며칠이 적당한가요?', a: '보통 계절과出行 방식에 따라 다릅니다. 하루는精华, 이틀은 심층, 삼일 이상은 스키, 온천, 주변 확장을 추가할 수 있습니다.' },
+      { q: '얼마나事前 예약해야 하나요?', a: '3-7일事前 예약을 권장합니다. 휴일과 설빙 시즌은 더 빨리 확인하는 것이 좋습니다.' },
+      { q: '플랫폼에서 직접 예약할 수 있나요?', a: '현재 공식 입구를 대체하지 않으며, 주로 설명, 유도, 질문 정리를 제공합니다.' },
+      { q: '겨울 장백산에는 무엇을 준비해야 하나요?', a: '방한,保暖 장비, 미끄럼 방지 신발, 선글라스(눈 반사 대비), 그리고事前 예약한 티켓과 숙소가 필요합니다.' },
+    ],
+  },
+};
+
+const t = copy[locale];
+const schemas = [
+  buildWebPageSchema(pagePath, pageTitle, pageDescription, locale),
+  buildTouristDestinationSchema(pagePath, pageTitle, pageDescription, locale),
+];
+---
+
+<BaseLayout title={`${pageTitle} | dajilin.net`} description={pageDescription} schemas={schemas} locale={locale}>
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-hero">
+          <div class="page-copy">
+            <div class="eyebrow">{t.eyebrow}</div>
+            <h1>{isZh ? pageTitle : t.eyebrow}</h1>
+            <p>{isZh ? pageDescription : t.intro}</p>
+          </div>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.whatIsThis}</h2>
+          <p>{t.whatIsThisBody}</p>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.audience}</h2>
+          <ul>
+            {t.audienceList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.highlights}</h2>
+          <ul>
+            {t.highlightsList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.howToPlan}</h2>
+          <p>{t.howToPlanBody}</p>
+          <ul>
+            {t.howToPlanList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.officialEntry}</h2>
+          <p>{t.officialEntryBody}</p>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.notes}</h2>
+          <ul>
+            {t.notesList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.faqTitle}</h2>
+          <div class="faq-list">
+            {t.faqs.map((faq) => (
+              <article class="faq-item">
+                <h3>{faq.q}</h3>
+                <p>{faq.a}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <aside class="page-card">
+        <h3>{isZh ? '建议继续浏览' : 'Continue Reading'}</h3>
+        <ul class="page-list">
+          <li><a href={localizePath('/destinations', locale)}>{isZh ? '查看所有目的地' : 'View all destinations'}</a></li>
+          <li><a href={localizePath('/themes/ice-snow', locale)}>{isZh ? '查看冰雪主题玩法' : 'View ice & snow themes'}</a></li>
+          <li><a href={localizePath('/themes', locale)}>{isZh ? '查看主题玩法' : 'View theme experiences'}</a></li>
+          <li><a href={localizePath('/official-services/jilin', locale)}>{isZh ? '查看官方服务入口' : 'View official services'}</a></li>
+        </ul>
+
+        <div class="detail-side-card">
+          <h3>{t.consultEntry}</h3>
+          <div class="cta-row">
+            <button class="button" type="button" data-open-ai-widget data-ai-page-url={pagePath}>
+              {isZh ? '先问 AI 助手' : 'Ask AI Assistant'}
+            </button>
+            <a class="button-secondary" href={localizePath('/cooperation', locale)}>
+              {isZh ? '提交咨询' : 'Submit Consultation'}
+            </a>
+          </div>
+        </div>
+
+</aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

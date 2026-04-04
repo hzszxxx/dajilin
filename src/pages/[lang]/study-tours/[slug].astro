@@ -1,0 +1,16 @@
+---
+import StudyTourDetailPage from '@/pages/study-tours/[slug].astro';
+import { supportedLocales } from '@/lib/i18n';
+import { studyTourPages } from '@/lib/content-pages';
+
+export const getStaticPaths = () =>
+  supportedLocales
+    .filter((locale) => locale !== 'zh')
+    .flatMap((lang) =>
+      studyTourPages.map((page) => ({
+        params: { lang, slug: page.slug },
+      })),
+    );
+---
+
+<StudyTourDetailPage />

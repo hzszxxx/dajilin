@@ -1,0 +1,82 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { buildCollectionPageSchema } from '@/lib/schema';
+import { guidePages } from '@/lib/content-pages';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+const copy: Record<
+  Locale,
+  { title: string; description: string; schemaName: string; heading: string; sideTitle: string; sideDesc: string }
+> = {
+  zh: {
+    title: '攻略与资讯 | dajilin.net',
+    description: '围绕目的地玩法、工业研学、自驾攻略和季节热点，持续输出可阅读、可参考、可转化为咨询的内容。',
+    schemaName: '攻略与资讯',
+    heading: '攻略与资讯',
+    sideTitle: '内容说明',
+    sideDesc: '内容围绕热点和常见问题，持续更新，帮助用户更好地规划行程。',
+  },
+  en: {
+    title: 'Guides & News | dajilin.net',
+    description: 'Guides and updates around destinations, study tours, Self-Drive Guide, and seasonal topics.',
+    schemaName: 'Guides & News',
+    heading: 'Guides & News',
+    sideTitle: 'Content Notes',
+    sideDesc: 'Content is updated regularly around trending topics and common questions.',
+  },
+  ja: {
+    title: 'ガイド情報 | dajilin.net',
+    description: '目的地、産業研修、自驾攻略、季節トピックに関するガイドと更新情報を提供します。',
+    schemaName: 'ガイド情報',
+    heading: 'ガイド情報',
+    sideTitle: 'コンテンツ案内',
+    sideDesc: 'トレンドとよくある質問を中心に継続更新し、旅行計画を支援します。',
+  },
+  ko: {
+    title: '가이드 & 소식 | dajilin.net',
+    description: '목적지, 산업 연수, 자가운전 가이드, 계절 이슈를 중심으로 가이드와 업데이트를 제공합니다.',
+    schemaName: '가이드 & 소식',
+    heading: '가이드 & 소식',
+    sideTitle: '콘텐츠 안내',
+    sideDesc: '트렌드와 자주 묻는 질문을 중심으로 지속 업데이트하여 여행 계획 수립을 지원합니다.',
+  },
+};
+const t = copy[locale];
+---
+
+<BaseLayout title={t.title} description={t.description} schemas={[buildCollectionPageSchema('/guides', t.schemaName, t.description, locale)]} locale={locale}>
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-copy">
+          <div class="eyebrow">Guides & Briefings</div>
+          <h1>{t.heading}</h1>
+          <p>{t.description}</p>
+        </div>
+
+        <div class="detail-grid">
+          {guidePages.map((item) => (
+            <a class="detail-link-card" href={localizePath(item.pathname, locale)}>
+              <h3>{locale === 'zh' ? item.shortTitle : item.eyebrow}</h3>
+              <p>{locale === 'zh' ? item.description : t.description}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+      <aside class="page-card">
+        <h3>{t.sideTitle}</h3>
+        <p>{t.sideDesc}</p>
+        <ul class="page-list">
+          {guidePages.slice(0, 3).map((page) => (
+            <li><a href={localizePath(page.pathname, locale)}>{locale === 'zh' ? page.title : page.eyebrow}</a></li>
+          ))}
+        </ul>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

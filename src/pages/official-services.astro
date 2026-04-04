@@ -1,0 +1,98 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { buildCollectionPageSchema } from '@/lib/schema';
+import { officialServicePages } from '@/lib/content-pages';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+const copy: Record<
+  Locale,
+  { title: string; description: string; schemaName: string; heading: string; strategyTitle: string; strategyItems: string[]; faqTitle: string; faqItems: string[] }
+> = {
+  zh: {
+    title: '官方服务入口 | dajilin.net',
+    description: '帮助用户理解吉林文旅相关官方平台、预约方式和注意事项，前期以说明和指引为主，不替代官方售卖与预约。',
+    schemaName: '官方服务入口',
+    heading: '官方服务入口',
+    strategyTitle: '当前策略',
+    strategyItems: ['优先说明和引导，不替代官方入口。', '帮助用户降低查找成本，理解平台与官方的边界。', '正式购票和预约以官方规则为准。'],
+    faqTitle: '常见问题',
+    faqItems: ['平台能直接帮我买票吗？', '为什么有些服务要以官方入口为准？'],
+  },
+  en: {
+    title: 'Official Services | dajilin.net',
+    description: 'Understand official travel channels, booking guidance, and service boundaries in Jilin.',
+    schemaName: 'Official Services',
+    heading: 'Official Service Entry',
+    strategyTitle: 'Current Strategy',
+    strategyItems: ['Explain and guide first, without replacing official channels.', 'Reduce search cost and clarify platform vs official boundaries.', 'Official rules apply for booking and ticketing.'],
+    faqTitle: 'Common Questions',
+    faqItems: ['Can this platform buy tickets directly?', 'Why must some services use official channels?'],
+  },
+  ja: {
+    title: '公式サービス | dajilin.net',
+    description: '吉林観光に関する公式チャネル、予約方式、注意事項を整理して案内します。',
+    schemaName: '公式サービス',
+    heading: '公式サービス入口',
+    strategyTitle: '現在の方針',
+    strategyItems: ['説明と案内を優先し、公式入口の代替はしません。', '検索コストを下げ、プラットフォームと公式の境界を明確化します。', '正式予約と購入は公式ルールを適用します。'],
+    faqTitle: 'よくある質問',
+    faqItems: ['このプラットフォームで直接購入できますか？', 'なぜ公式入口基準の案内が必要ですか？'],
+  },
+  ko: {
+    title: '공식 서비스 | dajilin.net',
+    description: '지린 문여 관련 공식 채널, 예약 방식, 주의사항을 정리해 안내합니다.',
+    schemaName: '공식 서비스',
+    heading: '공식 서비스 입구',
+    strategyTitle: '현재 전략',
+    strategyItems: ['설명과 안내를 우선하며 공식 채널을 대체하지 않습니다.', '탐색 비용을 줄이고 플랫폼과 공식 경계를 명확히 합니다.', '정식 예약 및 구매는 공식 규정을 따릅니다.'],
+    faqTitle: '자주 묻는 질문',
+    faqItems: ['플랫폼에서 직접 구매가 가능한가요?', '왜 공식 채널 기준 안내가 필요한가요?'],
+  },
+};
+const t = copy[locale];
+---
+
+<BaseLayout title={t.title} description={t.description} schemas={[buildCollectionPageSchema('/official-services', t.schemaName, t.description, locale)]} locale={locale}>
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-copy">
+          <div class="eyebrow">Official Services</div>
+          <h1>{t.heading}</h1>
+          <p>{t.description}</p>
+        </div>
+        <h2>{t.strategyTitle}</h2>
+        <ul>
+          {t.strategyItems.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+
+        <div class="detail-grid">
+          {officialServicePages.map((page) => (
+            <a class="detail-link-card" href={localizePath(page.pathname, locale)}>
+              <h3>{locale === 'zh' ? page.title : page.eyebrow}</h3>
+              <p>{locale === 'zh' ? page.description : t.description}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+      <aside class="page-card">
+        <h3>{t.faqTitle}</h3>
+        <ul class="page-list">
+          {t.faqItems.map((item) => (
+            <li>{item}</li>
+          ))}
+          {officialServicePages.map((page) => (
+            <li><a href={localizePath(page.pathname, locale)}>{locale === 'zh' ? page.shortTitle : page.eyebrow}</a></li>
+          ))}
+        </ul>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

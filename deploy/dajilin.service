@@ -1,0 +1,16 @@
+[Unit]
+Description=dajilin Astro site
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/var/www/dajilin/current
+EnvironmentFile=/var/www/dajilin/shared/.env
+ExecStart=/usr/bin/node ./dist/server/entry.mjs
+Restart=always
+RestartSec=5
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,16 @@
+---
+import OfficialServiceDetailPage from '@/pages/official-services/[slug].astro';
+import { supportedLocales } from '@/lib/i18n';
+import { officialServicePages } from '@/lib/content-pages';
+
+export const getStaticPaths = () =>
+  supportedLocales
+    .filter((locale) => locale !== 'zh')
+    .flatMap((lang) =>
+      officialServicePages.map((page) => ({
+        params: { lang, slug: page.slug },
+      })),
+    );
+---
+
+<OfficialServiceDetailPage />

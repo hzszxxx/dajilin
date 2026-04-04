@@ -1,0 +1,839 @@
+---
+import { getLocaleFromPathname, type Locale } from '@/lib/i18n';
+
+interface Props {
+  siteId: string;
+  pageUrl: string;
+  module?: string;
+  title?: string;
+}
+
+const { siteId, pageUrl, module = '', title = '吉林文旅 AI 导览助手' } = Astro.props;
+const locale = getLocaleFromPathname(Astro.url.pathname);
+
+type WidgetCopy = {
+  triggerMain: string;
+  triggerSub: string;
+  scope: string;
+  closeLabel: string;
+  introA: string;
+  introB: string;
+  handoffTitle: string;
+  handoffDesc: string;
+  namePlaceholder: string;
+  contactPlaceholder: string;
+  orgPlaceholder: string;
+  messagePlaceholder: string;
+  submit: string;
+  continueBrowsing: string;
+  inputPlaceholder: string;
+  send: string;
+  fallbackSummary: string;
+  fallbackDetail: string;
+  handoffLabel: string;
+  handoffSuccess: string;
+  handoffSuccessDetail: string;
+  handoffFail: string;
+  handoffFailDetail: string;
+  typingLabel: string;
+  conversationTitle: string;
+  clearHistory: string;
+  historyRestored: string;
+  followupsLabel: string;
+};
+
+const widgetCopyMap: Record<Locale, WidgetCopy> = {
+  zh: {
+    triggerMain: 'AI 导览',
+    triggerSub: '问问吉林怎么玩',
+    scope: '目的地 / 工业研学 / 331 / 官方说明',
+    closeLabel: '关闭',
+    introA: '你好，我可以先帮你了解吉林旅游、工业研学、331 国道路线和官方服务入口。',
+    introB: '你可以直接提问，也可以先点一个问题开始。',
+    handoffTitle: '这类需求更适合人工协助',
+    handoffDesc: '留下联系方式后，我们会进一步对接。',
+    namePlaceholder: '姓名',
+    contactPlaceholder: '联系方式',
+    orgPlaceholder: '单位 / 机构（可选）',
+    messagePlaceholder: '请简要说明你的咨询内容',
+    submit: '提交咨询',
+    continueBrowsing: '继续浏览',
+    inputPlaceholder: '问问吉林怎么玩、研学怎么安排、331 怎么走',
+    send: '发送',
+    fallbackSummary: '当前无法回答这个问题。',
+    fallbackDetail: '你可以尝试换一种问法，或直接提交咨询。',
+    handoffLabel: '提交咨询',
+    handoffSuccess: '咨询已提交',
+    handoffSuccessDetail: '我们已经收到你的需求，后续会进一步跟进。',
+    handoffFail: '暂时提交失败',
+    handoffFailDetail: '请稍后再试，或先通过合作咨询页联系我们。',
+    typingLabel: 'AI 正在思考...',
+    conversationTitle: '对话记录',
+    clearHistory: '清空对话',
+    historyRestored: '已恢复之前的对话',
+    followupsLabel: '相关问题：',
+  },
+  en: {
+    triggerMain: 'AI Guide',
+    triggerSub: 'Ask how to plan Jilin',
+    scope: 'Destinations / Study Tours / Route 331 / Official Services',
+    closeLabel: 'Close',
+    introA: 'Hi, I can help you understand Jilin destinations, study tours, Route 331, and official service entries.',
+    introB: 'Ask directly or start from a suggested question.',
+    handoffTitle: 'This request is better handled by a consultant',
+    handoffDesc: 'Leave your contact and we will follow up.',
+    namePlaceholder: 'Name',
+    contactPlaceholder: 'Contact',
+    orgPlaceholder: 'Organization (optional)',
+    messagePlaceholder: 'Briefly describe your request',
+    submit: 'Submit',
+    continueBrowsing: 'Continue browsing',
+    inputPlaceholder: 'Ask about destinations, study tours, or Route 331',
+    send: 'Send',
+    fallbackSummary: 'I cannot answer this yet.',
+    fallbackDetail: 'Try another question or submit a consultation.',
+    handoffLabel: 'Submit consultation',
+    handoffSuccess: 'Consultation submitted',
+    handoffSuccessDetail: 'We received your request and will follow up.',
+    handoffFail: 'Submission failed',
+    handoffFailDetail: 'Please try again later or use the cooperation page.',
+    typingLabel: 'AI is thinking...',
+    conversationTitle: 'Conversation',
+    clearHistory: 'Clear chat',
+    historyRestored: 'Previous conversation restored',
+    followupsLabel: 'Related questions:',
+  },
+  ja: {
+    triggerMain: 'AIガイド',
+    triggerSub: '吉林の旅を相談',
+    scope: '目的地 / 産業研修 / 331国道 / 公式サービス',
+    closeLabel: '閉じる',
+    introA: '吉林の目的地、産業研修、331国道、公式サービス入口についてご案内します。',
+    introB: '直接質問するか、推奨質問から開始できます。',
+    handoffTitle: 'この内容は担当者対応が適しています',
+    handoffDesc: '連絡先を残していただければ追ってご連絡します。',
+    namePlaceholder: 'お名前',
+    contactPlaceholder: '連絡先',
+    orgPlaceholder: '所属（任意）',
+    messagePlaceholder: 'ご相談内容を簡単に入力してください',
+    submit: '送信',
+    continueBrowsing: '閲覧を続ける',
+    inputPlaceholder: '吉林旅行、産業研修、331国道について質問',
+    send: '送信',
+    fallbackSummary: 'この質問にはまだ回答できません。',
+    fallbackDetail: '別の聞き方にするか、相談を送信してください。',
+    handoffLabel: '相談を送信',
+    handoffSuccess: '相談を送信しました',
+    handoffSuccessDetail: '内容を受け付けました。担当者が後ほど対応します。',
+    handoffFail: '送信に失敗しました',
+    handoffFailDetail: '時間をおいて再試行するか、協業ページをご利用ください。',
+    typingLabel: 'AI が考え中...',
+    conversationTitle: '会話記録',
+    clearHistory: '会話をクリア',
+    historyRestored: '以前の会話恢复了',
+    followupsLabel: '関連質問：',
+  },
+  ko: {
+    triggerMain: 'AI 가이드',
+    triggerSub: '지린 여행 문의',
+    scope: '목적지 / 산업 연수 / 331 국도 / 공식 서비스',
+    closeLabel: '닫기',
+    introA: '지린 목적지, 산업 연수, 331 국도, 공식 서비스 안내를 도와드립니다.',
+    introB: '직접 질문하거나 추천 질문으로 시작할 수 있습니다.',
+    handoffTitle: '이 요청은 상담사가 처리하는 것이 적합합니다',
+    handoffDesc: '연락처를 남겨주시면 후속 안내드리겠습니다.',
+    namePlaceholder: '이름',
+    contactPlaceholder: '연락처',
+    orgPlaceholder: '소속 (선택)',
+    messagePlaceholder: '요청 내용을 간단히 입력하세요',
+    submit: '제출',
+    continueBrowsing: '계속 보기',
+    inputPlaceholder: '지린 여행, 연수, 331 국도에 대해 질문',
+    send: '전송',
+    fallbackSummary: '현재 이 질문에는 답변할 수 없습니다.',
+    fallbackDetail: '다른 표현으로 질문하거나 상담을 제출해 주세요.',
+    handoffLabel: '상담 제출',
+    handoffSuccess: '상담이 제출되었습니다',
+    handoffSuccessDetail: '요청을 접수했습니다. 후속 안내드리겠습니다.',
+    handoffFail: '제출에 실패했습니다',
+    handoffFailDetail: '잠시 후 다시 시도하거나 협업 페이지를 이용해 주세요.',
+    typingLabel: 'AI 생각 중...',
+    conversationTitle: '대화 기록',
+    clearHistory: '대화 지우기',
+    historyRestored: '이전 대화 복원됨',
+    followupsLabel: '관련 질문:',
+  },
+};
+
+const localizedTitleMap: Record<Locale, Record<string, string>> = {
+  zh: {
+    default: '吉林文旅 AI 导览助手',
+    destinations: '吉林目的地 AI 导览助手',
+    industrial_study_tours: '工业研学 AI 导览助手',
+    route_331: '331 国道 AI 导览助手',
+    official_services: '官方服务说明 AI 助手',
+    cooperation: '合作咨询 AI 助手',
+  },
+  en: {
+    default: 'Jilin Travel AI Guide',
+    destinations: 'Destination AI Guide',
+    industrial_study_tours: 'Study Tour AI Guide',
+    route_331: 'Route 331 AI Guide',
+    official_services: 'Official Service AI Assistant',
+    cooperation: 'Cooperation AI Assistant',
+  },
+  ja: {
+    default: '吉林観光 AIガイド',
+    destinations: '目的地 AIガイド',
+    industrial_study_tours: '産業研修 AIガイド',
+    route_331: '331国道 AIガイド',
+    official_services: '公式サービス AIアシスタント',
+    cooperation: '協業相談 AIアシスタント',
+  },
+  ko: {
+    default: '지린 관광 AI 가이드',
+    destinations: '목적지 AI 가이드',
+    industrial_study_tours: '산업 연수 AI 가이드',
+    route_331: '331 국도 AI 가이드',
+    official_services: '공식 서비스 AI 도우미',
+    cooperation: '협업 문의 AI 도우미',
+  },
+};
+
+const copy = widgetCopyMap[locale];
+const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[locale].default ?? title;
+---
+
+<div
+  class="ai-widget"
+  data-site-id={siteId}
+  data-page-url={pageUrl}
+  data-module={module}
+  data-title={resolvedTitle}
+  data-locale={locale}
+  data-fallback-summary={copy.fallbackSummary}
+  data-fallback-detail={copy.fallbackDetail}
+  data-handoff-label={copy.handoffLabel}
+  data-handoff-success={copy.handoffSuccess}
+  data-handoff-success-detail={copy.handoffSuccessDetail}
+  data-handoff-fail={copy.handoffFail}
+  data-handoff-fail-detail={copy.handoffFailDetail}
+  data-typing-label={copy.typingLabel}
+  data-conversation-title={copy.conversationTitle}
+  data-clear-history={copy.clearHistory}
+  data-history-restored={copy.historyRestored}
+  data-followups-label={copy.followupsLabel}
+>
+  <button class="ai-widget-trigger" type="button" aria-expanded="false">
+    <span class="ai-widget-trigger-main">{copy.triggerMain}</span>
+    <span class="ai-widget-trigger-sub">{copy.triggerSub}</span>
+  </button>
+
+  <section class="ai-widget-panel" hidden>
+    <header class="ai-widget-header">
+      <div>
+        <strong>{resolvedTitle}</strong>
+        <small>{copy.scope}</small>
+      </div>
+      <div class="ai-widget-header-actions">
+        <button type="button" class="ai-widget-clear" aria-label={copy.clearHistory} title={copy.clearHistory}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+          </svg>
+        </button>
+        <button type="button" class="ai-widget-close" aria-label={copy.closeLabel}>×</button>
+      </div>
+    </header>
+
+    <div class="ai-widget-body">
+      <div class="ai-widget-intro">
+        <p>{copy.introA}</p>
+        <p>{copy.introB}</p>
+      </div>
+
+      <div class="ai-widget-recommended"></div>
+      <div class="ai-widget-messages"></div>
+      <div class="ai-widget-followups"></div>
+
+      <div class="ai-widget-typing" hidden>
+        <div class="typing-indicator">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <span class="typing-label">{copy.typingLabel}</span>
+      </div>
+
+      <form class="ai-widget-handoff" hidden>
+        <h3>{copy.handoffTitle}</h3>
+        <p>{copy.handoffDesc}</p>
+        <input name="name" type="text" placeholder={copy.namePlaceholder} required />
+        <input name="phone_or_wechat" type="text" placeholder={copy.contactPlaceholder} required />
+        <input name="organization" type="text" placeholder={copy.orgPlaceholder} />
+        <textarea name="message" rows="3" placeholder={copy.messagePlaceholder} required></textarea>
+        <div class="ai-widget-handoff-actions">
+          <button type="submit" class="button">{copy.submit}</button>
+          <button type="button" class="button-secondary" data-close-handoff>{copy.continueBrowsing}</button>
+        </div>
+      </form>
+    </div>
+
+    <form class="ai-widget-input">
+      <input type="text" name="message" placeholder={copy.inputPlaceholder} required />
+      <button type="submit" class="button">{copy.send}</button>
+    </form>
+  </section>
+</div>
+
+<script>
+  import { getGNPublicEndpoints } from '@/lib/gn-public';
+
+  const endpoints = getGNPublicEndpoints();
+  const widgets = Array.from(document.querySelectorAll('.ai-widget'));
+
+  // ---------------------------------------------------------------------------
+  // Utility functions
+  // ---------------------------------------------------------------------------
+
+  const formatTimestamp = (timestamp: number, locale: string): string => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const isToday = date.toDateString() === now.toDateString();
+
+    if (isToday) {
+      return date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+    }
+
+    return date.toLocaleDateString(locale, {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const generateId = (): string => `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+  // ---------------------------------------------------------------------------
+  // Session storage management
+  // ---------------------------------------------------------------------------
+
+  interface StoredSession {
+    sessionId: string;
+    messages: Array<{
+      id: string;
+      role: string;
+      content: string;
+      timestamp: number;
+      summary?: string;
+      detail?: string;
+    }>;
+  }
+
+  const loadSession = (storageKey: string): StoredSession | null => {
+    const stored = window.localStorage.getItem(storageKey);
+    if (!stored) return null;
+    try {
+      return JSON.parse(stored);
+    } catch {
+      return null;
+    }
+  };
+
+  const saveSession = (storageKey: string, session: StoredSession): void => {
+    window.localStorage.setItem(storageKey, JSON.stringify(session));
+  };
+
+  const clearSession = (storageKey: string): void => {
+    window.localStorage.removeItem(storageKey);
+  };
+
+  // ---------------------------------------------------------------------------
+  // Main widget initialization
+  // ---------------------------------------------------------------------------
+
+  widgets.forEach((root) => {
+    const trigger = root.querySelector('.ai-widget-trigger');
+    const panel = root.querySelector('.ai-widget-panel');
+    const closeButton = root.querySelector('.ai-widget-close');
+    const clearButton = root.querySelector('.ai-widget-clear');
+    const recommendedEl = root.querySelector('.ai-widget-recommended');
+    const messagesEl = root.querySelector('.ai-widget-messages');
+    const followupsEl = root.querySelector('.ai-widget-followups');
+    const typingEl = root.querySelector('.ai-widget-typing');
+    const inputForm = root.querySelector('.ai-widget-input');
+    const handoffForm = root.querySelector('.ai-widget-handoff');
+    const handoffClose = root.querySelector('[data-close-handoff]');
+
+    if (
+      !(trigger instanceof HTMLButtonElement) ||
+      !(panel instanceof HTMLElement) ||
+      !(recommendedEl instanceof HTMLElement) ||
+      !(messagesEl instanceof HTMLElement) ||
+      !(followupsEl instanceof HTMLElement) ||
+      !(inputForm instanceof HTMLFormElement) ||
+      !(handoffForm instanceof HTMLFormElement)
+    ) {
+      return;
+    }
+
+    const rootEl = root as HTMLElement;
+    const siteId = rootEl.dataset.siteId || 'dajilin';
+    const pageUrl = rootEl.dataset.pageUrl || window.location.pathname;
+    const module = rootEl.dataset.module || '';
+    const locale = rootEl.dataset.locale || 'zh';
+    const fallbackSummary = rootEl.dataset.fallbackSummary || '';
+    const fallbackDetail = rootEl.dataset.fallbackDetail || '';
+    const handoffLabel = rootEl.dataset.handoffLabel || '';
+    const handoffSuccess = rootEl.dataset.handoffSuccess || '';
+    const handoffSuccessDetail = rootEl.dataset.handoffSuccessDetail || '';
+    const handoffFail = rootEl.dataset.handoffFail || '';
+    const handoffFailDetail = rootEl.dataset.handoffFailDetail || '';
+    const historyRestored = rootEl.dataset.historyRestored || '';
+    const followupsLabel = rootEl.dataset.followupsLabel || '相关问题：';
+    const clearHistoryLabel = rootEl.dataset.clearHistory || '清空对话';
+    const storageKey = `dajilin-ai-session:${siteId}`;
+
+    let sessionId = '';
+    let currentMessages: StoredSession['messages'] = [];
+    let suggestedFollowUps: string[] = [];
+
+    // ---------------------------------------------------------------------------
+    // UI helpers
+    // ---------------------------------------------------------------------------
+
+    const scrollToBottom = () => {
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    };
+
+    const showTypingIndicator = () => {
+      if (typingEl) typingEl.removeAttribute('hidden');
+      scrollToBottom();
+    };
+
+    const hideTypingIndicator = () => {
+      if (typingEl) typingEl.setAttribute('hidden', '');
+    };
+
+    const renderTimestamp = (timestamp: number): string => {
+      return `<time class="ai-message-timestamp" datetime="${new Date(timestamp).toISOString()}">${formatTimestamp(timestamp, locale)}</time>`;
+    };
+
+    const appendMessage = (role: 'user' | 'assistant', content: string, timestamp: number = Date.now()) => {
+      const id = generateId();
+      const messageHtml =
+        role === 'assistant'
+          ? `<div class="ai-message-content"><p>${content}</p></div>${renderTimestamp(timestamp)}`
+          : `<div class="ai-message-content"><p>${content}</p></div>${renderTimestamp(timestamp)}`;
+
+      const item = document.createElement('article');
+      item.className = `ai-message ai-message-${role}`;
+      item.dataset.id = id;
+      item.innerHTML = messageHtml;
+      messagesEl.appendChild(item);
+      scrollToBottom();
+
+      // Save to session
+      currentMessages.push({ id, role, content, timestamp });
+      saveSession(storageKey, { sessionId, messages: currentMessages });
+
+      return id;
+    };
+
+    const appendAssistantAnswer = (payload: {
+      summary?: string;
+      detail?: string;
+      content?: string;
+      next_actions?: Array<{ type: string; label: string; target?: string }>;
+      suggested_follow_ups?: string[];
+    }) => {
+      const summary = payload?.summary || '';
+      const detail = payload?.detail || payload?.content || '';
+      const actions = Array.isArray(payload?.next_actions)
+        ? payload?.next_actions
+            .map((action) => {
+              if (action.type === 'open_page' && action.target) {
+                return `<a class="button-secondary" href="${action.target}">${action.label}</a>`;
+              }
+              if (action.type === 'handoff') {
+                return `<button type="button" class="button-secondary" data-handoff-trigger>${action.label}</button>`;
+              }
+              if (action.type === 'suggested_question' && action.label) {
+                return `<button type="button" class="ai-followup-chip" data-followup="${action.label}">${action.label}</button>`;
+              }
+              return '';
+            })
+            .join('')
+        : '';
+
+      const fullContent = summary ? `<strong>${summary}</strong><p>${detail}</p>` : `<p>${detail}</p>`;
+      appendMessage('assistant', `${fullContent}<div class="ai-message-actions">${actions}</div>`);
+
+      // Bind handoff triggers
+      root.querySelectorAll('[data-handoff-trigger]').forEach((button) => {
+        button.addEventListener('click', () => {
+          handoffForm.hidden = false;
+          handoffForm.scrollIntoView({ block: 'nearest' });
+        });
+      });
+
+      // Bind follow-up triggers
+      root.querySelectorAll('[data-followup]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const question = String(button.getAttribute('data-followup') || '').trim();
+          if (question) {
+            await submitMessage(question);
+          }
+        });
+      });
+
+      // Update suggested follow-ups
+      if (Array.isArray(payload?.suggested_follow_ups) && payload.suggested_follow_ups.length > 0) {
+        suggestedFollowUps = payload.suggested_follow_ups;
+        renderFollowUps();
+      }
+    };
+
+    const renderFollowUps = () => {
+      if (!followupsEl) return;
+
+      if (suggestedFollowUps.length === 0) {
+        followupsEl.innerHTML = '';
+        followupsEl.setAttribute('hidden', '');
+        return;
+      }
+
+      const chips = suggestedFollowUps
+        .map(
+          (q) =>
+            `<button type="button" class="ai-followup-chip" data-followup="${q}">${q}</button>`
+        )
+        .join('');
+
+      followupsEl.innerHTML = `<span class="followups-label">${followupsLabel}</span>${chips}`;
+      followupsEl.removeAttribute('hidden');
+
+      followupsEl.querySelectorAll('[data-followup]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const question = String(button.getAttribute('data-followup') || '').trim();
+          if (question) {
+            await submitMessage(question);
+          }
+        });
+      });
+    };
+
+    const restoreConversation = () => {
+      const stored = loadSession(storageKey);
+      if (stored && stored.messages.length > 0) {
+        sessionId = stored.sessionId;
+        currentMessages = stored.messages;
+
+        stored.messages.forEach((msg) => {
+          const content =
+            msg.role === 'assistant' && (msg.summary || msg.detail)
+              ? `<strong>${msg.summary || ''}</strong><p>${msg.detail || ''}</p>`
+              : `<p>${msg.content}</p>`;
+          const item = document.createElement('article');
+          item.className = `ai-message ai-message-${msg.role}`;
+          item.dataset.id = msg.id;
+          item.innerHTML = `${content}${renderTimestamp(msg.timestamp)}`;
+          messagesEl.appendChild(item);
+        });
+
+        scrollToBottom();
+
+        // Show history restored notification
+        const notification = document.createElement('div');
+        notification.className = 'ai-history-notification';
+        notification.textContent = historyRestored;
+        messagesEl.insertBefore(notification, messagesEl.firstChild);
+
+        setTimeout(() => notification.remove(), 3000);
+        return true;
+      }
+      return false;
+    };
+
+    // ---------------------------------------------------------------------------
+    // Core functions
+    // ---------------------------------------------------------------------------
+
+    const openPanel = async () => {
+      panel.removeAttribute('hidden');
+      trigger.setAttribute('aria-expanded', 'true');
+
+      // Restore previous conversation if exists
+      const hasHistory = restoreConversation();
+      if (!hasHistory) {
+        await ensureSession();
+        await loadRecommendedQuestions();
+      }
+    };
+
+    const closePanel = () => {
+      panel.setAttribute('hidden', '');
+      trigger.setAttribute('aria-expanded', 'false');
+    };
+
+    const clearConversation = () => {
+      if (!confirm(clearHistoryLabel + '?')) return;
+
+      currentMessages = [];
+      messagesEl.innerHTML = '';
+      followupsEl.innerHTML = '';
+      followupsEl.setAttribute('hidden', '');
+      sessionId = '';
+      clearSession(storageKey);
+
+      // Reload recommended questions
+      loadRecommendedQuestions();
+    };
+
+    const ensureSession = async (): Promise<string> => {
+      if (sessionId) {
+        return sessionId;
+      }
+
+      if (!endpoints.aiSession) {
+        console.warn('AI session endpoint not configured');
+        return '';
+      }
+
+      try {
+        const response = await fetch(endpoints.aiSession, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            site_id: siteId,
+            page_url: pageUrl,
+            source: 'web',
+            context: {
+              module,
+              locale,
+            },
+          }),
+        });
+
+        const result = await response.json().catch(() => null);
+        sessionId = result?.data?.session_id || '';
+
+        if (sessionId) {
+          saveSession(storageKey, { sessionId, messages: [] });
+        }
+
+        return sessionId;
+      } catch (err) {
+        console.error('Failed to start session:', err);
+        return '';
+      }
+    };
+
+    const loadRecommendedQuestions = async () => {
+      if (!endpoints.aiRecommendedQuestions) {
+        return;
+      }
+
+      const query = new URLSearchParams({
+        site_id: siteId,
+        page_url: pageUrl,
+      });
+
+      if (module) {
+        query.set('module', module);
+      }
+
+      try {
+        const response = await fetch(`${endpoints.aiRecommendedQuestions}?${query.toString()}`);
+        const result = await response.json().catch(() => null);
+        const questions = result?.data?.questions || [];
+
+        recommendedEl.innerHTML = '';
+        questions.forEach((question: string) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'ai-question-chip';
+          button.textContent = question;
+          button.addEventListener('click', async () => {
+            await submitMessage(question);
+          });
+          recommendedEl.appendChild(button);
+        });
+      } catch (err) {
+        console.error('Failed to load recommended questions:', err);
+      }
+    };
+
+    const submitMessage = async (message: string) => {
+      const clean = String(message || '').trim();
+      if (!clean || !endpoints.aiChat) {
+        return;
+      }
+
+      // Clear recommended questions after first message
+      recommendedEl.innerHTML = '';
+      followupsEl.innerHTML = '';
+      followupsEl.setAttribute('hidden', '');
+      suggestedFollowUps = [];
+
+      await ensureSession();
+      appendMessage('user', clean);
+
+      const input = inputForm.querySelector('input[name="message"]') as HTMLInputElement;
+      if (input) input.value = '';
+
+      showTypingIndicator();
+
+      try {
+        const response = await fetch(endpoints.aiChat, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            site_id: siteId,
+            session_id: sessionId,
+            page_url: pageUrl,
+            message: clean,
+            context: {
+              module,
+              locale,
+            },
+          }),
+        });
+
+        const result = await response.json().catch(() => null);
+        hideTypingIndicator();
+
+        const answer = result?.data?.answer;
+        if (answer) {
+          appendAssistantAnswer(answer);
+
+          if (result?.data?.handoff_suggested) {
+            handoffForm.hidden = false;
+            handoffForm.scrollIntoView({ block: 'nearest' });
+          }
+        } else {
+          throw new Error('Invalid response');
+        }
+      } catch (err) {
+        console.error('Failed to send message:', err);
+        hideTypingIndicator();
+        appendAssistantAnswer({
+          summary: fallbackSummary || '当前无法回答这个问题。',
+          detail: fallbackDetail || '你可以尝试换一种问法，或直接提交咨询。',
+          next_actions: [{ type: 'handoff', label: handoffLabel || '提交咨询' }],
+        });
+      }
+    };
+
+    // ---------------------------------------------------------------------------
+    // Event listeners
+    // ---------------------------------------------------------------------------
+
+    trigger.addEventListener('click', async () => {
+      const hidden = panel.hasAttribute('hidden');
+      if (hidden) {
+        await openPanel();
+      } else {
+        closePanel();
+      }
+    });
+
+    closeButton?.addEventListener('click', () => {
+      closePanel();
+    });
+
+    clearButton?.addEventListener('click', () => {
+      clearConversation();
+    });
+
+    inputForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = new FormData(inputForm);
+      const message = String(form.get('message') || '').trim();
+      if (!message) {
+        return;
+      }
+      await submitMessage(message);
+    });
+
+    handoffClose?.addEventListener('click', () => {
+      handoffForm.hidden = true;
+    });
+
+    handoffForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!endpoints.aiHandoff) {
+        return;
+      }
+
+      const submitBtn = handoffForm.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.setAttribute('disabled', '');
+
+      try {
+        const formData = new FormData(handoffForm);
+        const payload = {
+          site_id: siteId,
+          session_id: sessionId,
+          handoff_type: 'consultation',
+          contact: {
+            name: String(formData.get('name') || '').trim(),
+            phone_or_wechat: String(formData.get('phone_or_wechat') || '').trim(),
+            organization: String(formData.get('organization') || '').trim(),
+          },
+          message: String(formData.get('message') || '').trim(),
+        };
+
+        const response = await fetch(endpoints.aiHandoff, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const result = await response.json().catch(() => null);
+        if (result?.success) {
+          handoffForm.reset();
+          handoffForm.hidden = true;
+          appendMessage(
+            'assistant',
+            `<strong>${handoffSuccess || '咨询已提交'}</strong><p>${handoffSuccessDetail || '我们已经收到你的需求，后续会进一步跟进。'}</p>`,
+          );
+        } else {
+          throw new Error(result?.error || 'Handoff failed');
+        }
+      } catch (err) {
+        console.error('Handoff failed:', err);
+        appendMessage(
+          'assistant',
+          `<strong>${handoffFail || '提交失败'}</strong><p>${handoffFailDetail || '请稍后再试，或通过合作咨询页联系我们。'}</p>`,
+        );
+      } finally {
+        if (submitBtn) submitBtn.removeAttribute('disabled');
+      }
+    });
+
+    // Handle external trigger buttons
+    document.querySelectorAll('[data-open-ai-widget]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const question = String(button.getAttribute('data-ai-question') || '').trim();
+        const targetPageUrl = String(button.getAttribute('data-ai-page-url') || '').trim();
+        const targetModule = String(button.getAttribute('data-ai-module') || '').trim();
+
+        if (targetPageUrl && targetPageUrl !== pageUrl) {
+          return;
+        }
+
+        if (targetModule && targetModule !== module) {
+          return;
+        }
+
+        if (panel.hasAttribute('hidden')) {
+          await openPanel();
+        }
+
+        if (question) {
+          await submitMessage(question);
+        }
+      });
+    });
+  });
+</script>

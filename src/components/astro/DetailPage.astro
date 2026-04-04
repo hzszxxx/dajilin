@@ -1,0 +1,450 @@
+---
+import type { DetailPage } from '@/lib/content-pages';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+
+type Props = {
+  page: DetailPage;
+};
+
+const { page } = Astro.props;
+const locale = getLocaleFromPathname(Astro.url.pathname);
+const isZh = locale === 'zh';
+
+const copy: Record<
+  Locale,
+  {
+    whatIsThis: string;
+    audience: string;
+    highlights: string;
+    notes: string;
+    faq: string;
+    continueRead: string;
+    quickConsult: string;
+    askAi: string;
+    submitConsult: string;
+    stageTitle: string;
+    stageDesc: string;
+    fallbackTitle: string;
+    fallbackDesc: string;
+  }
+> = {
+  zh: {
+    whatIsThis: '这是什么',
+    audience: '适合哪些用户',
+    highlights: '核心看点',
+    notes: '注意事项',
+    faq: '常见问题',
+    continueRead: '建议继续浏览',
+    quickConsult: '快速咨询',
+    askAi: '先问 AI 助手',
+    submitConsult: '提交咨询',
+    stageTitle: '当前阶段说明',
+    stageDesc: '本页以介绍说明、资源理解与咨询引导为主，前期不默认提供强销售入口。',
+    fallbackTitle: '',
+    fallbackDesc: '',
+  },
+  en: {
+    whatIsThis: 'Overview',
+    audience: 'Suitable Audience',
+    highlights: 'Key Highlights',
+    notes: 'Important Notes',
+    faq: 'FAQ',
+    continueRead: 'Continue Reading',
+    quickConsult: 'Quick Consultation',
+    askAi: 'Ask AI Assistant',
+    submitConsult: 'Submit Consultation',
+    stageTitle: 'Current Stage',
+    stageDesc: 'This page is information-first and consultation-oriented. Hard sales entry is intentionally deferred.',
+    fallbackTitle: 'Localized content is being expanded',
+    fallbackDesc: 'You are viewing the multilingual structure for this page. Detailed localized content is being updated in phases.',
+  },
+  ja: {
+    whatIsThis: '概要',
+    audience: '対象ユーザー',
+    highlights: '主要ポイント',
+    notes: '注意事項',
+    faq: 'よくある質問',
+    continueRead: '続けて閲覧',
+    quickConsult: 'ご相談',
+    askAi: '先に AIアシスタントへ',
+    submitConsult: '相談を送信',
+    stageTitle: '現段階のご案内',
+    stageDesc: '本ページは情報整理と相談導線を優先しており、販売導線は後段で整備します。',
+    fallbackTitle: '多言語コンテンツを段階的に拡充中',
+    fallbackDesc: '現在は多言語構造を先行適用しています。詳細な現地語コンテンツは順次反映します。',
+  },
+  ko: {
+    whatIsThis: '개요',
+    audience: '적합 대상',
+    highlights: '핵심 포인트',
+    notes: '유의사항',
+    faq: '자주 묻는 질문',
+    continueRead: '계속 보기',
+    quickConsult: '상담 안내',
+    askAi: 'AI 도우미 먼저',
+    submitConsult: '상담 제출',
+    stageTitle: '현재 단계 안내',
+    stageDesc: '본 페이지는 정보 정리와 상담 동선을 우선하며, 판매 동선은 후속 단계에서 정식 연결됩니다.',
+    fallbackTitle: '다국어 콘텐츠를 단계적으로 확장 중입니다',
+    fallbackDesc: '현재는 다국어 구조를 우선 적용했습니다. 상세 현지어 콘텐츠는 순차 반영됩니다.',
+  },
+};
+const t = copy[locale];
+const localizedSectionNames: Record<Locale, Record<DetailPage['section'], string>> = {
+  zh: {
+    destinations: '目的地',
+    'study-tours': '工业研学',
+    'self-drive': '自驾攻略',
+    'official-services': '官方服务',
+    themes: '主题玩法',
+    guides: '攻略与资讯',
+    shop: '商城',
+  },
+  en: {
+    destinations: 'Destinations',
+    'study-tours': 'Study Tours',
+    'self-drive': 'Self-Drive Guide',
+    'official-services': 'Official Services',
+    themes: 'Themes',
+    guides: 'Guides',
+    shop: 'Shop',
+  },
+  ja: {
+    destinations: '目的地',
+    'study-tours': '産業研修',
+    'self-drive': '自驾攻略',
+    'official-services': '公式サービス',
+    themes: 'テーマ',
+    guides: 'ガイド情報',
+    shop: 'ショップ',
+  },
+  ko: {
+    destinations: '목적지',
+    'study-tours': '산업 연수',
+    'self-drive': '자가운전 가이드',
+    'official-services': '공식 서비스',
+    themes: '테마',
+    guides: '가이드',
+    shop: '샵',
+  },
+};
+
+const ctaLabelForHref = (href: string): string => {
+  if (locale === 'zh') return href;
+  const path = href.toLowerCase();
+  if (path.includes('/destinations')) return locale === 'ja' ? '目的地を見る' : locale === 'ko' ? '목적지 보기' : 'View destinations';
+  if (path.includes('/study-tours')) return locale === 'ja' ? '産業研修を見る' : locale === 'ko' ? '산업 연수 보기' : 'View study tours';
+  if (path.includes('/self-drive')) return locale === 'ja' ? '自驾攻略を見る' : locale === 'ko' ? '자가운전 가이드 보기' : 'View Self-Drive Guide';
+  if (path.includes('/official-services')) return locale === 'ja' ? '公式サービスを見る' : locale === 'ko' ? '공식 서비스 보기' : 'View official services';
+  if (path.includes('/themes')) return locale === 'ja' ? 'テーマを見る' : locale === 'ko' ? '테마 보기' : 'View themes';
+  if (path.includes('/guides')) return locale === 'ja' ? 'ガイドを見る' : locale === 'ko' ? '가이드 보기' : 'View guides';
+  if (path.includes('/shop')) return locale === 'ja' ? 'ショップを見る' : locale === 'ko' ? '샵 보기' : 'View shop';
+  if (path.includes('/cooperation')) return locale === 'ja' ? '協業相談へ' : locale === 'ko' ? '협업 문의로' : 'Go to cooperation';
+  if (path.includes('/ai-assistant')) return locale === 'ja' ? 'AIアシスタントへ' : locale === 'ko' ? 'AI 도우미로' : 'Go to AI assistant';
+  return locale === 'ja' ? 'ページを見る' : locale === 'ko' ? '페이지 보기' : 'Open page';
+};
+
+const sectionLabelByLocaleAndType: Record<Locale, Record<DetailPage['section'], string>> = {
+  zh: {
+    destinations: '目的地',
+    'study-tours': '工业研学',
+    'self-drive': '自驾攻略',
+    'official-services': '官方服务',
+    themes: '主题玩法',
+    guides: '攻略与资讯',
+    shop: '商城',
+  },
+  en: {
+    destinations: 'destination',
+    'study-tours': 'study-tour',
+    'self-drive': 'self-drive',
+    'official-services': 'official service',
+    themes: 'theme',
+    guides: 'guide',
+    shop: 'shop',
+  },
+  ja: {
+    destinations: '目的地',
+    'study-tours': '産業研修',
+    'self-drive': '自驾攻略',
+    'official-services': '公式サービス',
+    themes: 'テーマ',
+    guides: 'ガイド情報',
+    shop: 'ショップ',
+  },
+  ko: {
+    destinations: '목적지',
+    'study-tours': '산업 연수',
+    'self-drive': '자가운전 가이드',
+    'official-services': '공식 서비스',
+    themes: '테마',
+    guides: '가이드',
+    shop: '샵',
+  },
+};
+
+const englishTitle = page.eyebrow || 'Jilin Topic';
+const englishSectionType = sectionLabelByLocaleAndType.en[page.section];
+const englishOverview = {
+  description: `This page provides a practical first-phase overview for ${englishTitle}, including scope, planning logic, and next actions.`,
+  intro: `${englishTitle} is presented as a structured ${englishSectionType} page in the first phase. It helps users understand scope, planning logic, and the next action path before making detailed decisions.`,
+  audience: [
+    `Users exploring ${englishTitle} before confirming final itinerary.`,
+    'Schools, institutions, teams, or individual travelers who need a readable planning baseline.',
+    'Users who prefer understanding service boundaries and official channels first.',
+  ],
+  highlights: [
+    `Clear first-phase explanation framework for ${englishTitle}.`,
+    'Practical planning-first structure with consultation-ready output.',
+    'Connected navigation to destinations, routes, themes, and official service entries.',
+  ],
+  sections: [
+    {
+      title: 'What This Page Covers',
+      body: `This page explains the first-phase content scope of ${englishTitle}, including how to read it and where to continue next.`,
+      bullets: [
+        'Scope and positioning',
+        'Who this page is suitable for',
+        'How to continue to the next linked module',
+      ],
+    },
+    {
+      title: 'How To Use This Information',
+      body: 'Use this page as an orientation layer first, then continue to connected routes, destination pages, or official channels based on your travel objective.',
+      bullets: [
+        'Read summary first',
+        'Compare linked modules',
+        'Ask AI guide for a route draft',
+      ],
+    },
+    {
+      title: 'Service Boundary and Next Step',
+      body: 'At this stage, the platform prioritizes explanation and consultation. Final booking and execution should follow official or confirmed partner channels.',
+      bullets: [
+        'Information-first and consultation-first',
+        'Official rules take precedence where applicable',
+        'Handoff to consultant for complex cases',
+      ],
+    },
+  ],
+  notes: [
+    'This page is maintained as a planning and understanding layer.',
+    'For policy-sensitive or booking-sensitive topics, official channels are authoritative.',
+    'Use cooperation consultation for group or institutional scenarios.',
+  ],
+  faq: [
+    {
+      question: `How should I use the ${englishTitle} page effectively?`,
+      answer: 'Start with overview and highlights, then open linked modules for detailed routes or service entries, and use AI guide if you need a fast first-draft plan.',
+    },
+    {
+      question: 'Can I complete all actions directly on this page?',
+      answer: 'This phase is guidance-first. For official booking or complex coordination, continue to official entries or submit consultation.',
+    },
+  ],
+};
+
+const japaneseTitle = page.eyebrow || '吉林トピック';
+const japaneseSectionType = sectionLabelByLocaleAndType.ja[page.section];
+const japaneseOverview = {
+  description: `${japaneseTitle}に関する第一段階の案内ページです。対象範囲、計画の考え方、次の行動導線を整理して確認できます。`,
+  intro: `${japaneseTitle}は、第一段階における${japaneseSectionType}の理解を目的とした構成です。詳細判断の前に、要点と次の行動導線を把握できます。`,
+  audience: [
+    `${japaneseTitle}を検討中で、まず全体像を把握したい方。`,
+    '学校・機関・チーム・個人旅行者のうち、分かりやすい計画基準を必要とする方。',
+    'サービス境界や公式チャネルを先に確認したうえで判断したい方。',
+  ],
+  highlights: [
+    `${japaneseTitle}の第一段階における説明フレームを明確化。`,
+    '説明優先の構成により、相談につながる判断材料を提供。',
+    '目的地・ルート・テーマ・公式サービス入口へ連携可能。',
+  ],
+  sections: [
+    {
+      title: 'このページで確認できること',
+      body: `${japaneseTitle}の第一段階コンテンツ範囲、閲覧順序、次に進むべき導線を説明します。`,
+      bullets: ['範囲と位置づけ', '対象ユーザー', '次に見るべき関連モジュール'],
+    },
+    {
+      title: '情報の活用方法',
+      body: 'まず概要を把握し、その後に目的に応じてルート・目的地・公式チャネルへ進む使い方を推奨します。',
+      bullets: ['概要を先に確認', '関連モジュールを比較', 'AIガイドで初版ルートを取得'],
+    },
+    {
+      title: 'サービス境界と次のアクション',
+      body: '現段階では説明と相談を優先します。予約・購入・実施は、公式または確認済み協力チャネルを基準に進めてください。',
+      bullets: ['説明優先・相談優先', '公式ルールを優先適用', '複雑案件は相談員へ引き継ぎ'],
+    },
+  ],
+  notes: [
+    '本ページは計画理解のための説明レイヤーとして運用します。',
+    '制度・予約ルールに関わる内容は公式チャネルを基準とします。',
+    '団体・機関案件は協業相談への進行を推奨します。',
+  ],
+  faq: [
+    {
+      question: `${japaneseTitle}ページはどのように活用するのが効果的ですか？`,
+      answer: '概要と主要ポイントを確認し、関連モジュールで詳細を比較したうえで、必要に応じてAIガイドまたは相談へ進む流れが最適です。',
+    },
+    {
+      question: 'このページのみで手続きは完了しますか？',
+      answer: '本フェーズはガイド中心です。正式予約や複雑な調整は、公式入口または相談導線をご利用ください。',
+    },
+  ],
+};
+
+const koreanTitle = page.eyebrow || '지린 토픽';
+const koreanSectionType = sectionLabelByLocaleAndType.ko[page.section];
+const koreanOverview = {
+  description: `${koreanTitle} 관련 1단계 안내 페이지입니다. 범위, 계획 기준, 다음 행동 동선을 체계적으로 확인할 수 있습니다.`,
+  intro: `${koreanTitle} 페이지는 1단계에서 ${koreanSectionType} 맥락을 이해하기 위한 구조화 안내 페이지입니다. 세부 결정을 하기 전에 핵심과 다음 동선을 파악할 수 있습니다.`,
+  audience: [
+    `${koreanTitle} 관련 의사결정 전에 전체 구조를 먼저 파악하려는 사용자.`,
+    '학교, 기관, 팀, 개인 여행자 중 명확한 계획 기준이 필요한 사용자.',
+    '서비스 경계와 공식 채널을 선확인한 뒤 판단하려는 사용자.',
+  ],
+  highlights: [
+    `${koreanTitle} 1단계 설명 프레임을 명확하게 제공합니다.`,
+    '설명 중심 구조로 상담 전환이 가능한 판단 기준을 제공합니다.',
+    '목적지, 루트, 테마, 공식 서비스 입구와 연계됩니다.',
+  ],
+  sections: [
+    {
+      title: '이 페이지에서 확인할 내용',
+      body: `${koreanTitle}의 1단계 콘텐츠 범위, 권장 열람 순서, 다음 이동 동선을 설명합니다.`,
+      bullets: ['범위와 포지셔닝', '적합 대상', '다음에 볼 연결 모듈'],
+    },
+    {
+      title: '정보 활용 방법',
+      body: '먼저 개요를 확인하고, 이후 목적에 따라 루트·목적지·공식 채널로 이동하는 방식이 가장 효율적입니다.',
+      bullets: ['개요 우선 확인', '연결 모듈 비교', 'AI 가이드로 1차 루트 생성'],
+    },
+    {
+      title: '서비스 경계와 다음 단계',
+      body: '현재 단계는 설명과 상담을 우선합니다. 예약, 구매, 실행은 공식 채널 또는 확인된 협력 채널 기준으로 진행해야 합니다.',
+      bullets: ['설명 우선 · 상담 우선', '공식 규정 우선 적용', '복합 요청은 상담사 연계'],
+    },
+  ],
+  notes: [
+    '본 페이지는 계획 이해를 위한 설명 레이어로 운영됩니다.',
+    '정책·예약 규정 관련 내용은 공식 채널 기준을 따릅니다.',
+    '단체·기관 수요는 협업 문의로 연결하는 것을 권장합니다.',
+  ],
+  faq: [
+    {
+      question: `${koreanTitle} 페이지를 가장 효율적으로 활용하는 방법은 무엇인가요?`,
+      answer: '개요와 핵심 포인트를 먼저 확인한 뒤 연결 모듈에서 세부 내용을 비교하고, 필요 시 AI 가이드 또는 상담으로 이어가면 됩니다.',
+    },
+    {
+      question: '이 페이지에서 모든 절차를 바로 완료할 수 있나요?',
+      answer: '현재 단계는 가이드 중심입니다. 공식 예약이나 복잡한 조정은 공식 입구 또는 상담 경로를 이용해 주세요.',
+    },
+  ],
+};
+
+const localizedOverviewByLocale = {
+  en: englishOverview,
+  ja: japaneseOverview,
+  ko: koreanOverview,
+} as const;
+
+const localizedOverview = !isZh ? localizedOverviewByLocale[locale as 'en' | 'ja' | 'ko'] : null;
+
+const displayIntro = isZh ? page.intro : localizedOverview?.intro ?? t.fallbackTitle;
+const displayAudience = isZh ? page.audience : localizedOverview?.audience ?? [];
+const displayHighlights = isZh ? page.highlights : localizedOverview?.highlights ?? [];
+const displaySections = isZh ? page.sections : localizedOverview?.sections ?? [];
+const displayNotes = isZh ? page.notes : localizedOverview?.notes ?? [];
+const displayFaqs = isZh ? page.faqs : localizedOverview?.faq ?? [];
+---
+
+<div class="container page-grid">
+  <section class="content-card">
+    <div class="page-hero">
+      <div class="page-copy">
+        <div class="eyebrow">{page.eyebrow}</div>
+        <h1>{isZh ? page.title : page.eyebrow}</h1>
+        <p>{isZh ? page.description : localizedOverview?.description ?? t.fallbackDesc}</p>
+      </div>
+    </div>
+
+    <div class="detail-block">
+      <h2>{t.whatIsThis}</h2>
+      <p>{displayIntro}</p>
+    </div>
+
+    <div class="detail-block">
+      <h2>{t.audience}</h2>
+      <ul>
+        {displayAudience.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+
+    <div class="detail-block">
+      <h2>{t.highlights}</h2>
+      <ul>
+        {displayHighlights.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+
+    {displaySections.map((section) => (
+      <div class="detail-block">
+        <h2>{section.title}</h2>
+        <p>{section.body}</p>
+        {section.bullets && (
+          <ul>
+            {section.bullets.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+    ))}
+
+    <div class="detail-block">
+      <h2>{t.notes}</h2>
+      <ul>
+        {displayNotes.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+
+    <div class="detail-block">
+      <h2>{t.faq}</h2>
+      <div class="faq-list">
+        {displayFaqs.map((faq) => (
+          <article class="faq-item">
+            <h3>{faq.question}</h3>
+            <p>{faq.answer}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <aside class="page-card">
+    <h3>{t.continueRead}</h3>
+    <ul class="page-list">
+      {page.ctas.map((cta) => (
+        <li>
+          <a href={localizePath(cta.href, locale)}>{isZh ? cta.label : ctaLabelForHref(cta.href)}</a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="detail-side-card">
+      <h3>{t.quickConsult}</h3>
+      <div class="cta-row">
+        <button
+          class="button"
+          type="button"
+          data-open-ai-widget
+          data-ai-page-url={page.pathname}
+        >
+          {t.askAi}
+        </button>
+        <a class="button-secondary" href={localizePath('/cooperation', locale)}>{t.submitConsult}</a>
+      </div>
+    </div>
+
+</aside>
+</div>

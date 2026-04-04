@@ -1,0 +1,133 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import DetailPage from '@/components/astro/DetailPage.astro';
+import { buildCollectionPageSchema } from '@/lib/schema';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+import type { DetailPage as DetailPageType } from '@/lib/content-pages';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+
+const page: DetailPageType = {
+  section: 'study-tours',
+  slug: 'crrc',
+  pathname: '/guides/crrc',
+  title: '中车长客企业参访说明页',
+  shortTitle: '中车长客参访',
+  description: '把中车长客定位成高价值定制资源，为企业、机构和定制研学场景提供说明与咨询入口。',
+  eyebrow: 'CRRC Changchun Visit',
+  intro: '中车长客（CRRC Changchun Railway Vehicles Co., Ltd.）是中国轨道交通装备制造业的龙头企业，主要产品包括高速动车组、城市轨道交通车辆和铁路客车。中车长客更适合做高价值定制说明页，而不是面向散客的标准化公开产品页。',
+  audience: [
+    '企业与商协会参访',
+    '机构定制参访（学校、培训机构等）',
+    '政府与产业园区考察团',
+    '轨道交通行业从业者与研究者',
+  ],
+  highlights: [
+    '更适合定制型需求，不做标准化散客产品',
+    '高端制造与行业认知价值强',
+    '可承接企业商务、机构研学、政府考察等多类需求',
+    '复兴号等代表性产品具有高公众认知度',
+  ],
+  sections: [
+    {
+      title: '中车长客参访的价值',
+      body: '重点在于先进制造、行业认知、组织型参访和高质量沟通场景。中车长客代表了中国轨道交通装备的最高制造水平。',
+      bullets: [
+        '高速动车组制造认知：了解复兴号等先进列车生产流程',
+        '城市轨道交通车辆展示：地铁、轻轨等车型介绍',
+        '企业展厅参观：企业发展历程与技术创新展示',
+        '行业交流与对接：适合企业商务与行业研究类需求',
+      ],
+    },
+    {
+      title: '线路说明',
+      body: '中车长客参访线路通常以企业展厅、生产线和互动体验为主，根据参访目的和时长可分为不同层级。',
+      bullets: [
+        '半日线路：企业展厅+主要产品展示+交流座谈',
+        '一日线路：增加生产线参观（视情况）+深度交流',
+        '定制线路：根据机构需求组合不同模块',
+      ],
+    },
+    {
+      title: '参访类型',
+      body: '中车长客的参访需求主要分为行业交流、机构研学、政府考察和公众科普四类。',
+      bullets: [
+        '行业交流：企业间对标学习与商务合作探讨',
+        '机构研学：学校与培训机构的职业认知与专业学习',
+        '政府考察：产业政策了解与区域产业发展调研',
+        '公众科普：轨道交通知识普及与科普教育',
+      ],
+    },
+    {
+      title: '适合人群分析',
+      body: '中车长客的参访内容相对专业，更适合有一定认知基础或明确学习目的的用户群体。',
+      bullets: [
+        '高中生与大学生：轨道交通、机械工程相关专业职业认知',
+        '企业管理者：轨道交通产业对标与商务交流',
+        '政府官员：区域产业政策与轨道交通产业发展了解',
+        '行业研究者：轨道交通技术与市场研究',
+      ],
+    },
+    {
+      title: '注意事项',
+      body: '中车长客作为国家重点企业，参访需遵守严格的保密与安全规定。',
+      bullets: [
+        '参访需提前预约并获得企业批准',
+        '生产线区域严格禁止拍照，手机需统一存放',
+        '涉及商业机密的交流内容需签署保密协议',
+        '参访团体需有明确的接待对接人',
+        '平台当前以定制咨询为主，不做标准化产品承诺',
+      ],
+    },
+  ],
+  notes: [
+    '明确是定制说明页，不做标准化散客产品',
+    '不公开承诺固定散客产品',
+    '更适合高价值咨询转化',
+    '建议提前2周以上咨询',
+  ],
+  faqs: [
+    {
+      question: '中车长客是否适合散客报名？',
+      answer: '当前更适合作为企业、机构和定制型需求的说明页，不建议当作标准散客产品理解。',
+    },
+    {
+      question: '可以参观动车组生产线吗？',
+      answer: '生产线参观需根据企业生产状态、安全情况和保密规定综合判断，不是每次参访都能安排。',
+    },
+    {
+      question: '平台当前可以提供什么帮助？',
+      answer: '主要是资源说明、适配判断和定制咨询入口，帮助用户对接合适的参访方案。',
+    },
+    {
+      question: '参访费用如何计算？',
+      answer: '具体费用根据参访内容、时长、接待标准和是否涉及特殊环节而定，定制咨询时可详细沟通。',
+    },
+  ],
+  ctas: [
+    { label: '查看长春工业研学总入口', href: '/guides/changchun-industry' },
+    { label: '查看一汽红旗研学', href: '/guides/hongqi' },
+    { label: '查看工业文明线路', href: '/guides/changchun-industry-line' },
+    { label: '提交企业参访咨询', href: '/cooperation' },
+  ],
+};
+
+const localizedPath = localizePath(page.pathname, locale);
+const localizedTitle = locale === 'zh' ? page.title : page.eyebrow;
+const localizedDescription = locale === 'zh' ? page.description : `CRRC Changchun corporate visit overview for enterprise and institutional visitors.`;
+---
+
+<BaseLayout
+  title={`${localizedTitle} | dajilin.net`}
+  description={localizedDescription}
+  schemas={[buildCollectionPageSchema(localizedPath, localizedTitle, localizedDescription, locale)]}
+  locale={locale}
+>
+  <Header />
+  <main class="page-shell">
+    <DetailPage page={page} />
+  </main>
+  <Footer />
+</BaseLayout>

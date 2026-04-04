@@ -1,0 +1,58 @@
+---
+import DestinationCard from '@/components/astro/destinations/DestinationCard.astro';
+import SectionTitle from '@/components/astro/destinations/SectionTitle.astro';
+import { getLocaleFromPathname, type Locale } from '@/lib/i18n';
+
+type DestinationItem = {
+  title: string;
+  description: string;
+  tag: string;
+  href: string;
+  image: string;
+  imageAlt: string;
+};
+
+interface Props {
+  items: DestinationItem[];
+}
+
+const { items } = Astro.props;
+const locale = getLocaleFromPathname(Astro.url.pathname);
+const copy: Record<Locale, { eyebrow: string; title: string; description: string }> = {
+  zh: {
+    eyebrow: '核心目的地',
+    title: '重点目的地',
+    description: '从长春、长白山、延边三条入口开始，先建立吉林旅行的整体认知，再延展到主题玩法与线路内容。',
+  },
+  en: {
+    eyebrow: 'Core Destinations',
+    title: 'Core destinations',
+    description: 'Start with Changchun, Changbai Mountain, and Yanbian, then expand to themes and routes.',
+  },
+  ja: {
+    eyebrow: '主要目的地',
+    title: '主要目的地',
+    description: '長春・長白山・延辺の3入口から理解し、テーマやルートへ拡張します。',
+  },
+  ko: {
+    eyebrow: '핵심 목적지',
+    title: '핵심 목적지',
+    description: '창춘, 창바이산, 옌볜 3개 진입점부터 이해하고 테마와 루트로 확장합니다.',
+  },
+};
+---
+
+<section id="destination-grid" class="dst-section">
+  <div class="container">
+    <SectionTitle
+      eyebrow={copy[locale].eyebrow}
+      title={copy[locale].title}
+      description={copy[locale].description}
+    />
+    <div class="dst-destination-grid">
+      {items.map((item) => (
+        <DestinationCard {...item} />
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,560 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { getLocaleFromPathname, localizePath } from '@/lib/i18n';
+import { buildWebPageSchema } from '@/lib/schema';
+
+export function getStaticPaths() {
+  // Station data - in production this would come from a CMS or database
+  const stations = [
+    {
+      slug: 'hongxing-station',
+      name: '鸿星驿站',
+      nameEn: 'Hongxing Station',
+      nameJa: '鴻星驛駅',
+      nameKo: '홍성 거점',
+      type: 'comprehensive',
+      location: '吉林省延边州珲春市',
+      locationEn: 'Hunchun City, Yanbian Prefecture, Jilin',
+      coordinates: { lat: 42.9048, lng: 130.3652 },
+      description: '位于331国道珲春段，是通往防川风景区的必经之路。驿站提供停车、餐饮、住宿、补给等综合服务，是自驾游客的重要休整点。',
+      descriptionEn: 'Located on Hunchun section of G331, a must-stop on the way to Fangchuan Scenic Area. Offers comprehensive services including parking, dining, accommodation, and supplies.',
+      descriptionJa: '331国道珲春セクションに位置し、防川景勝地への必经之路。駐車、餐饮、宿泊、補給などの総合サービスを提供.',
+      descriptionKo: '331 국도훈춘 구간에 위치하며 방천 풍경구로 가는 필수 경로입니다. 주차, 식음, 숙박, 보급 등의 종합 서비스를 제공합니다.',
+      services: ['停车服务', '餐饮服务', '住宿服务', '补给支持', '团队服务'],
+      capacity: '可同时容纳50辆车，50人住宿',
+      hours: '24小时营业',
+      contact: '0433-785-XXXX',
+      images: ['https://picsum.photos/seed/hongxing1/800/600', 'https://picsum.photos/seed/hongxing2/800/600'],
+      highlights: ['防川风景区入口', '中朝俄三国交界', '日出观赏点'],
+      rating: 4.5,
+      reviewCount: 128,
+      isPartner: true,
+      reservationUrl: '/reservations/hongxing-station',
+    },
+    {
+      slug: 'tengzhi-station',
+      name: '腾志驿站',
+      nameEn: 'Tengzhi Station',
+      nameJa: '騰志驛駅',
+      nameKo: '틍지 거점',
+      type: 'rest',
+      location: '吉林省吉林市蛟河市',
+      locationEn: 'Jiaohe City, Jilin City, Jilin',
+      coordinates: { lat: 43.7184, lng: 127.3421 },
+      description: '紧邻松花湖景区，是长白山方向的重要休整点。环境清幽，适合自驾途中短暂休息。',
+      descriptionEn: 'Adjacent to Songhua Lake Scenic Area, an important rest stop towards Changbai Mountain. Serene environment, perfect for short breaks.',
+      descriptionJa: '松花湖景勝地に隣接し、長白山方向の重要な休整点。清幽な環境で、自驾途中の一時休息に 적합.',
+      descriptionKo: '송화호 풍경구와 인접하며 장백산 방면의 중요한 휴식점입니다. 쾌적한 환경으로自驾 중간 휴식에 적합합니다.',
+      services: ['停车服务', '休息空间', '餐饮服务'],
+      capacity: '可同时容纳30辆车',
+      hours: '08:00-22:00',
+      contact: '0432-672-XXXX',
+      images: ['https://picsum.photos/seed/tengzhi1/800/600'],
+      highlights: ['松花湖景区旁', '长白山入口'],
+      rating: 4.2,
+      reviewCount: 86,
+      isPartner: true,
+      reservationUrl: '/reservations/tengzhi-station',
+    },
+    {
+      slug: 'changbai-station',
+      name: '长白驿站',
+      nameEn: 'Changbai Station',
+      nameJa: '長白驛駅',
+      nameKo: '장백 거점',
+      type: 'supply',
+      location: '吉林省白山市长白县',
+      locationEn: 'Changbai County, Baishan City, Jilin',
+      coordinates: { lat: 41.4122, lng: 127.4838 },
+      description: '位于长白山北坡入口处，是登山爱好者和自驾游客的重要补给站。提供当地特产和户外装备补给。',
+      descriptionEn: 'At the north entrance of Changbai Mountain, an important supply station for hikers and self-drive tourists. Offers local specialties and outdoor gear.',
+      descriptionJa: '長白山北麓入口に位置し、登山愛好家とレンタルカー游客の重要な補給站。地元特産と户外装備を提供.',
+      descriptionKo: '장백산 북쪽 입구에 위치하며 등산 애호가와自驾 관광객의 중요한 보급점입니다. 현지 특산품과 야외 장비를 제공합니다.',
+      services: ['停车服务', '补给支持', '餐饮服务'],
+      capacity: '可同时容纳40辆车',
+      hours: '06:00-20:00 (旺季延至22:00)',
+      contact: '0439-882-XXXX',
+      images: ['https://picsum.photos/seed/changbai1/800/600'],
+      highlights: ['长白山北坡入口', '当地特产', '户外装备补给'],
+      rating: 4.7,
+      reviewCount: 203,
+      isPartner: true,
+      reservationUrl: '/reservations/changbai-station',
+    },
+    {
+      slug: 'yanji-station',
+      name: '延吉驿站',
+      nameEn: 'Yanji Station',
+      nameJa: '延吉驛駅',
+      nameKo: '연길 거점',
+      type: 'comprehensive',
+      location: '吉林省延边州延吉市',
+      locationEn: 'Yanji City, Yanbian Prefecture, Jilin',
+      coordinates: { lat: 42.8917, lng: 129.5094 },
+      description: '延吉市是331国道的重要节点，驿站位于市区交通枢纽位置，提供完善的旅游配套服务。',
+      descriptionEn: 'Yanji is an important node on G331. The station is located at the city traffic hub, offering comprehensive tourism services.',
+      descriptionJa: '延吉市は331国道の重要なノード。驛駅は市街地交通結節점에位置し、完善された旅游配套 서비스를 제공.',
+      descriptionKo: '연길시는 331 국도의 중요한 노드입니다. 거점은 시가지 교통 결절점에 위치하며 완벽한 관광配套设施를 제공합니다.',
+      services: ['停车服务', '休息空间', '餐饮服务', '住宿服务', '补给支持', '团队服务'],
+      capacity: '可同时容纳80辆车，100人住宿',
+      hours: '24小时营业',
+      contact: '0433-291-XXXX',
+      images: ['https://picsum.photos/seed/yanji1/800/600', 'https://picsum.photos/seed/yanji2/800/600'],
+      highlights: ['延吉西市场旁', '朝鲜族美食', '民俗文化体验'],
+      rating: 4.8,
+      reviewCount: 312,
+      isPartner: true,
+      reservationUrl: '/reservations/yanji-station',
+    },
+  ];
+
+  return stations.map((station) => ({
+    params: { slug: station.slug },
+    props: { station },
+  }));
+}
+
+const { station } = Astro.props;
+const locale = getLocaleFromPathname(Astro.url.pathname);
+
+const localized = {
+  zh: {
+    title: `${station.name} | 驿站服务 | dajilin.net`,
+    description: station.description,
+    pageTitle: station.name,
+    servicesTitle: '服务项目',
+    capacityTitle: '接待能力',
+    hoursTitle: '营业时间',
+    contactTitle: '联系方式',
+    locationTitle: '位置信息',
+    highlightsTitle: '特色亮点',
+    reserveCta: '立即预约',
+    consultCta: '在线咨询',
+    askAi: '先问 AI 助手',
+    askAiQuestion: `${station.name}有哪些服务？如何预约？`,
+    relatedTitle: '相关驿站',
+    viewAll: '查看全部驿站',
+    rating: '评分',
+    reviews: '条评价',
+    partnerBadge: '合作伙伴',
+  },
+  en: {
+    title: `${station.nameEn} | Station Services | dajilin.net`,
+    description: station.descriptionEn,
+    pageTitle: station.nameEn,
+    servicesTitle: 'Services',
+    capacityTitle: 'Capacity',
+    hoursTitle: 'Hours',
+    contactTitle: 'Contact',
+    locationTitle: 'Location',
+    highlightsTitle: 'Highlights',
+    reserveCta: 'Reserve Now',
+    consultCta: 'Online Consultation',
+    askAi: 'Ask AI Assistant',
+    askAiQuestion: `What services does ${station.nameEn} offer? How to make a reservation?`,
+    relatedTitle: 'Related Stations',
+    viewAll: 'View All Stations',
+    rating: 'Rating',
+    reviews: 'reviews',
+    partnerBadge: 'Partner',
+  },
+  ja: {
+    title: `${station.nameJa} | 驛站サービス | dajilin.net`,
+    description: station.descriptionJa,
+    pageTitle: station.nameJa,
+    servicesTitle: 'サービス項目',
+    capacityTitle: '受付能力',
+    hoursTitle: '営業時間',
+    contactTitle: '联系方式',
+    locationTitle: '位置情報',
+    highlightsTitle: '特色ポイント',
+    reserveCta: 'すぐに予約',
+    consultCta: 'オンライン相談',
+    askAi: '先に AIアシスタントへ',
+    askAiQuestion: `${station.nameJa}有哪些サービス？如何予約？`,
+    relatedTitle: '関連驛駅',
+    viewAll: '全部の驛駅を見る',
+    rating: '評価',
+    reviews: '件の評価',
+    partnerBadge: 'パートナー',
+  },
+  ko: {
+    title: `${station.nameKo} | 거점 서비스 | dajilin.net`,
+    description: station.descriptionKo,
+    pageTitle: station.nameKo,
+    servicesTitle: '서비스 항목',
+    capacityTitle: '수용 능력',
+    hoursTitle: '영업 시간',
+    contactTitle: '연락처',
+    locationTitle: '위치 정보',
+    highlightsTitle: '특색 하이라이트',
+    reserveCta: '즉시 예약',
+    consultCta: '온라인 상담',
+    askAi: 'AI 도우미 먼저',
+    askAiQuestion: `${station.nameKo}有哪些 서비스？如何 예약？`,
+    relatedTitle: '관련 거점',
+    viewAll: '전체 거점 보기',
+    rating: '평점',
+    reviews: '개 평가',
+    partnerBadge: '파트너',
+  },
+};
+
+const t = localized[locale];
+const thisPath = `/stations/${station.slug}`;
+const schema = buildWebPageSchema(thisPath, t.pageTitle, t.description, locale);
+---
+
+<BaseLayout title={t.title} description={t.description} schemas={[schema]} locale={locale}>
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="station-hero">
+          <div class="hero-image">
+            <img src={station.images[0]} alt={station.name} loading="lazy" />
+            {station.isPartner && (
+              <span class="partner-badge">{t.partnerBadge}</span>
+            )}
+          </div>
+          <div class="hero-info">
+            <div class="eyebrow">Route 331</div>
+            <h1>{t.pageTitle}</h1>
+            <div class="station-meta">
+              <span class="rating">
+                <span class="stars">{'★'.repeat(Math.floor(station.rating))}</span>
+                <span class="rating-value">{station.rating}</span>
+                <span class="review-count">({station.reviewCount}{t.reviews})</span>
+              </span>
+            </div>
+            <p class="station-description">{locale === 'zh' ? station.description : locale === 'ja' ? station.descriptionJa : locale === 'ko' ? station.descriptionKo : station.descriptionEn}</p>
+          </div>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.servicesTitle}</h2>
+          <ul class="services-list">
+            {station.services.map((service) => (
+              <li class="service-item">
+                <span class="service-icon">✓</span>
+                <span>{service}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item">
+            <h3>{t.capacityTitle}</h3>
+            <p>{station.capacity}</p>
+          </div>
+          <div class="detail-item">
+            <h3>{t.hoursTitle}</h3>
+            <p>{station.hours}</p>
+          </div>
+          <div class="detail-item">
+            <h3>{t.contactTitle}</h3>
+            <p>{station.contact}</p>
+          </div>
+          <div class="detail-item">
+            <h3>{t.locationTitle}</h3>
+            <p>{locale === 'zh' ? station.location : locale === 'ja' ? station.location : locale === 'ko' ? station.location : station.locationEn}</p>
+          </div>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.highlightsTitle}</h2>
+          <ul class="highlights-list">
+            {station.highlights.map((highlight) => (
+              <li>{highlight}</li>
+            ))}
+          </ul>
+        </div>
+
+        {station.images.length > 1 && (
+          <div class="detail-block">
+            <h2>{locale === 'zh' ? '驿站相册' : locale === 'ja' ? '驛駅フォト' : locale === 'ko' ? '거점 앨범' : 'Station Gallery'}</h2>
+            <div class="gallery-grid">
+              {station.images.map((img, idx) => (
+                <img src={img} alt={`${station.name} ${idx + 1}`} loading="lazy" />
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
+
+      <aside class="page-card">
+        <div class="reserve-card">
+          <h3>{locale === 'zh' ? '预约服务' : locale === 'ja' ? '予約サービス' : locale === 'ko' ? '예약 서비스' : 'Reserve Service'}</h3>
+          <p>{locale === 'zh' ? '预约成功后，驿站将提前与您确认行程安排。' : locale === 'ja' ? '予約成功后、驛站から事前に旅程の確認があります。' : locale === 'ko' ? '예약 성공 후 거점에서事前に일정을 확인합니다.' : 'After successful reservation, the station will confirm your itinerary in advance.'}</p>
+          <a class="button" href={station.reservationUrl}>{t.reserveCta}</a>
+          <button
+            class="button-secondary"
+            type="button"
+            data-open-ai-widget
+            data-ai-page-url={thisPath}
+            data-ai-question={t.askAiQuestion}
+          >
+            {t.consultCta}
+          </button>
+        </div>
+
+        <div class="detail-side-card">
+          <h3>{locale === 'zh' ? '快速咨询' : locale === 'ja' ? '快速相談' : locale === 'ko' ? '빠른 상담' : 'Quick Consultation'}</h3>
+          <div class="cta-row">
+            <button
+              class="button"
+              type="button"
+              data-open-ai-widget
+              data-ai-page-url={thisPath}
+            >
+              {t.askAi}
+            </button>
+            <a class="button-secondary" href={localizePath('/cooperation', locale)}>
+              {locale === 'zh' ? '合作咨询' : locale === 'ja' ? '協業相談' : locale === 'ko' ? '협업 문의' : 'Cooperation'}
+            </a>
+          </div>
+        </div>
+
+        <div class="detail-side-card">
+          <h3>{t.relatedTitle}</h3>
+          <ul class="page-list">
+            <li><a href={localizePath('/stations/hongxing-station', locale)}>鸿星驿站</a></li>
+            <li><a href={localizePath('/stations/tengzhi-station', locale)}>腾志驿站</a></li>
+            <li><a href={localizePath('/stations/changbai-station', locale)}>长白驿站</a></li>
+          </ul>
+          <a class="view-all-link" href={localizePath('/stations', locale)}>{t.viewAll}</a>
+        </div>
+
+        <div class="detail-side-card">
+          <h3>{locale === 'zh' ? '温馨提示' : locale === 'ja' ? 'お知らせ' : locale === 'ko' ? '알림' : 'Notes'}</h3>
+          <ul class="notes-list">
+            <li>{locale === 'zh' ? '建议提前预约，特别是在旅游旺季' : locale === 'ja' ? '観光のピーク時には事前予約をお勧めします' : locale === 'ko' ? '여행 성수기에는 사전 예약을 권장합니다' : 'Advance booking is recommended, especially during peak season'}</li>
+            <li>{locale === 'zh' ? '服务以现场实际情况为准' : locale === 'ja' ? 'サービスは現場の实际情况を基準とします' : locale === 'ko' ? '서비스는 현장实际情况을 기준으로 합니다' : 'Services are subject to actual on-site conditions'}</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .station-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .hero-image {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .hero-image img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+  }
+
+  .partner-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: var(--color-primary, var(--primary));
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+  }
+
+  .hero-info h1 {
+    margin-bottom: 0.5rem;
+  }
+
+  .station-meta {
+    margin-bottom: 1rem;
+  }
+
+  .rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .stars {
+    color: var(--accent);
+  }
+
+  .rating-value {
+    font-weight: bold;
+  }
+
+  .review-count {
+    color: var(--color-text-secondary, #666);
+    font-size: 0.9rem;
+  }
+
+  .station-description {
+    line-height: 1.7;
+  }
+
+  .services-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .service-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .service-icon {
+    color: var(--color-primary, var(--primary));
+    font-weight: bold;
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .detail-item {
+    background: var(--color-surface, #f8f9fa);
+    padding: 1rem;
+    border-radius: 8px;
+  }
+
+  .detail-item h3 {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-text-secondary, #666);
+  }
+
+  .detail-item p {
+    font-weight: 500;
+  }
+
+  .highlights-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .highlights-list li {
+    background: var(--color-surface, #f8f9fa);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .gallery-grid img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .reserve-card {
+    background: var(--color-primary, var(--primary));
+    color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .reserve-card h3 {
+    margin-bottom: 0.5rem;
+  }
+
+  .reserve-card p {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 1rem;
+  }
+
+  .reserve-card .button {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    background: white;
+    color: var(--color-primary, var(--primary));
+  }
+
+  .reserve-card .button:hover {
+    background: #f0f0f0;
+  }
+
+  .button-secondary {
+    width: 100%;
+    display: block;
+    text-align: center;
+    padding: 0.625rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+  }
+
+  .page-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .page-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--color-border, #eee);
+  }
+
+  .page-list a {
+    color: var(--color-primary, var(--primary));
+  }
+
+  .view-all-link {
+    display: inline-block;
+    margin-top: 0.75rem;
+    color: var(--color-primary, var(--primary));
+    font-weight: 500;
+  }
+
+  .notes-list {
+    list-style: none;
+    padding: 0;
+    font-size: 0.9rem;
+  }
+
+  .notes-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--color-border, #eee);
+  }
+
+  @media (max-width: 768px) {
+    .station-hero {
+      grid-template-columns: 1fr;
+    }
+
+    .services-list,
+    .detail-grid,
+    .gallery-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

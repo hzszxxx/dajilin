@@ -1,0 +1,6 @@
+{
+  "chromecp": {
+    "command": "chromecp",
+    "args": ["stdio", "--cdp-port", "9222"]
+  }
+}

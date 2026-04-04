@@ -1,0 +1,691 @@
+---
+export const prerender = false;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { getLocaleFromPathname, localizePath } from '@/lib/i18n';
+import { getOrder } from '@/lib/cart';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+const orderId = Astro.params.id;
+
+// For static generation, we'll render a placeholder
+// The actual order data will be loaded client-side
+const t = {
+  zh: {
+    title: '订单确认 | dajilin.net',
+    heading: '订单已提交',
+    orderNumber: '订单号',
+    status: '订单状态',
+    thankYou: '感谢您的订单！我们将尽快处理。',
+    contactInfo: '联系人信息',
+    orderDetails: '订单详情',
+    paymentMethod: '支付方式',
+    total: '合计',
+    viewOrders: '查看所有订单',
+    backToShop: '返回商城',
+    statusLabels: {
+      pending: '待处理',
+      confirmed: '已确认',
+      processing: '处理中',
+      completed: '已完成',
+      cancelled: '已取消',
+    },
+    paymentLabels: {
+      wechat: '微信支付',
+      alipay: '支付宝',
+      banktransfer: '银行转账',
+      cod: '货到付款',
+    },
+    notFound: '订单未找到',
+    items: '商品',
+    quantity: '数量',
+    price: '单价',
+  },
+  en: {
+    title: 'Order Confirmation | dajilin.net',
+    heading: 'Order Submitted',
+    orderNumber: 'Order Number',
+    status: 'Order Status',
+    thankYou: 'Thank you for your order! We will process it as soon as possible.',
+    contactInfo: 'Contact Information',
+    orderDetails: 'Order Details',
+    paymentMethod: 'Payment Method',
+    total: 'Total',
+    viewOrders: 'View All Orders',
+    backToShop: 'Back to Shop',
+    statusLabels: {
+      pending: 'Pending',
+      confirmed: 'Confirmed',
+      processing: 'Processing',
+      completed: 'Completed',
+      cancelled: 'Cancelled',
+    },
+    paymentLabels: {
+      wechat: 'WeChat Pay',
+      alipay: 'Alipay',
+      banktransfer: 'Bank Transfer',
+      cod: 'Cash on Delivery',
+    },
+    notFound: 'Order not found',
+    items: 'Items',
+    quantity: 'Quantity',
+    price: 'Price',
+  },
+  ja: {
+    title: '注文確認 | dajilin.net',
+    heading: 'ご注文完了',
+    orderNumber: '注文番号',
+    status: '注文状況',
+    thankYou: 'ご注文ありがとうございます！できるだけ早く處理いたします。',
+    contactInfo: '連絡先情報',
+    orderDetails: '注文詳細',
+    paymentMethod: 'お支払い方法',
+    total: '合計',
+    viewOrders: 'すべての注文を見る',
+    backToShop: 'ショップに戻る',
+    statusLabels: {
+      pending: '保留中',
+      confirmed: '確認済み',
+      processing: '處理中',
+      completed: '完了',
+      cancelled: 'キャンセル',
+    },
+    paymentLabels: {
+      wechat: 'WeChat Pay',
+      alipay: 'Alipay',
+      banktransfer: '銀行振込',
+      cod: '代引き',
+    },
+    notFound: '注文が見つかりません',
+    items: '商品',
+    quantity: '数量',
+    price: '単価',
+  },
+  ko: {
+    title: '주문 확인 | dajilin.net',
+    heading: '주문 완료',
+    orderNumber: '주문번호',
+    status: '주문 상태',
+    thankYou: '주문해 주셔서 감사합니다! 최대한 빨리 처리하겠습니다.',
+    contactInfo: '연락처 정보',
+    orderDetails: '주문 상세',
+    paymentMethod: '결제 방법',
+    total: '합계',
+    viewOrders: '모든 주문 보기',
+    backToShop: '샵으로 돌아가기',
+    statusLabels: {
+      pending: '대기중',
+      confirmed: '확인됨',
+      processing: '처리중',
+      completed: '완료',
+      cancelled: '취소',
+    },
+    paymentLabels: {
+      wechat: '위챗.pay',
+      alipay: '알리.pay',
+      banktransfer: '은행转账',
+      cod: '착불',
+    },
+    notFound: '주문을 찾을 수 없습니다',
+    items: '상품',
+    quantity: '수량',
+    price: '단가',
+  },
+};
+
+const text = t[locale] || t.zh;
+---
+
+<BaseLayout title={text.title} description={text.thankYou} locale={locale}>
+  <Header />
+  <main class="page-shell order-confirmation-shell">
+    <div class="container">
+      <div id="order-content" class="order-content">
+        <div class="loading-state">
+          <div class="loading-spinner"></div>
+          <p>{locale === 'zh' ? '加载订单信息...' : 'Loading order information...'}</p>
+        </div>
+      </div>
+    </div>
+  </main>
+  <Footer />
+
+  <script>
+    import { getOrder, type Order } from '@/lib/cart';
+
+    const locale = document.documentElement.lang?.startsWith('zh') ? 'zh' :
+                   document.documentElement.lang?.startsWith('ja') ? 'ja' :
+                   document.documentElement.lang?.startsWith('ko') ? 'ko' : 'en';
+
+    const translations: Record<string, any> = {
+      zh: {
+        title: '订单确认 | dajilin.net',
+        heading: '订单已提交',
+        orderNumber: '订单号',
+        status: '订单状态',
+        thankYou: '感谢您的订单！我们将尽快处理。',
+        contactInfo: '联系人信息',
+        orderDetails: '订单详情',
+        paymentMethod: '支付方式',
+        total: '合计',
+        viewOrders: '查看所有订单',
+        backToShop: '返回商城',
+        statusLabels: { pending: '待处理', confirmed: '已确认', processing: '处理中', completed: '已完成', cancelled: '已取消' },
+        paymentLabels: { wechat: '微信支付', alipay: '支付宝', banktransfer: '银行转账', cod: '货到付款' },
+        notFound: '订单未找到',
+        items: '商品',
+        quantity: '数量',
+        price: '单价',
+        phone: '电话',
+        email: '邮箱',
+        address: '地址',
+        notes: '备注',
+      },
+      en: {
+        title: 'Order Confirmation | dajilin.net',
+        heading: 'Order Submitted',
+        orderNumber: 'Order Number',
+        status: 'Order Status',
+        thankYou: 'Thank you for your order! We will process it as soon as possible.',
+        contactInfo: 'Contact Information',
+        orderDetails: 'Order Details',
+        paymentMethod: 'Payment Method',
+        total: 'Total',
+        viewOrders: 'View All Orders',
+        backToShop: 'Back to Shop',
+        statusLabels: { pending: 'Pending', confirmed: 'Confirmed', processing: 'Processing', completed: 'Completed', cancelled: 'Cancelled' },
+        paymentLabels: { wechat: 'WeChat Pay', alipay: 'Alipay', banktransfer: 'Bank Transfer', cod: 'Cash on Delivery' },
+        notFound: 'Order not found',
+        items: 'Items',
+        quantity: 'Quantity',
+        price: 'Price',
+        phone: 'Phone',
+        email: 'Email',
+        address: 'Address',
+        notes: 'Notes',
+      },
+      ja: {
+        title: '注文確認 | dajilin.net',
+        heading: 'ご注文完了',
+        orderNumber: '注文番号',
+        status: '注文状況',
+        thankYou: 'ご注文ありがとうございます！',
+        contactInfo: '連絡先情報',
+        orderDetails: '注文詳細',
+        paymentMethod: 'お支払い方法',
+        total: '合計',
+        viewOrders: 'すべての注文を見る',
+        backToShop: 'ショップに戻る',
+        statusLabels: { pending: '保留中', confirmed: '確認済み', processing: '處理中', completed: '完了', cancelled: 'キャンセル' },
+        paymentLabels: { wechat: 'WeChat Pay', alipay: 'Alipay', banktransfer: '銀行振込', cod: '代引き' },
+        notFound: '注文が見つかりません',
+        items: '商品',
+        quantity: '数量',
+        price: '単価',
+        phone: '電話',
+        email: 'メール',
+        address: '住所',
+        notes: 'メモ',
+      },
+      ko: {
+        title: '주문 확인 | dajilin.net',
+        heading: '주문 완료',
+        orderNumber: '주문번호',
+        status: '주문 상태',
+        thankYou: '주문해 주셔서 감사합니다!',
+        contactInfo: '연락처 정보',
+        orderDetails: '주문 상세',
+        paymentMethod: '결제 방법',
+        total: '합계',
+        viewOrders: '모든 주문 보기',
+        backToShop: '샵으로 돌아가기',
+        statusLabels: { pending: '대기중', confirmed: '확인됨', processing: '처리중', completed: '완료', cancelled: '취소' },
+        paymentLabels: { wechat: '위챗.pay', alipay: '알리.pay', banktransfer: '은행转账', cod: '착불' },
+        notFound: '주문을 찾을 수 없습니다',
+        items: '상품',
+        quantity: '수량',
+        price: '단가',
+        phone: '전화',
+        email: '이메일',
+        address: '주소',
+        notes: '메모',
+      },
+    };
+
+    const t = translations[locale] || translations.zh;
+
+    // Get order ID from URL
+    const pathParts = window.location.pathname.split('/');
+    const orderId = pathParts[pathParts.length - 1];
+
+    function renderOrder(order: Order) {
+      const statusClass = order.status === 'pending' ? 'status-pending' :
+                          order.status === 'confirmed' ? 'status-confirmed' :
+                          order.status === 'completed' ? 'status-completed' :
+                          order.status === 'cancelled' ? 'status-cancelled' : '';
+
+      const statusLabel = t.statusLabels[order.status] || order.status;
+      const paymentLabel = order.paymentMethod ? (t.paymentLabels[order.paymentMethod] || order.paymentMethod) : '-';
+
+      const itemRows = order.items.map(item => `
+        <tr>
+          <td>${item.name}</td>
+          <td>${item.quantity}</td>
+          <td>${item.price === 0 ? (locale === 'zh' ? '价格待定' : 'TBD') : `¥${item.price.toFixed(2)}`}</td>
+          <td>${item.price === 0 ? (locale === 'zh' ? '价格待定' : 'TBD') : `¥${(item.price * item.quantity).toFixed(2)}`}</td>
+        </tr>
+      `).join('');
+
+      const orderDate = new Date(order.createdAt).toLocaleDateString(locale === 'zh' ? 'zh-CN' : locale === 'ja' ? 'ja-JP' : locale === 'ko' ? 'ko-KR' : 'en-US');
+
+      return `
+        <div class="success-header">
+          <div class="success-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+          </div>
+          <h1>${t.heading}</h1>
+          <p>${t.thankYou}</p>
+        </div>
+
+        <div class="order-info-card">
+          <div class="info-row">
+            <span class="info-label">${t.orderNumber}</span>
+            <span class="info-value order-id">${order.id}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">${t.status}</span>
+            <span class="info-value status-badge ${statusClass}">${statusLabel}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">${t.paymentMethod}</span>
+            <span class="info-value">${paymentLabel}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">${locale === 'zh' ? '下单时间' : 'Order Date'}</span>
+            <span class="info-value">${orderDate}</span>
+          </div>
+        </div>
+
+        <div class="order-details-section">
+          <h2>${t.contactInfo}</h2>
+          <div class="contact-grid">
+            <div class="contact-item">
+              <span class="contact-label">${locale === 'zh' ? '姓名' : 'Name'}</span>
+              <span class="contact-value">${order.contact.name}</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-label">${t.phone}</span>
+              <span class="contact-value">${order.contact.phone}</span>
+            </div>
+            ${order.contact.email ? `
+            <div class="contact-item">
+              <span class="contact-label">${t.email}</span>
+              <span class="contact-value">${order.contact.email}</span>
+            </div>
+            ` : ''}
+            ${order.contact.address ? `
+            <div class="contact-item">
+              <span class="contact-label">${t.address}</span>
+              <span class="contact-value">${order.contact.address}</span>
+            </div>
+            ` : ''}
+            ${order.contact.notes ? `
+            <div class="contact-item full-width">
+              <span class="contact-label">${t.notes}</span>
+              <span class="contact-value">${order.contact.notes}</span>
+            </div>
+            ` : ''}
+          </div>
+        </div>
+
+        <div class="order-details-section">
+          <h2>${t.orderDetails}</h2>
+          <table class="order-items-table">
+            <thead>
+              <tr>
+                <th>${t.items}</th>
+                <th>${t.quantity}</th>
+                <th>${t.price}</th>
+                <th>${locale === 'zh' ? '小计' : 'Subtotal'}</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemRows}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3">${t.total}</td>
+                <td class="total-amount">${order.total === 0 ? (locale === 'zh' ? '价格待定' : 'TBD') : `¥${order.total.toFixed(2)}`}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="order-actions">
+          <a href="${locale === 'zh' ? '/orders/list' : `/${locale}/orders/list`}" class="action-btn secondary">
+            ${t.viewOrders}
+          </a>
+          <a href="${locale === 'zh' ? '/shop' : `/${locale}/shop`}" class="action-btn primary">
+            ${t.backToShop}
+          </a>
+        </div>
+      `;
+    }
+
+    function renderNotFound() {
+      return `
+        <div class="not-found-state">
+          <div class="not-found-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 8v4M12 16h.01" />
+            </svg>
+          </div>
+          <h1>${t.notFound}</h1>
+          <a href="${locale === 'zh' ? '/shop' : `/${locale}/shop`}" class="action-btn primary">
+            ${t.backToShop}
+          </a>
+        </div>
+      `;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const contentEl = document.getElementById('order-content');
+      if (!contentEl) return;
+
+      const order = getOrder(orderId);
+
+      if (order) {
+        contentEl.innerHTML = renderOrder(order);
+      } else {
+        contentEl.innerHTML = renderNotFound();
+      }
+    });
+  </script>
+
+  <style>
+    .order-confirmation-shell {
+      padding-bottom: 80px;
+      background: linear-gradient(180deg, #f8fbfb 0%, #eef4f3 48%, #f8fbfc 100%);
+    }
+
+    .order-content {
+      max-width: 800px;
+      margin: 0 auto;
+      padding-top: 40px;
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: 80px 24px;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(15, 118, 110, 0.2);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .success-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(5, 150, 105, 0.15), rgba(16, 185, 129, 0.1));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      color: #059669;
+    }
+
+    .success-header h1 {
+      margin: 0 0 8px;
+      font-size: 1.8rem;
+      color: var(--text-strong);
+    }
+
+    .success-header p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .order-info-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .info-value {
+      color: var(--text-strong);
+      font-weight: 500;
+    }
+
+    .order-id {
+      font-family: monospace;
+      font-size: 0.9rem;
+      background: #f1f5f9;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-confirmed {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .status-processing {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+
+    .status-completed {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-cancelled {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .order-details-section {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .order-details-section h2 {
+      margin: 0 0 16px;
+      font-size: 1.15rem;
+      color: var(--text-strong);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .contact-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .contact-item.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .contact-label {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .contact-value {
+      font-size: 0.95rem;
+      color: var(--text-strong);
+    }
+
+    .order-items-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .order-items-table th,
+    .order-items-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .order-items-table th {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: #f8fafb;
+    }
+
+    .order-items-table td {
+      font-size: 0.95rem;
+      color: var(--text-strong);
+    }
+
+    .order-items-table tfoot td {
+      font-weight: 600;
+      border-bottom: none;
+    }
+
+    .total-amount {
+      font-size: 1.1rem;
+      color: var(--primary) !important;
+    }
+
+    .order-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 28px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn.primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%);
+      color: #fff;
+    }
+
+    .action-btn.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.35);
+    }
+
+    .action-btn.secondary {
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: #fff;
+    }
+
+    .action-btn.secondary:hover {
+      border-color: rgba(15, 118, 110, 0.32);
+      color: var(--primary);
+    }
+
+    .not-found-state {
+      text-align: center;
+      padding: 80px 24px;
+    }
+
+    .not-found-icon {
+      margin-bottom: 20px;
+      color: var(--muted);
+    }
+
+    .not-found-state h1 {
+      margin: 0 0 24px;
+      font-size: 1.5rem;
+      color: var(--text-strong);
+    }
+
+    @media (max-width: 640px) {
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .order-items-table {
+        display: block;
+        overflow-x: auto;
+      }
+
+      .order-actions {
+        flex-direction: column;
+      }
+
+      .action-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</BaseLayout>

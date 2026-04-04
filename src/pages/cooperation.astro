@@ -1,0 +1,170 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { buildCollectionPageSchema } from '@/lib/schema';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+const copy: Record<
+  Locale,
+  {
+    title: string;
+    description: string;
+    schemaName: string;
+    heading: string;
+    needsTitle: string;
+    needsItems: string[];
+    cards: { title: string; body: string }[];
+    submitTitle: string;
+    submitItems: string[];
+    sideTitle: string;
+    sideDesc: string;
+    entryTitle: string;
+    askAi: string;
+    askAiQuestion: string;
+    studyLink: string;
+  }
+> = {
+  zh: {
+    title: '合作咨询 | dajilin.net',
+    description: '承接文旅机构、驿站服务方、研学合作方、企业参访需求方和团体用户的咨询与合作对接。',
+    schemaName: '合作咨询',
+    heading: '合作咨询',
+    needsTitle: '适合对接的需求',
+    needsItems: ['工业研学合作', '企业参访与政企考察', '331 驿站合作', '团体定制与线路需求'],
+    cards: [
+      { title: '学校与研学机构', body: '适合提交一汽红旗研学、工业文明线路和团体研学的初步需求。' },
+      { title: '企业与机构参访', body: '适合提交中车长客、工业文明线路和政企考察型参访需求。' },
+      { title: '331 驿站合作', body: '适合沿线驿站、住宿、餐饮、补给和团队服务资源方发起对接。' },
+      { title: '文旅资源合作', body: '适合景区、场馆、路线服务方和内容合作伙伴建立第一轮联系。' },
+    ],
+    submitTitle: '建议提交哪些信息',
+    submitItems: ['你的身份：学校、机构、企业或资源方', '希望咨询的主题：研学、参访、驿站、路线或合作', '时间范围、人数规模或资源位置', '希望平台先帮助你判断什么'],
+    sideTitle: '合作方式',
+    sideDesc: '通过页面提交咨询后，平台会尽快与您对接，评估需求并匹配合适的资源方。',
+    entryTitle: '建议入口',
+    askAi: '先问 AI 导览',
+    askAiQuestion: '我有合作需求，应该先准备哪些信息？',
+    studyLink: '查看工业研学',
+  },
+  en: {
+    title: 'Cooperation | dajilin.net',
+    description: 'Consultation and cooperation for tourism institutions, station partners, study-tour partners, enterprise visits, and group travel demands.',
+    schemaName: 'Cooperation',
+    heading: 'Cooperation',
+    needsTitle: 'Suitable Requests',
+    needsItems: ['Industrial study-tour cooperation', 'Enterprise visits and government delegation tours', 'Route 331 station cooperation', 'Group custom itinerary requests'],
+    cards: [
+      { title: 'Schools & Study Institutions', body: 'Submit initial requests for FAW Hongqi study tours and industrial heritage routes.' },
+      { title: 'Enterprise & Institutional Visits', body: 'Submit CRRC and industrial civilization visit requests for organizations.' },
+      { title: 'Route 331 Station Partners', body: 'For station, stay, dining, supply, and team-service providers along the route.' },
+      { title: 'Tourism Resource Partners', body: 'For scenic spots, venues, route providers, and content partners.' },
+    ],
+    submitTitle: 'Recommended Information to Submit',
+    submitItems: ['Your role: school, institution, enterprise, or resource provider', 'Request type: study tour, visit, station, route, or cooperation', 'Time range, group size, or resource location', 'What you want us to evaluate first'],
+    sideTitle: 'Cooperation Process',
+    sideDesc: 'After submitting your inquiry through the page, we will match you with the appropriate resource partners.',
+    entryTitle: 'Recommended Entry',
+    askAi: 'Ask AI Guide First',
+    askAiQuestion: 'I have a cooperation request. What information should I prepare first?',
+    studyLink: 'View Study Tours',
+  },
+  ja: {
+    title: '協業相談 | dajilin.net',
+    description: '観光機関、驛站サービス、研修協力、企業訪問、団体需要向けの協業相談入口です。',
+    schemaName: '協業相談',
+    heading: '協業相談',
+    needsTitle: '対応可能な相談',
+    needsItems: ['産業研修協力', '企業訪問・政企視察', '331 驛站協力', '団体カスタムルート相談'],
+    cards: [
+      { title: '学校・研修機関', body: '一汽紅旗研修、産業文明ルート、団体研修の初期相談に対応。' },
+      { title: '企業・機関訪問', body: '中車長客、産業文明ルート、政企視察型訪問の相談に対応。' },
+      { title: '331 驛站協力', body: '沿線の驛站、宿泊、飲食、補給、団体サービス提供者向け。' },
+      { title: '文旅資源協力', body: '景区、施設、ルート事業者、コンテンツ協力者向け。' },
+    ],
+    submitTitle: '提出推奨情報',
+    submitItems: ['属性：学校・機関・企業・資源提供者', '相談テーマ：研修・訪問・驛站・ルート・協力', '時期、人数規模、資源位置', '先に判断してほしい内容'],
+    sideTitle: '協力の流れ',
+    sideDesc: 'ページから相談を送信した後 Suitable のリソースとマッチングします。',
+    entryTitle: '推奨入口',
+    askAi: '先に AIガイドへ',
+    askAiQuestion: '協業相談をしたい場合、先に何を準備すべきですか？',
+    studyLink: '産業研修を見る',
+  },
+  ko: {
+    title: '협업 문의 | dajilin.net',
+    description: '문여 기관, 거점 서비스 파트너, 연수 협력사, 기업 방문 수요, 단체 수요를 위한 협업 문의 입구입니다.',
+    schemaName: '협업 문의',
+    heading: '협업 문의',
+    needsTitle: '연계 가능한 수요',
+    needsItems: ['산업 연수 협력', '기업 방문·정책 시찰', '331 거점 협력', '단체 맞춤 루트 수요'],
+    cards: [
+      { title: '학교·연수 기관', body: 'FAW 홍치 연수, 산업 문명 루트, 단체 연수 초기 수요 접수.' },
+      { title: '기업·기관 방문', body: 'CRRC, 산업 문명 루트, 정책 시찰형 방문 수요 접수.' },
+      { title: '331 거점 협력', body: '연선 거점, 숙박, 식음, 보급, 팀 서비스 파트너 대상.' },
+      { title: '문여 자원 협력', body: '관광지, 시설, 루트 운영사, 콘텐츠 파트너 대상.' },
+    ],
+    submitTitle: '제출 권장 정보',
+    submitItems: ['역할: 학교, 기관, 기업, 자원 파트너', '문의 주제: 연수, 방문, 거점, 루트, 협업', '일정 범위, 인원 규모, 자원 위치', '플랫폼이 먼저 판단해야 할 항목'],
+    sideTitle: '협업 절차',
+    sideDesc: '페이지를 통해 문의를 제출하면 적합한 자원 파트너와 매칭해 드립니다.',
+    entryTitle: '권장 입구',
+    askAi: 'AI 가이드 먼저',
+    askAiQuestion: '협업 문의를 하려면 어떤 정보를 먼저 준비해야 하나요?',
+    studyLink: '산업 연수 보기',
+  },
+};
+const t = copy[locale];
+---
+
+<BaseLayout title={t.title} description={t.description} schemas={[buildCollectionPageSchema('/cooperation', t.schemaName, t.description, locale)]} locale={locale}>
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-copy">
+          <div class="eyebrow">Cooperation</div>
+          <h1>{t.heading}</h1>
+          <p>{t.description}</p>
+        </div>
+        <h2>{t.needsTitle}</h2>
+        <ul>
+          {t.needsItems.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+
+        <div class="detail-grid">
+          {t.cards.map((card) => (
+            <article class="detail-link-card">
+              <h3>{card.title}</h3>
+              <p>{card.body}</p>
+            </article>
+          ))}
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.submitTitle}</h2>
+          <ul>
+            {t.submitItems.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+      <aside class="page-card">
+        <h3>{t.sideTitle}</h3>
+        <p>{t.sideDesc}</p>
+        <div class="detail-side-card">
+          <h3>{t.entryTitle}</h3>
+          <div class="cta-row">
+            <button class="button" type="button" data-open-ai-widget data-ai-module="cooperation" data-ai-question={t.askAiQuestion}>{t.askAi}</button>
+            <a class="button-secondary" href={localizePath('/study-tours', locale)}>{t.studyLink}</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

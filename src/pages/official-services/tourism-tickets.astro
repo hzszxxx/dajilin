@@ -1,0 +1,517 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { buildCollectionPageSchema } from '@/lib/schema';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+
+interface OfficialPortal {
+  name: string;
+  url: string;
+  description: string;
+  category: 'ticket' | 'culture' | 'transport' | 'info';
+}
+
+interface Copy {
+  title: string;
+  description: string;
+  schemaName: string;
+  heading: string;
+  intro: string;
+  ticketPortalsTitle: string;
+  ticketPortalsDesc: string;
+  culturePortalsTitle: string;
+  culturePortalsDesc: string;
+  bookingTitle: string;
+  bookingSteps: { step: string; desc: string }[];
+  precautionsTitle: string;
+  precautions: string[];
+  faqTitle: string;
+  faqs: { q: string; a: string }[];
+  relatedTitle: string;
+}
+
+const copy: Record<Locale, Copy> = {
+  zh: {
+    title: '吉林官方文旅与票务入口说明 | dajilin.net',
+    description: '整理吉林省官方票务入口、文旅服务入口、预约说明和注意事项，帮助用户正确理解和使用官方渠道。',
+    schemaName: '吉林官方文旅与票务入口',
+    heading: '吉林官方文旅与票务入口',
+    intro: '这页帮助用户理解吉林官方票务和文旅服务入口，明确官方渠道与平台的边界，让出行准备更高效。',
+    ticketPortalsTitle: '官方票务入口',
+    ticketPortalsDesc: '以下为吉林省内主要官方票务平台，覆盖景区门票、演出活动和公共交通等类型。',
+    culturePortalsTitle: '文旅服务入口',
+    culturePortalsDesc: '官方文旅厅、文化活动和旅游服务平台，提供权威信息和在线预约功能。',
+    bookingTitle: '预约购票说明',
+    bookingSteps: [
+      { step: '确认景区与日期', desc: '提前查阅官方公告，了解开放状态和限流规则。' },
+      { step: '选择官方渠道', desc: '通过下方列出的官方入口进入预约页面。' },
+      { step: '填写出行信息', desc: '按要求填写身份证、人数、日期等必要信息。' },
+      { step: '完成支付与确认', desc: '支付后保留凭证，部分景区需现场核验身份证。' },
+    ],
+    precautionsTitle: '注意事项',
+    precautions: [
+      '官方票务以实时发布为准，高峰期建议提前 3-7 天预约。',
+      '部分景区实行分时预约，请按预约时段进入。',
+      '优惠政策（学生、老人、军人等）需携带有效证件现场核验。',
+      '平台不替代官方预约，以说明和引导为主，如有疑问请直接联系官方客服。',
+      '遇到票务纠纷时，建议首先通过官方渠道申诉。',
+    ],
+    faqTitle: '常见问题',
+    faqs: [
+      { q: '平台能直接帮买票吗？', a: '当前阶段平台不做票务售卖，主要提供官方入口说明和预约引导。' },
+      { q: '为什么有些票必须从官方入口预约？', a: '官方入口确保信息的实时性和准确性，同时也是唯一可保障售后和退改的渠道。' },
+      { q: '预约后还需要取票吗？', a: '多数景区已支持身份证直接入园，具体以官方提示为准。' },
+      { q: '儿童需要预约吗？', a: '部分景区对儿童有免票或优惠政策，建议提前查阅官方说明或致电确认。' },
+    ],
+    relatedTitle: '相关服务',
+  },
+  en: {
+    title: 'Jilin Official Tourism & Ticket Portal Guide | dajilin.net',
+    description: 'Guide to official Jilin tourism ticketing portals, booking instructions, and key precautions for visitors.',
+    schemaName: 'Jilin Official Tourism & Ticket Portal',
+    heading: 'Jilin Official Tourism & Ticket Portal',
+    intro: 'This page helps users understand official Jilin tourism and ticketing channels, clarifying boundaries between platform guidance and official services.',
+    ticketPortalsTitle: 'Official Ticketing Portals',
+    ticketPortalsDesc: 'Key official ticketing platforms covering scenic spots, events, and public transport in Jilin Province.',
+    culturePortalsTitle: 'Culture & Tourism Service Portals',
+    culturePortalsDesc: 'Official culture departments and tourism service platforms providing authoritative information and booking.',
+    bookingTitle: 'Booking Instructions',
+    bookingSteps: [
+      { step: 'Confirm destination and date', desc: 'Check official announcements for opening status and capacity limits.' },
+      { step: 'Choose official channel', desc: 'Use the official portals listed below to access the booking page.' },
+      { step: 'Fill in travel information', desc: 'Provide required details including ID, number of visitors, and date.' },
+      { step: 'Complete payment and confirmation', desc: 'Keep your confirmation. Some scenic areas require ID verification on-site.' },
+    ],
+    precautionsTitle: 'Precautions',
+    precautions: [
+      'Official ticketing information is updated in real-time. During peak seasons, book 3-7 days in advance.',
+      'Some scenic areas use time-slot reservations. Please arrive within your reserved time window.',
+      'Discount policies (students, seniors, military) require valid ID verification on-site.',
+      'This platform does not replace official booking. For questions, contact official customer service directly.',
+      'For ticket disputes, it is recommended to file appeals through official channels first.',
+    ],
+    faqTitle: 'Common Questions',
+    faqs: [
+      { q: 'Can this platform buy tickets directly?', a: 'Currently the platform does not sell tickets. It provides official portal guidance and booking instructions.' },
+      { q: 'Why must some tickets be booked through official channels?', a: 'Official channels ensure real-time accuracy and are the only channels that can guarantee after-sales service and refunds.' },
+      { q: 'Do I need to pick up tickets after booking?', a: 'Most scenic areas support direct entry with ID. Check official guidelines for specifics.' },
+      { q: 'Do children need reservations?', a: 'Some areas offer free or discounted entry for children. It is recommended to check official guidelines or call ahead.' },
+    ],
+    relatedTitle: 'Related Services',
+  },
+  ja: {
+    title: '吉林公式文旅·チケット入口ガイド | dajilin.net',
+    description: '吉林省の公式チケット入口、预约方法、注意事項をまとめて、旅行者の予約uckleを支援します。',
+    schemaName: '吉林公式文旅·チケット入口',
+    heading: '吉林公式文旅·チケット入口',
+    intro: 'この言葉は吉林の公式チケットと文旅サービスの入口を理解し、プラットフォームと公式チャンネルの境界を明確にして、旅行準備を効率的にします。',
+    ticketPortalsTitle: '公式チケット入口',
+    ticketPortalsDesc: '省内主要景区チケット、公共交通などの公式チケットプラットフォームを整理。',
+    culturePortalsTitle: '文旅サービス入口',
+    culturePortalsDesc: '文旅庁、文化イベント、旅行サービスプラットフォームを提供し、権威ある情報とオンライン予約機能を提供します。',
+    bookingTitle: '予約·購入の説明',
+    bookingSteps: [
+      { step: '景区と日期を確認', desc: '公式発表で開放状態と人流制限规则を事前確認。' },
+      { step: '公式チャンネルを選択', desc: '以下の公式入口から予約ページにアクセス。' },
+      { step: '旅行情報を入力', desc: '身分証明書、人数、日付など必要情報を記入。' },
+      { step: '支払いと確認を完了', desc: '支払後に凭证を保管。景区によっては現地で身分証明書の確認が必要。' },
+    ],
+    precautionsTitle: '注意事項',
+    precautions: [
+      '公式チケット情報はリアルタイム更新。高峰期は3〜7日前に予約推奨。',
+      '一部の景区は分段予約を実施。予約した時間枠内の入場お願いします。',
+      '割引政策（学生·老人·軍人など）は現地で有効证件の確認が必要。',
+      '当プラットフォームは公式予約を代替しません。質問があれば公式客服に連絡してください。',
+      'チケット紛争が発生した場合は、公式渠道から申诉することを推奨。',
+    ],
+    faqTitle: 'よくある質問',
+    faqs: [
+      { q: 'プラットフォームで直接チケット購入可能ですか？', a: '現在プラットフォームはチケット販売を行わず、公式入口の説明と予約案内为主要業務としています。' },
+      { q: 'なぜ公式入口からの予約が必要ですか？', a: '公式入口は情報のリアルタイム性と正確性を保証し、アフター服务和り返金に 유일한渠道です。' },
+      { q: '予約後にチケットを受け取る必要がありますか？', a: '多くの景区は身分証明書で直接入場できます。公式案内に従ってください。' },
+      { q: '子供も予約が必要ですか？', a: '一部の景区は子供の無料または割引政策があります。事前確認を推奨。' },
+    ],
+    relatedTitle: '関連サービス',
+  },
+  ko: {
+    title: '지린 공식 문여·티켓 입구 가이드 | dajilin.net',
+    description: '지린성의 공식 티켓 입구, 예약 방법, 주의사항을 정리하여 여행자의 취켓 예약을 돕습니다.',
+    schemaName: '지린 공식 문여·티켓 입구',
+    heading: '지린 공식 문여·티켓 입구',
+    intro: '이 페이지는 지린 공식 티켓과 문여 서비스 입구를 이해하고 플랫폼과 공식 채널의 경계를 명확히 하여 여행 준비를 효율적으로 합니다.',
+    ticketPortalsTitle: '공식 티켓 입구',
+    ticketPortalsDesc: '省内 주요 관광지 티켓, 대중교통 등의 공식 티켓 플랫폼을 정리.',
+    culturePortalsTitle: '문여 서비스 입구',
+    culturePortalsDesc: '문여청, 문화 행사, 여행 서비스 플랫폼을 제공하여 권위 있는 정보와 온라인 예약 기능을 제공합니다.',
+    bookingTitle: '예약·구매 설명',
+    bookingSteps: [
+      { step: '관광지와 날짜 확인', desc: '공식 발표로 개방 상태와 인원 제한 규정을 사전 확인.' },
+      { step: '공식 채널 선택', desc: '아래 공식 입구에서 예약 페이지에 접속.' },
+      { step: '여행 정보 입력', desc: '신분증, 인원, 날짜 등 필요 정보를 기입.' },
+      { step: '결제 및 확인 완료', desc: '결제 후 확인서를 보관. 일부 관광지는 현장에서 신분증 확인 필요.' },
+    ],
+    precautionsTitle: '주의사항',
+    precautions: [
+      '공식 티켓 정보는 실시간 업데이트됩니다. 성수기에는 3~7일 전에 예약 권장.',
+      '일부 관광지는 시간대별 예약을 실시합니다. 예약 시간대에 맞춰 입장해 주세요.',
+      '할인 정책(학생, 노인, 군인 등)은 현장에서 유효한 신분증 확인이 필요합니다.',
+      '플랫폼은 공식 예약을 대체하지 않습니다. 질문이 있으시면 공식 고객센터에 연락하세요.',
+      '티켓 분쟁이 발생하면 공식 채널에서 항소하는 것을 권장합니다.',
+    ],
+    faqTitle: '주요 질문',
+    faqs: [
+      { q: '플랫폼에서 직접 티켓 구매 가능한가요?', a: '현재 플랫폼은 티켓 판매를 하지 않으며, 공식 입구 설명과 예약 안내가 주요 업무입니다.' },
+      { q: '왜 공식 입구からの 예약을 해야 하나요?', a: '공식 입구는 정보의 실시간성과 정확성을 보장하며, 애프터서비스와 환불에 유일한 채널입니다.' },
+      { q: '예약 후 티켓을 수령해야 하나요?', a: '대부분의 관광지는 신분증으로 직접 입장이 가능합니다. 공식 안내를 따르세요.' },
+      { q: '어린이도 예약이 필요한가요?', a: '일부 관광지는 어린이 무료 또는 할인 정책이 있습니다. 사전 확인을 권장합니다.' },
+    ],
+    relatedTitle: '관련 서비스',
+  },
+};
+
+const t = copy[locale];
+
+const ticketPortals: OfficialPortal[] = [
+  {
+    name: '吉林省文化和旅游厅',
+    url: 'https://www.jlsgh.gov.cn',
+    description: locale === 'zh' ? '吉林省文化和旅游厅官方网站，提供文旅政策、公告和公共服务信息。' : 'Official website of Jilin Provincial Department of Culture and Tourism.',
+    category: 'culture',
+  },
+  {
+    name: '长白山官方票务平台',
+    url: 'https://www.wbcbs.com',
+    description: locale === 'zh' ? '长白山景区官方票务预约平台，支持分时预约和电子票务。' : 'Official ticketing platform for Changbai Mountain scenic area with time-slot booking.',
+    category: 'ticket',
+  },
+  {
+    name: '全国旅游监管服务平台',
+    url: 'https://lxs.mct.gov.cn',
+    description: locale === 'zh' ? '文化和旅游部官方监管平台，提供团队游和导游信息查询。' : 'Ministry of Culture and Tourism supervision platform for group tours and guides.',
+    category: 'info',
+  },
+  {
+    name: '12301旅游投诉热线',
+    url: 'tel:12301',
+    description: locale === 'zh' ? '全国旅游投诉服务热线，可处理旅游纠纷和咨询。' : 'National tourism complaint hotline for disputes and inquiries.',
+    category: 'info',
+  },
+];
+
+const culturePortals: OfficialPortal[] = [
+  {
+    name: '吉林省文化和旅游厅',
+    url: 'https://www.jlsgh.gov.cn',
+    description: locale === 'zh' ? '文旅政策发布、公告通知和公共服务事项办理入口。' : 'Policy releases, announcements, and public service portals.',
+    category: 'culture',
+  },
+  {
+    name: '长春市文化广播电视和旅游局',
+    url: 'http://wgxj.changchun.gov.cn',
+    description: locale === 'zh' ? '长春市文旅信息发布和行业管理入口。' : 'Changchun culture, broadcasting and tourism information portal.',
+    category: 'culture',
+  },
+  {
+    name: '延边州文化广播电视和旅游局',
+    url: 'http://whgdxzf.yanbian.gov.cn',
+    description: locale === 'zh' ? '延边州文旅资源介绍和服务信息。' : 'Yanbian cultural and tourism resource guide and service information.',
+    category: 'culture',
+  },
+];
+
+const getPortalIcon = (category: OfficialPortal['category']): string => {
+  const icons: Record<string, string> = {
+    ticket: '🎫',
+    culture: '🏛️',
+    transport: '🚌',
+    info: 'ℹ️',
+  };
+  return icons[category] || '🔗';
+};
+---
+
+<BaseLayout
+  title={t.title}
+  description={t.description}
+  schemas={[buildCollectionPageSchema('/official-services/tourism-tickets', t.schemaName, t.description, locale)]}
+  locale={locale}
+>
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-copy">
+          <div class="eyebrow">Official Services</div>
+          <h1>{t.heading}</h1>
+          <p class="lead">{t.intro}</p>
+        </div>
+
+        <div class="info-section">
+          <h2>{t.ticketPortalsTitle}</h2>
+          <p class="section-desc">{t.ticketPortalsDesc}</p>
+          <div class="portal-grid">
+            {ticketPortals.map((portal) => (
+              <a class="portal-card" href={portal.url} target="_blank" rel="noopener noreferrer">
+                <span class="portal-icon">{getPortalIcon(portal.category)}</span>
+                <div class="portal-body">
+                  <h3>{portal.name}</h3>
+                  <p>{portal.description}</p>
+                </div>
+                <span class="portal-arrow">↗</span>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h2>{t.culturePortalsTitle}</h2>
+          <p class="section-desc">{t.culturePortalsDesc}</p>
+          <div class="portal-grid">
+            {culturePortals.map((portal) => (
+              <a class="portal-card" href={portal.url} target="_blank" rel="noopener noreferrer">
+                <span class="portal-icon">{getPortalIcon(portal.category)}</span>
+                <div class="portal-body">
+                  <h3>{portal.name}</h3>
+                  <p>{portal.description}</p>
+                </div>
+                <span class="portal-arrow">↗</span>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h2>{t.bookingTitle}</h2>
+          <ol class="booking-steps">
+            {t.bookingSteps.map((item) => (
+              <li class="booking-step">
+                <span class="step-number">{t.bookingSteps.indexOf(item) + 1}</span>
+                <div>
+                  <strong>{item.step}</strong>
+                  <p>{item.desc}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <div class="info-section">
+          <h2>{t.precautionsTitle}</h2>
+          <ul class="precautions-list">
+            {t.precautions.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <aside class="page-card">
+        <h3>{t.faqTitle}</h3>
+        <dl class="faq-list">
+          {t.faqs.map((faq) => (
+            <div class="faq-item">
+              <dt>{faq.q}</dt>
+              <dd>{faq.a}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <h3>{t.relatedTitle}</h3>
+        <ul class="page-list">
+          <li><a href={localizePath('/official-services', locale)}>{locale === 'zh' ? '官方服务总览' : 'Official Services Overview'}</a></li>
+          <li><a href={localizePath('/destinations', locale)}>{locale === 'zh' ? '吉林目的地' : 'Jilin Destinations'}</a></li>
+          <li><a href={localizePath('/ai-assistant', locale)}>{locale === 'zh' ? 'AI 助手' : 'AI Assistant'}</a></li>
+          <li><a href={localizePath('/cooperation', locale)}>{locale === 'zh' ? '合作咨询' : 'Cooperation'}</a></li>
+        </ul>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .info-section {
+    margin-block: 2.5rem;
+  }
+
+  .info-section h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-block-end: 0.75rem;
+  }
+
+  .section-desc {
+    color: var(--color-muted);
+    margin-block-end: 1.25rem;
+    font-size: 0.9375rem;
+  }
+
+  .portal-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .portal-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.125rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .portal-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  .portal-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .portal-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .portal-body h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-block-end: 0.25rem;
+  }
+
+  .portal-body p {
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .portal-arrow {
+    color: var(--color-primary);
+    font-size: 1.125rem;
+    flex-shrink: 0;
+  }
+
+  .booking-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .booking-step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+  }
+
+  .booking-step strong {
+    display: block;
+    margin-block-end: 0.25rem;
+  }
+
+  .booking-step p {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--color-muted);
+  }
+
+  .precautions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .precautions-list li {
+    position: relative;
+    padding-inline-start: 1.5rem;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
+  .precautions-list li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: var(--color-primary);
+    font-weight: bold;
+  }
+
+  .faq-list {
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .faq-item {
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 1.25rem;
+  }
+
+  .faq-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .faq-item dt {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    margin-block-end: 0.5rem;
+  }
+
+  .faq-item dd {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    line-height: 1.6;
+  }
+
+  .page-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .page-list li {
+    font-size: 0.9375rem;
+  }
+
+  .page-list a {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .page-list a:hover {
+    text-decoration: underline;
+  }
+</style>

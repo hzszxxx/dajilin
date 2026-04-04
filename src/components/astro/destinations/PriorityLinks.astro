@@ -1,0 +1,62 @@
+---
+import SectionTitle from '@/components/astro/destinations/SectionTitle.astro';
+import { getLocaleFromPathname, type Locale } from '@/lib/i18n';
+
+type PriorityItem = {
+  title: string;
+  description: string;
+  href: string;
+};
+
+interface Props {
+  items: PriorityItem[];
+}
+
+const { items } = Astro.props;
+const locale = getLocaleFromPathname(Astro.url.pathname);
+const copy: Record<Locale, { eyebrow: string; title: string; description: string; cta: string }> = {
+  zh: {
+    eyebrow: '优先建设页面',
+    title: '优先建设页面',
+    description: '先完善三条主入口的高质量说明页，统一内容语气和浏览节奏，再向专题与路线扩展。',
+    cta: '进入页面',
+  },
+  en: {
+    eyebrow: 'Priority Pages',
+    title: 'Priority pages',
+    description: 'Improve three core destination pages first, then expand to themes and routes.',
+    cta: 'Open page',
+  },
+  ja: {
+    eyebrow: '優先整備ページ',
+    title: '優先整備ページ',
+    description: '主要3入口ページを先に強化し、その後テーマとルートへ拡張します。',
+    cta: 'ページへ',
+  },
+  ko: {
+    eyebrow: '우선 구축 페이지',
+    title: '우선 구축 페이지',
+    description: '핵심 3개 진입 페이지를 먼저 개선하고 이후 테마/루트로 확장합니다.',
+    cta: '페이지 열기',
+  },
+};
+---
+
+<section class="dst-section">
+  <div class="container">
+    <SectionTitle
+      eyebrow={copy[locale].eyebrow}
+      title={copy[locale].title}
+      description={copy[locale].description}
+    />
+    <div class="dst-priority-grid">
+      {items.map((item) => (
+        <a class="dst-priority-card" href={item.href}>
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+          <span>{copy[locale].cta}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

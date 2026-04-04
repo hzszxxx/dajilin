@@ -1,0 +1,182 @@
+---
+import HeroSection from '@/components/astro/destinations/HeroSection.astro';
+import DestinationGrid from '@/components/astro/destinations/DestinationGrid.astro';
+import AiGuideSection from '@/components/astro/destinations/AiGuideSection.astro';
+import ExploreMoreSection from '@/components/astro/destinations/ExploreMoreSection.astro';
+import type { DetailPage } from '@/lib/content-pages';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+
+interface Props {
+  title: string;
+  description: string;
+  destinations: DetailPage[];
+}
+
+const { title, description, destinations } = Astro.props;
+const locale = getLocaleFromPathname(Astro.url.pathname);
+
+const destinationImages: Record<string, string> = {
+  长春: '/images/home/changchun.jpg',
+  长白山: '/images/home/changbai.jpg',
+  延边: '/images/home/yanbian.jpg',
+};
+
+const destinationTagMap: Record<Locale, Record<string, string>> = {
+  zh: {
+    Changchun: '长春',
+    'Changbai Mountain': '长白山',
+    Yanbian: '延边',
+  },
+  en: {
+    Changchun: 'Changchun',
+    'Changbai Mountain': 'Changbai Mountain',
+    Yanbian: 'Yanbian',
+  },
+  ja: {
+    Changchun: '長春',
+    'Changbai Mountain': '長白山',
+    Yanbian: '延辺',
+  },
+  ko: {
+    Changchun: '창춘',
+    'Changbai Mountain': '창바이산',
+    Yanbian: '옌볜',
+  },
+};
+
+const destinationCopyBySlug: Record<
+  string,
+  Record<Locale, { title: string; description: string; intro: string }>
+> = {
+  changchun: {
+    zh: {
+      title: '长春',
+      description: '从城市文旅、工业文明、亲子与团体体验角度理解长春，帮助用户找到适合自己的吉林入口城市。',
+      intro: '长春适合做吉林旅行的第一站。这里既有城市文旅和生活体验，也能延展到工业研学、企业参访和亲子路线。',
+    },
+    en: {
+      title: 'Changchun',
+      description: 'A key entry city for urban culture, industrial heritage, and family-friendly travel.',
+      intro: 'A practical first stop in Jilin, connecting city life, study tours, and family routes.',
+    },
+    ja: {
+      title: '長春',
+      description: '都市文化・産業文明・親子旅行をつなぐ吉林の主要入口都市。',
+      intro: '吉林旅行の最初の拠点として使いやすく、産業研修や企業訪問にも拡張しやすい地域です。',
+    },
+    ko: {
+      title: '창춘',
+      description: '도시 문화, 산업 문명, 가족 여행을 아우르는 지린의 핵심 진입 도시입니다.',
+      intro: '지린 여행의 첫 거점으로 적합하며 산업 연수와 기업 방문으로도 확장하기 좋습니다.',
+    },
+  },
+  'changbai-mountain': {
+    zh: {
+      title: '长白山',
+      description: '围绕长白山的四季差异、适合人群、官方预约说明和行程时长，建立吉林代表性目的地的说明入口。',
+      intro: '长白山是吉林最具代表性的自然型目的地之一，用户更关心的是四季差异、预约规则和适合安排几天。',
+    },
+    en: {
+      title: 'Changbai Mountain',
+      description: 'A flagship nature destination with strong seasonal differences and planning needs.',
+      intro: 'Focus on season differences, booking notes, and recommended trip length.',
+    },
+    ja: {
+      title: '長白山',
+      description: '四季差と予約情報の整理が重要な吉林の代表的な自然目的地です。',
+      intro: '季節ごとの違い、予約ルール、必要日数の理解を優先して案内します。',
+    },
+    ko: {
+      title: '창바이산',
+      description: '사계절 차이와 예약 정보 정리가 중요한 지린 대표 자연 목적지입니다.',
+      intro: '계절별 차이, 예약 규칙, 권장 일정 일수를 우선 안내합니다.',
+    },
+  },
+  yanbian: {
+    zh: {
+      title: '延边',
+      description: '围绕延边的边境文化、美食体验和路线延展能力，建立更适合内容引流与主题玩法的区域入口。',
+      intro: '延边适合做边境文化、美食与线路体验的专题型目的地。它不是单点游览，更适合和主题玩法、自驾路线一起理解。',
+    },
+    en: {
+      title: 'Yanbian',
+      description: 'A border-culture destination focused on food, local life, and route extension.',
+      intro: 'Best understood as a themed area connected with self-drive and route experiences.',
+    },
+    ja: {
+      title: '延辺',
+      description: '国境文化・食体験・ルート拡張に強いテーマ型目的地です。',
+      intro: '単独観光よりも、テーマ閲覧やドライブルートと組み合わせて理解するのが適しています。',
+    },
+    ko: {
+      title: '옌볜',
+      description: '국경 문화, 미식, 루트 확장에 강한 테마형 목적지입니다.',
+      intro: '단일 관광지보다 테마 탐색과 자가운전 루트와 함께 이해하는 것이 적합합니다.',
+    },
+  },
+};
+
+const coreDestinations = destinations.slice(0, 3).map((item) => ({
+  title: destinationCopyBySlug[item.slug]?.[locale]?.title ?? item.shortTitle,
+  description: destinationCopyBySlug[item.slug]?.[locale]?.description ?? item.description,
+  tag: locale === 'zh' ? item.shortTitle : destinationTagMap[locale][item.eyebrow] ?? item.eyebrow,
+  href: localizePath(item.pathname, locale),
+  image: destinationImages[item.shortTitle] ?? '/images/home/hero-jilin.jpg',
+  imageAlt:
+    locale === 'zh'
+      ? `${item.shortTitle}目的地图片`
+      : `${destinationCopyBySlug[item.slug]?.[locale]?.title ?? item.shortTitle} destination image`,
+}));
+
+const aiQuestionMap: Record<Locale, string[]> = {
+  zh: ['第一次去吉林怎么玩？', '长白山玩几天？', '延边适合自驾吗？'],
+  en: ['How should I plan my first trip to Jilin?', 'How many days for Changbai Mountain?', 'Is Yanbian good for self-driving?'],
+  ja: ['初めて吉林へ行くならどう回る？', '長白山は何日がおすすめ？', '延辺はドライブ向き？'],
+  ko: ['처음 지린을 가면 어떻게 여행하나요?', '창바이산은 며칠이 적당한가요?', '옌볜은 자가운전에 적합한가요?'],
+};
+
+const exploreLinksMap: Record<Locale, { title: string; href: string; description: string }[]> = {
+  zh: [
+    { title: '主题玩法', href: '/themes', description: '看冰雪、文化、自驾与城市体验等主题内容。' },
+    { title: '工业研学', href: '/study-tours', description: '浏览长春工业文明、一汽红旗和企业参访专题。' },
+    { title: '自驾攻略', href: '/self-drive', description: '查看吉林段路线概览、驿站服务和补给建议。' },
+    { title: '官方服务入口', href: '/official-services', description: '先理解官方渠道和服务规则，再继续规划行程。' },
+    { title: '攻略资讯', href: '/guides', description: '持续更新吉林目的地与线路的内容解读。' },
+  ],
+  en: [
+    { title: 'Theme Experiences', href: '/themes', description: 'Ice-snow, culture, self-drive, and city experiences.' },
+    { title: 'Study Tours', href: '/study-tours', description: 'Industrial civilization and enterprise visit topics.' },
+    { title: 'Self-Drive Guide', href: '/self-drive', description: 'Overview, station services, and supply advice.' },
+    { title: 'Official Services', href: '/official-services', description: 'Understand official channels and service rules first.' },
+    { title: 'Guides & News', href: '/guides', description: 'Continuous destination and route content updates.' },
+  ],
+  ja: [
+    { title: 'テーマ体験', href: '/themes', description: '氷雪・文化・自動車旅・都市体験を閲覧。' },
+    { title: '産業研修', href: '/study-tours', description: '産業文明と企業訪問テーマを確認。' },
+    { title: '自驾攻略', href: '/self-drive', description: 'ルート概要、驛站サービス、補給情報。' },
+    { title: '公式サービス', href: '/official-services', description: '公式チャネルと規則を先に理解。' },
+    { title: 'ガイド情報', href: '/guides', description: '目的地とルート内容を継続更新。' },
+  ],
+  ko: [
+    { title: '테마 체험', href: '/themes', description: '빙설, 문화, 자가운전, 도시 체험 콘텐츠.' },
+    { title: '산업 연수', href: '/study-tours', description: '산업 문명 및 기업 방문 주제 확인.' },
+    { title: '자가운전 가이드', href: '/self-drive', description: '루트 개요, 거점 서비스, 보급 정보.' },
+    { title: '공식 서비스', href: '/official-services', description: '공식 채널과 규정을 먼저 이해.' },
+    { title: '가이드 & 소식', href: '/guides', description: '목적지와 루트 콘텐츠를 지속 업데이트.' },
+  ],
+};
+
+const aiQuestions = aiQuestionMap[locale];
+const exploreLinks = exploreLinksMap[locale];
+const localizedExploreLinks = exploreLinks.map((item) => ({
+  ...item,
+  href: localizePath(item.href, locale),
+}));
+---
+
+<main class="dst-page-shell">
+  <HeroSection title={title} description={description} />
+  <DestinationGrid items={coreDestinations} />
+  <AiGuideSection questions={aiQuestions} />
+  <ExploreMoreSection items={localizedExploreLinks} />
+</main>

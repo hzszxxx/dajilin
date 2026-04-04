@@ -1,0 +1,641 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { getLocaleFromPathname } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+
+// Mock station applications data - in production this would come from a database/CMS
+const applications = [
+  {
+    id: 'app-001',
+    stationName: '北极星驿站',
+    stationType: 'comprehensive',
+    location: '吉林省延边州珲春市',
+    contactName: '张明',
+    contactPhone: '138****1234',
+    contactEmail: 'zhang***@example.com',
+    services: ['停车服务', '餐饮服务', '住宿服务', '补给支持'],
+    submittedAt: '2024-03-15',
+    status: 'pending',
+  },
+  {
+    id: 'app-002',
+    stationName: '松花江驿站',
+    stationType: 'rest',
+    location: '吉林省吉林市丰满区',
+    contactName: '李华',
+    contactPhone: '139****5678',
+    contactEmail: 'li***@example.com',
+    services: ['停车服务', '休息空间', '餐饮服务'],
+    submittedAt: '2024-03-14',
+    status: 'pending',
+  },
+  {
+    id: 'app-003',
+    stationName: '长白山补给站',
+    stationType: 'supply',
+    location: '吉林省白山市抚松县',
+    contactName: '王强',
+    contactPhone: '137****9012',
+    contactEmail: 'wang***@example.com',
+    services: ['停车服务', '补给支持'],
+    submittedAt: '2024-03-12',
+    status: 'approved',
+  },
+  {
+    id: 'app-004',
+    stationName: '延边民俗驿站',
+    stationType: 'comprehensive',
+    location: '吉林省延边州延吉市',
+    contactName: '赵丽',
+    contactPhone: '136****3456',
+    contactEmail: 'zhao***@example.com',
+    services: ['停车服务', '休息空间', '餐饮服务', '住宿服务', '团队服务'],
+    submittedAt: '2024-03-10',
+    status: 'rejected',
+  },
+];
+
+const localized = {
+  zh: {
+    title: '驿站管理 | 管理后台 | dajilin.net',
+    description: '管理驿站合作伙伴申请和审批',
+    pageTitle: '驿站管理',
+    statsTitle: '数据概览',
+    totalApplications: '申请总数',
+    pendingReview: '待审核',
+    approved: '已通过',
+    rejected: '已拒绝',
+    applicationsTitle: '合作申请列表',
+    cols: {
+      stationName: '驿站名称',
+      stationType: '驿站类型',
+      location: '所在地',
+      contact: '联系人',
+      services: '服务项目',
+      submittedAt: '申请时间',
+      status: '状态',
+      actions: '操作',
+    },
+    status: {
+      pending: '待审核',
+      approved: '已通过',
+      rejected: '已拒绝',
+    },
+    actions: {
+      view: '查看',
+      approve: '通过',
+      reject: '拒绝',
+    },
+    typeLabels: {
+      parking: '停车场',
+      rest: '休息站',
+      dining: '餐饮店',
+      accommodation: '住宿',
+      supply: '补给站',
+      comprehensive: '综合服务',
+    },
+    noData: '暂无申请记录',
+    filterAll: '全部',
+    filterPending: '待审核',
+    filterApproved: '已通过',
+    filterRejected: '已拒绝',
+  },
+  en: {
+    title: 'Station Management | Admin | dajilin.net',
+    description: 'Manage station partnership applications and approvals',
+    pageTitle: 'Station Management',
+    statsTitle: 'Overview',
+    totalApplications: 'Total Applications',
+    pendingReview: 'Pending',
+    approved: 'Approved',
+    rejected: 'Rejected',
+    applicationsTitle: 'Partnership Applications',
+    cols: {
+      stationName: 'Station Name',
+      stationType: 'Type',
+      location: 'Location',
+      contact: 'Contact',
+      services: 'Services',
+      submittedAt: 'Submitted',
+      status: 'Status',
+      actions: 'Actions',
+    },
+    status: {
+      pending: 'Pending',
+      approved: 'Approved',
+      rejected: 'Rejected',
+    },
+    actions: {
+      view: 'View',
+      approve: 'Approve',
+      reject: 'Reject',
+    },
+    typeLabels: {
+      parking: 'Parking',
+      rest: 'Rest Stop',
+      dining: 'Restaurant',
+      accommodation: 'Accommodation',
+      supply: 'Supply Station',
+      comprehensive: 'Full Service',
+    },
+    noData: 'No applications',
+    filterAll: 'All',
+    filterPending: 'Pending',
+    filterApproved: 'Approved',
+    filterRejected: 'Rejected',
+  },
+  ja: {
+    title: '驛駅管理 | 管理后台 | dajilin.net',
+    description: '驛站パートナー申請と承認を管理',
+    pageTitle: '驛駅管理',
+    statsTitle: 'データ概要',
+    totalApplications: '申請総数',
+    pendingReview: '審査待ち',
+    approved: '承認済み',
+    rejected: '却下',
+    applicationsTitle: '協力申請リスト',
+    cols: {
+      stationName: '驛駅名称',
+      stationType: '驛駅タイプ',
+      location: '所在地',
+      contact: '連絡先',
+      services: 'サービス項目',
+      submittedAt: '申請時間',
+      status: 'ステータス',
+      actions: '操作',
+    },
+    status: {
+      pending: '審査待ち',
+      approved: '承認済み',
+      rejected: '却下',
+    },
+    actions: {
+      view: '詳細',
+      approve: '承認',
+      reject: '却下',
+    },
+    typeLabels: {
+      parking: '駐車場',
+      rest: '休憩所',
+      dining: '飲食店',
+      accommodation: '宿泊',
+      supply: '補給ステーション',
+      comprehensive: '総合サービス',
+    },
+    noData: '申請記録なし',
+    filterAll: '全部',
+    filterPending: '審査待ち',
+    filterApproved: '承認済み',
+    filterRejected: '却下',
+  },
+  ko: {
+    title: '거점 관리 | 관리后台 | dajilin.net',
+    description: '거점 파트너 신청과 승인을 관리',
+    pageTitle: '거점 관리',
+    statsTitle: '데이터 개요',
+    totalApplications: '신청 총수',
+    pendingReview: '심사 대기',
+    approved: '승인됨',
+    rejected: '거절됨',
+    applicationsTitle: '협력 신청 목록',
+    cols: {
+      stationName: '거점명',
+      stationType: '거점 유형',
+      location: '소재지',
+      contact: '담당자',
+      services: '서비스 항목',
+      submittedAt: '신청 시간',
+      status: '상태',
+      actions: '조작',
+    },
+    status: {
+      pending: '심사 대기',
+      approved: '승인됨',
+      rejected: '거절됨',
+    },
+    actions: {
+      view: '상세',
+      approve: '승인',
+      reject: '거절',
+    },
+    typeLabels: {
+      parking: '주차장',
+      rest: '휴게소',
+      dining: '음식점',
+      accommodation: '숙박',
+      supply: '보급소',
+      comprehensive: '종합 서비스',
+    },
+    noData: '신청 기록 없음',
+    filterAll: '전체',
+    filterPending: '심사 대기',
+    filterApproved: '승인됨',
+    filterRejected: '거절됨',
+  },
+};
+
+const t = localized[locale];
+
+const stats = {
+  total: applications.length,
+  pending: applications.filter((a) => a.status === 'pending').length,
+  approved: applications.filter((a) => a.status === 'approved').length,
+  rejected: applications.filter((a) => a.status === 'rejected').length,
+};
+---
+
+<BaseLayout title={t.title} description={t.description} locale={locale}>
+  <Header />
+  <main class="page-shell admin-shell">
+    <div class="container">
+      <div class="admin-header">
+        <h1>{t.pageTitle}</h1>
+        <p class="admin-desc">{t.description}</p>
+      </div>
+
+      <section class="stats-section">
+        <h2>{t.statsTitle}</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-value">{stats.total}</span>
+            <span class="stat-label">{t.totalApplications}</span>
+          </div>
+          <div class="stat-card pending">
+            <span class="stat-value">{stats.pending}</span>
+            <span class="stat-label">{t.pendingReview}</span>
+          </div>
+          <div class="stat-card approved">
+            <span class="stat-value">{stats.approved}</span>
+            <span class="stat-label">{t.approved}</span>
+          </div>
+          <div class="stat-card rejected">
+            <span class="stat-value">{stats.rejected}</span>
+            <span class="stat-label">{t.rejected}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="applications-section">
+        <div class="section-header">
+          <h2>{t.applicationsTitle}</h2>
+          <div class="filters">
+            <button class="filter-btn active" data-filter="all">{t.filterAll}</button>
+            <button class="filter-btn" data-filter="pending">{t.filterPending}</button>
+            <button class="filter-btn" data-filter="approved">{t.filterApproved}</button>
+            <button class="filter-btn" data-filter="rejected">{t.filterRejected}</button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="applications-table">
+            <thead>
+              <tr>
+                <th>{t.cols.stationName}</th>
+                <th>{t.cols.stationType}</th>
+                <th>{t.cols.location}</th>
+                <th>{t.cols.contact}</th>
+                <th>{t.cols.services}</th>
+                <th>{t.cols.submittedAt}</th>
+                <th>{t.cols.status}</th>
+                <th>{t.cols.actions}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {applications.map((app) => (
+                <tr data-status={app.status}>
+                  <td class="station-name">{app.stationName}</td>
+                  <td>{t.typeLabels[app.stationType as keyof typeof t.typeLabels] || app.stationType}</td>
+                  <td>{app.location}</td>
+                  <td>
+                    <div class="contact-info">
+                      <span>{app.contactName}</span>
+                      <small>{app.contactPhone}</small>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="services-cell">
+                      {app.services.slice(0, 2).map((s) => (
+                        <span class="service-tag">{s}</span>
+                      ))}
+                      {app.services.length > 2 && (
+                        <span class="service-more">+{app.services.length - 2}</span>
+                      )}
+                    </div>
+                  </td>
+                  <td>{app.submittedAt}</td>
+                  <td>
+                    <span class={`status-badge ${app.status}`}>
+                      {t.status[app.status as keyof typeof t.status]}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="action-buttons">
+                      <button class="action-btn view" title={t.actions.view}>👁</button>
+                      {app.status === 'pending' && (
+                        <>
+                          <button class="action-btn approve" title={t.actions.approve}>✓</button>
+                          <button class="action-btn reject" title={t.actions.reject}>✗</button>
+                        </>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {applications.length === 0 && (
+          <p class="no-data">{t.noData}</p>
+        )}
+      </section>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .admin-shell {
+    padding: 2rem 0;
+    background: #f5f5f5;
+  }
+
+  .admin-header {
+    margin-bottom: 2rem;
+  }
+
+  .admin-header h1 {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .admin-desc {
+    color: var(--color-text-secondary, #666);
+  }
+
+  .stats-section {
+    margin-bottom: 2rem;
+  }
+
+  .stats-section h2 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+
+  .stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary, #666);
+  }
+
+  .stat-card.pending .stat-value {
+    color: var(--accent);
+  }
+
+  .stat-card.approved .stat-value {
+    color: #10b981;
+  }
+
+  .stat-card.rejected .stat-value {
+    color: #ef4444;
+  }
+
+  .applications-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .filters {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .filter-btn {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid var(--color-border, #d1d5db);
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--color-primary, var(--primary));
+  }
+
+  .filter-btn.active {
+    background: var(--color-primary, var(--primary));
+    color: white;
+    border-color: var(--color-primary, var(--primary));
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .applications-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .applications-table th {
+    text-align: left;
+    padding: 0.75rem;
+    border-bottom: 2px solid var(--color-border, #eee);
+    color: var(--color-text-secondary, #666);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .applications-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--color-border, #eee);
+    vertical-align: middle;
+  }
+
+  .applications-table tbody tr:hover {
+    background: #fafafa;
+  }
+
+  .station-name {
+    font-weight: 500;
+  }
+
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .contact-info small {
+    color: var(--color-text-secondary, #666);
+    font-size: 0.8rem;
+  }
+
+  .services-cell {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .service-tag {
+    background: var(--color-surface, #f3f4f6);
+    padding: 0.125rem 0.375rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+  }
+
+  .service-more {
+    font-size: 0.75rem;
+    color: var(--color-primary, var(--primary));
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .status-badge.pending {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .status-badge.approved {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .status-badge.rejected {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 0.375rem;
+  }
+
+  .action-btn {
+    padding: 0.375rem 0.5rem;
+    border: 1px solid var(--color-border, #d1d5db);
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.15s;
+  }
+
+  .action-btn:hover {
+    border-color: var(--color-primary, var(--primary));
+  }
+
+  .action-btn.approve:hover {
+    background: #d1fae5;
+    border-color: #10b981;
+  }
+
+  .action-btn.reject:hover {
+    background: #fee2e2;
+    border-color: #ef4444;
+  }
+
+  .no-data {
+    text-align: center;
+    padding: 3rem;
+    color: var(--color-text-secondary, #666);
+  }
+
+  @media (max-width: 1024px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .section-header {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .applications-table {
+      font-size: 0.8rem;
+    }
+
+    .applications-table th,
+    .applications-table td {
+      padding: 0.5rem;
+    }
+  }
+</style>
+
+<script>
+  // Client-side filtering
+  document.addEventListener('DOMContentLoaded', () => {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const tableRows = document.querySelectorAll('.applications-table tbody tr');
+
+    filterBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const filter = btn.getAttribute('data-filter');
+
+        filterBtns.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        tableRows.forEach((row) => {
+          const status = row.getAttribute('data-status');
+          if (filter === 'all' || status === filter) {
+            (row as HTMLElement).style.display = '';
+          } else {
+            (row as HTMLElement).style.display = 'none';
+          }
+        });
+      });
+    });
+  });
+</script>

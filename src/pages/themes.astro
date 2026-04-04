@@ -1,0 +1,122 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { buildCollectionPageSchema } from '@/lib/schema';
+import { themePages } from '@/lib/content-pages';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+const copy: Record<
+  Locale,
+  {
+    title: string;
+    description: string;
+    schemaName: string;
+    eyebrow: string;
+    heading: string;
+    themeTitle: string;
+    themeItems: string[];
+    roleTitle: string;
+    roleBody: string;
+    sideTitle: string;
+    sideBody: string;
+  }
+> = {
+  zh: {
+    title: '主题玩法 | dajilin.net',
+    description: '围绕冰雪、避暑、自驾、边境、亲子、美食和工业文明等主题，帮助用户按兴趣理解吉林旅游。',
+    schemaName: '主题玩法',
+    eyebrow: 'Themes',
+    heading: '主题玩法',
+    themeTitle: '核心主题方向',
+    themeItems: ['冰雪吉林', '避暑与山地自然', '边境与延边体验', '自驾攻略与驿站', '工业文明与研学体验'],
+    roleTitle: '主题页的作用',
+    roleBody:
+      '如果用户不是先决定去哪，而是先决定想体验什么，那么主题玩法会比目的地页更适合。每个主题都会推荐适合该主题的目的地、路线和玩法建议。',
+    sideTitle: '内容说明',
+    sideBody: '主题玩法串联目的地、路线和攻略内容，帮助用户按兴趣探索吉林。',
+  },
+  en: {
+    title: 'Themes | dajilin.net',
+    description: 'Explore Jilin by themes such as snow season, mountain summer, self-drive, border culture, and industrial heritage.',
+    schemaName: 'Themes',
+    eyebrow: 'Themes',
+    heading: 'Theme Experiences',
+    themeTitle: 'Core Theme Areas',
+    themeItems: ['Ice & Snow Jilin', 'Mountain Summer Escapes', 'Border & Yanbian Experiences', 'Self-Drive Guide & Stations', 'Industrial Heritage & Study Tours'],
+    roleTitle: 'Why Theme Pages Matter',
+    roleBody:
+      'Some users choose experiences before destinations. Theme pages reorganize destinations, routes, and guides around intent.',
+    sideTitle: 'Content Overview',
+    sideBody: 'Theme pages connect destinations, routes, and guides to help users explore Jilin by interest.',
+  },
+  ja: {
+    title: 'テーマ | dajilin.net',
+    description: '雪季、避暑、ドライブ、国境文化、親子、美食、産業文明などの観点から吉林旅行を理解できます。',
+    schemaName: 'テーマ',
+    eyebrow: 'Themes',
+    heading: 'テーマ体験',
+    themeTitle: 'コアテーマ方向',
+    themeItems: ['氷雪吉林', '避暑と山岳自然', '国境と延辺体験', '自動車旅行と驛站', '産業文明と研修体験'],
+    roleTitle: 'テーマページの役割',
+    roleBody: '行き先より体験軸で探したいユーザー向けに、目的地・ルート・攻略を再構成します。',
+    sideTitle: 'コンテンツ概要',
+    sideBody: 'テーマPages は興味別に吉林を探求するための入口で、目的地・ルート・ガイドをつなげます。',
+  },
+  ko: {
+    title: '테마 | dajilin.net',
+    description: '빙설, 피서, 자가운전, 국경 문화, 가족 여행, 미식, 산업 문명 등 테마 중심으로 지린을 탐색합니다.',
+    schemaName: '테마',
+    eyebrow: 'Themes',
+    heading: '테마 체험',
+    themeTitle: '핵심 테마 방향',
+    themeItems: ['빙설 지린', '피서와 산악 자연', '국경·옌볜 체험', '자가운전·거점 서비스', '산업 문명·연수 체험'],
+    roleTitle: '테마 페이지의 역할',
+    roleBody: '목적지보다 체험을 먼저 고르는 사용자에게 목적지·루트·가이드를 체험 축으로 재구성해 제공합니다.',
+    sideTitle: '콘텐츠 개요',
+    sideBody: '테마 페이지는 목적지, 루트, 가이드를 연결하여 사용자가 관심별로 지린을 탐색할 수 있도록 지원합니다.',
+  },
+};
+const t = copy[locale];
+---
+
+<BaseLayout title={t.title} description={t.description} schemas={[buildCollectionPageSchema('/themes', t.schemaName, t.description, locale)]} locale={locale}>
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-copy">
+          <div class="eyebrow">{t.eyebrow}</div>
+          <h1>{t.heading}</h1>
+          <p>{t.description}</p>
+        </div>
+
+        <div class="theme-grid-full">
+          {themePages.map((item) => (
+            <a class="theme-card" href={localizePath(item.pathname, locale)}>
+              <div class="theme-card-body">
+                <h3>{locale === 'zh' ? item.shortTitle : item.eyebrow}</h3>
+                <p>{locale === 'zh' ? item.description : t.description}</p>
+              </div>
+              <div class="theme-card-arrow" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+      <aside class="page-card">
+        <h3>{t.sideTitle}</h3>
+        <ul class="page-list page-list-full">
+          {themePages.map((page) => (
+            <li><a href={localizePath(page.pathname, locale)}>{locale === 'zh' ? page.title : page.eyebrow}</a></li>
+          ))}
+        </ul>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,46 @@
+---
+import { getHeaderText, getLanguageSwitcherItems, getLocaleFromPathname, getNavItems, localizePath } from '@/lib/i18n';
+import CartIcon from '@/components/astro/CartIcon.astro';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+const navItems = getNavItems(locale);
+const languageItems = getLanguageSwitcherItems(Astro.url.pathname);
+const headerText = getHeaderText(locale);
+const brandMark = locale === 'zh' ? '大' : 'D';
+---
+
+<header class="site-header">
+  <div class="container topbar">
+    <a class="brand" href={localizePath('/', locale)}>
+      <span class="brand-mark">{brandMark}</span>
+      <span class="brand-copy">
+        <strong>dajilin.net</strong>
+        <small>{headerText.subtitle}</small>
+      </span>
+    </a>
+    <div class="header-right">
+      <div class="header-badge">{headerText.badge}</div>
+      <div class="lang-switcher" aria-label="Language switcher">
+        {languageItems.map((item) => (
+          <a href={item.href} class={item.active ? 'is-active' : ''}>
+            {item.label}
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+  <nav class="main-nav">
+    <div class="container nav-inner">
+      <div class="nav-links">
+        {navItems.map((item) => (
+          <a href={item.href}>{item.label}</a>
+        ))}
+      </div>
+      <CartIcon locale={locale} />
+    </div>
+  </nav>
+</header>
+
+<style>
+  /* .nav-links styles moved to src/styles/index.css */
+</style>

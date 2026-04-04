@@ -1,0 +1,13 @@
+---
+import OfficialServicesPage from '@/pages/official-services.astro';
+import { supportedLocales } from '@/lib/i18n';
+
+export const getStaticPaths = () =>
+  supportedLocales
+    .filter((locale) => locale !== 'zh')
+    .map((lang) => ({
+      params: { lang },
+    }));
+---
+
+<OfficialServicesPage />

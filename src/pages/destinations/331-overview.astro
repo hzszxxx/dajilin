@@ -1,0 +1,234 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { buildWebPageSchema, buildCollectionPageSchema } from '@/lib/schema';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname) as Locale;
+const isZh = locale === 'zh';
+
+const pageTitle = '吉林331国道路线概览';
+const pageDescription = '建立331吉林段作为重要线路资源的总入口，帮助用户先理解线路逻辑，再继续看驿站、自驾与补给内容。';
+const pagePath = '/destinations/331-overview';
+
+const copy: Record<Locale, {
+  eyebrow: string;
+  intro: string;
+  whatIsThis: string;
+  whatIsThisBody: string;
+  audience: string;
+  audienceList: string[];
+  highlights: string;
+  highlightsList: string[];
+  howToPlan: string;
+  howToPlanBody: string;
+  howToPlanList: string[];
+  officialEntry: string;
+  officialEntryBody: string;
+  notes: string;
+  notesList: string[];
+  consultEntry: string;
+  faqTitle: string;
+  faqs: { q: string; a: string }[];
+}> = {
+  zh: {
+    eyebrow: '331国道',
+    intro: '这是一张总入口页面，用于解释331吉林段是什么、适合谁、应该怎么继续浏览和理解。',
+    whatIsThis: '什么是331国道',
+    whatIsThisBody: '331国道（丹阿线）是中国重要的边境公路之一，起点为辽宁丹东，终点为新疆阿勒泰。吉林段是这条边境公路的重要组成部分，途经延边地区、边境沿线和多个特色驿站。它不是单一景区，而是一条可以深度体验边境文化的线路型目的地。',
+    audience: '适合哪些用户',
+    audienceList: ['自驾与公路旅行爱好者', '摄影和内容型旅行者', '喜欢边境文化与自然景观的用户', '希望深度探索吉林的用户', '喜欢路线规划和多日行程的旅行者'],
+    highlights: '有哪些看点',
+    highlightsList: ['边境风光：沿途边境景观、自然风光和地域文化', '延边段：经过延边朝鲜族自治州，体验边境民俗', '特色驿站：沿线多个驿站提供休整和补给服务', '331标识：G331标识牌和起点纪念点', '边境村落：沿途经过的特色边境村落', '自然景观：山区、森林、河流等自然景观变化'],
+    howToPlan: '如何安排',
+    howToPlanBody: '331国道的安排逻辑以路线体验和驿站节点为核心：',
+    howToPlanList: ['吉林段精华：延吉到珲春段是经典线路，适合 2-3 天自驾', '完整吉林段：从起点到终点完整穿越，适合 4-5 天或更长', '分段体验：根据时间选择其中一段或几段重点体验', '季节建议：秋季层林尽染是最佳自驾季节，冬季需注意冰雪路况'],
+    officialEntry: '官方入口与说明',
+    officialEntryBody: '331国道吉林段属于国家普通公路系统，沿途有明确的交通标识。驿站服务和补给设施由沿线经营主体提供，非官方统一运营。自驾出行前建议了解最新的路况信息和驿站开放情况。',
+    notes: '注意事项',
+    notesList: ['边境地区需遵守相关规定，不得拍摄军事设施', '部分路段可能有交通限制或施工，注意提前查询路况', '驿站开放情况可能随季节变化，建议提前确认', '边境地区手机信号可能不稳定，提前做好准备', '多日行程建议准备充足的补给和应急物资'],
+    consultEntry: '咨询入口',
+    faqTitle: '常见问题',
+    faqs: [
+      { q: '331吉林段适合什么类型游客？', a: '更适合自驾、摄影、线路型和主题体验型用户。它是一条线路型目的地，不是单点景区。' },
+      { q: '331国道吉林段需要几天？', a: '根据体验深度不同，精华段2-3天，完整穿越需要4-5天或更长。建议根据时间和兴趣选择分段或全程。' },
+      { q: '先看哪一页最合适？', a: '建议先看路线概览，再看驿站服务、补给建议和具体玩法页，形成有顺序的理解路径。' },
+      { q: '331和延边是什么关系？', a: '延边地区是331国道吉林段的重要组成部分，两者可以联动理解，边境体验和自驾主题可以一起规划。' },
+    ],
+  },
+  en: {
+    eyebrow: 'Route 331',
+    intro: 'This is a gateway page explaining what Jilin Section of Route 331 is, who its suitable for, and how to continue browsing and understanding it.',
+    whatIsThis: 'What is Route 331',
+    whatIsThisBody: 'Route 331 (Dan-Axle Line) is one of Chinas important border highways, starting from Dandong in Liaoning and ending in Altay in Xinjiang. The Jilin section is an important part of this border highway, passing through the Yanbian area, border routes, and multiple characteristic stations.',
+    audience: 'Who is it suitable for',
+    audienceList: ['Self-drive and road trip enthusiasts', 'Photography and content-driven travelers', 'Users who enjoy border culture and natural scenery', 'Users wanting to deeply explore Jilin', 'Travelers who like route planning and multi-day itineraries'],
+    highlights: 'Key Highlights',
+    highlightsList: ['Border scenery: Along the route border landscapes, natural scenery and regional culture', 'Yanbian section: Passing through Yanbian Korean Autonomous Prefecture, experience border customs', 'Characteristic stations: Multiple stations along the route provide rest and supply services', 'Route 331 markers: G331 signage and starting point memorial', 'Border villages: Characteristic border villages along the route', 'Natural landscapes: Mountain, forest, river and other natural landscape changes'],
+    howToPlan: 'How to Plan',
+    howToPlanBody: 'Planning for Route 331 centers on route experience and station nodes:',
+    howToPlanList: ['Jilin section highlights: Yanji to Hunchun is the classic route, suitable for 2-3 days self-drive', 'Complete Jilin section: Full traverse from start to end, suitable for 4-5 days or longer', 'Segmented experience: Choose one or several key sections based on time', 'Seasonal advice: Autumn foliage is the best self-drive season; winter requires attention to ice and snow road conditions'],
+    officialEntry: 'Official Entry Points',
+    officialEntryBody: 'Route 331 Jilin section belongs to the national ordinary highway system with clear traffic signs. Station services and supply facilities are provided by operators along the route, not officially unified. Check latest road conditions and station information before your trip.',
+    notes: 'Important Notes',
+    notesList: ['Border areas must comply with regulations; no photography of military facilities', 'Some sections may have traffic restrictions or construction; check road conditions in advance', 'Station availability may vary with seasons; confirm in advance', 'Mobile signals may be unstable in border areas; prepare accordingly', 'Multi-day trips require sufficient supplies and emergency materials'],
+    consultEntry: 'Consultation',
+    faqTitle: 'FAQ',
+    faqs: [
+      { q: 'What type of traveler is Route 331 suitable for?', a: 'Its best for self-drive, photography, route-based, and themed experience travelers. Its a route-type destination, not a single attraction.' },
+      { q: 'How many days for Route 331 Jilin section?', a: 'Highlights section takes 2-3 days, full traverse takes 4-5 days or longer. Choose based on time and interest.' },
+      { q: 'Which page should I look at first?', a: 'Recommended to first view the route overview, then station services, supply advice, and specific play pages for an organized understanding path.' },
+      { q: 'What is the relationship between Route 331 and Yanbian?', a: 'Yanbian is an important part of Route 331 Jilin section. They can be understood together; border experience and self-drive themes can be planned together.' },
+    ],
+  },
+  ja: {
+    eyebrow: '331国道',
+    intro: 'これは331吉林段とは何か、誰に適しているか、どのように閲覧と理解を続けていくかを説明する総入口ページです。',
+    whatIsThis: '331国道とは',
+    whatIsThisBody: '331国道（丹阿線）は中国重要な国境公路の一つで、起点は遼寧丹東、終点は新疆アルタイです。吉林段はこの国境公路の重要组成部分で、延辺地域、国境沿い、複数の特色ある驛站を通り抜けます。',
+    audience: 'こんなユーザーに最適',
+    audienceList: ['自驾と公路旅行愛好家', '写真撮影とコンテンツ型旅行者', '国境文化と自然景色の的用户', '吉林を深度的に探検したいユーザー', 'ルート計画と複数日行程を 좋아する旅行者'],
+    highlights: '見どころ',
+    highlightsList: ['国境风光：沿道の国境景观、自然景色と地域文化', '延辺段：延辺朝鮮族自治州を通り、国境民俗を体験', '特色驛站：沿道の複数の驛站が休整と補給サービスを提供', '331标识：G331标识牌と起点記念点', '国境村落：沿道にある特色ある国境村落', '自然景觀：山間部、森林、河川などの自然景觀変化'],
+    howToPlan: '周り方',
+    howToPlanBody: '331国道の旅程計画はルート体験と驛站ノードを为核心とします：',
+    howToPlanList: ['吉林段精华：延吉から琿春への区間が古典ルートで、2-3日の自驾に適する', '完整吉林段：起点から終点まで完全横断で、4-5日またはそれ以上に適する', '分段体験：時間に応じて1区間または複数区間を重点的に体験', '季節提案：秋は紅葉が最重要な自驾シーズン、冬季は冰雪道路状況に注意が必要'],
+    officialEntry: '公式入口と説明',
+    officialEntryBody: '331国道吉林段は国家普通公路系統に属し、沿道には明確な交通标识があります。驛站サービスと補給施設は沿道経営主体が提供し、非公式統一運営です。自家用車出発前に最新の道路状況と驛站開放状況を確認してください。',
+    notes: '注意事項',
+    notesList: ['国境地域では相关规定を遵守し、軍事施設は撮影禁止', '一部区間には交通制限または施工がある場合があり、事前に道路状況を確認する必要があります', '驛站開放状況は季節によって変化する可能があり、事前に確認することをお勧めします', '国境地域ではモバイル信号が不安定になる場合があり、提前做好准备が必要です', '複数日行程では十分な補給と緊急物資の準備をお勧めします'],
+    consultEntry: '相談入口',
+    faqTitle: 'よくある質問',
+    faqs: [
+      { q: '331吉林段はどのような旅行者に適していますか？', a: 'より自驾、写真撮影、ルート型、テーマ体験型ユーザーに適しています。单一観光地ではなく、ルート型目的地です。' },
+      { q: '331国道吉林段は几日間に必要がありますか？', a: '体験深度により異なります。精华区間は2-3日、完全横断は4-5日またはそれ以上です。時間と兴趣に応じて区間または全程を選択してください。' },
+      { q: '最初にどのページを見るのが最適ですか？', a: '最初にルート概観を確認し、次に驛站サービス、補給提案、具体的な玩法ページを閲覧して、順序的な理解フローを形成することをお勧めします。' },
+      { q: '331と延辺の関係は何ですか？', a: '延辺地区は331国道吉林段の重要组成部分で、两者は連動して理解でき、国境体験と自驾テーマを一緒に計画できます。' },
+    ],
+  },
+  ko: {
+    eyebrow: '331 국도',
+    intro: '이는 331 지린 구간이 무엇인지, 누구에게 적합한지, 어떻게 계속 둘러보고 이해해야 하는지를 설명하는 총 입구 페이지입니다.',
+    whatIsThis: '331 국도란',
+    whatIsThisBody: '331 국도(단아선)는 중국 중요한 국경 도로의 하나로, 기점은 랴오닝 단둥, 종점은 신장 아리타이입니다. 지린 구간은 이 국경 도로의 중요한 구성 부분으로, 연변 지역, 국경 졸계,複数の 특색 있는 거점을 지나갑니다.',
+    audience: '이런 사용자에게 적합',
+    audienceList: ['자가운전과 도로 여행 애호가', '사진 촬영과 콘텐츠형 여행자', '국경 문화와 자연 풍경을 좋아하는 사용자', '지린을 심층적으로 탐구하고 싶은 사용자', '노선 계획과 여러 날 일정을 좋아하는 여행자'],
+    highlights: '주요 볼거리',
+    highlightsList: ['국경 풍광:沿途 국경 풍경, 자연 풍경과 지역 문화', '연변 구간: 연변 조선족 자치주를 지나며 국경 민속을 체험', '특색 거점:沿途 여러 거점이 휴식과 보급 서비스를 제공', '331 표시: G331 표시판과 기점 기념지', '국경 마을:沿途 특색 있는 국경 마을', '자연 풍광: 산악, 삼림, 하천 등 자연 풍경 변화'],
+    howToPlan: '일정 잡기',
+    howToPlanBody: '331 국도의 일정 계획은 노선 체험과 거점 노드를为核心으로 합니다:',
+    howToPlanList: ['지린 구간精华: 연길에서훈춘 구간이 클래식 노선으로, 2-3일 자가운전에 적합', '완전한 지린 구간: 기점에서 종점까지 완전 횡단으로, 4-5일 또는 그 이상에 적합', '구간 체험: 시간에 따라 1개 구간 또는 여러 구간을 중점적으로 체험', '계절 제안: 가을은 단풍이 최적의 자가운전 시즌, 겨울은 눈과 얼음 도로 상황에 주의가 필요합니다'],
+    officialEntry: '공식 입구와 설명',
+    officialEntryBody: '331 국도 지린 구간은 국가 일반 도로 시스템에 속하며,沿途에는 명확한 교통 표시가 있습니다. 거점 서비스와 보급 시설은沿途 경영주가 제공하며, 공식 통일 운영이 아닙니다. 자가운전 출발 전에 최신 도로 상황과 거점 개방 상황을 확인하세요.',
+    notes: '주의사항',
+    notesList: ['국경 지역에서는相关规定을 준수하고, 군사 시설 촬영은 금지됩니다', '일부 구간에는 교통 제한 또는 시공이 있을 수 있어事前に 도로 상황을 확인해야 합니다', '거점 개방 상황은 계절에 따라 변화할 수 있어事前に 확인하는 것이 좋습니다', '국경 지역에서는 모바일 신호가 불안정할 수 있어事前に 준비가 필요합니다', '여러 날 일정에서는 충분한 보급과 비상 물자의 준비를 권장합니다'],
+    consultEntry: '상담 입구',
+    faqTitle: '자주 묻는 질문',
+    faqs: [
+      { q: '331 지린 구간은 어떤 여행자에게 적합합니까?', a: 'より자가운전, 사진 촬영, 노선형, 테마 체험형 사용자에게 적합합니다. 단일 관광지가 아니라 노선형 목적지입니다.' },
+      { q: '331 국도 지린 구간은 며칠이 필요합니까?', a: '체험 깊이에 따라 다릅니다.精华 구간은 2-3일, 완전 횡단은 4-5일 또는 그 이상입니다. 시간과兴趣에 따라 구간 또는全程을 선택하세요.' },
+      { q: '먼저 어느 페이지를 보는 것이 좋습니까?', a: '먼저 노선 개요를 보고,次に 거점 서비스, 보급 제안, 구체적인玩法 페이지를 둘러보며 순서적 이해 경로를 형성하는 것이 좋습니다.' },
+      { q: '331과 연변의 관계는 무엇입니까?', a: '연변 지역은 331 국도 지린 구간의 중요한 구성 부분으로, 둘 다 이해하고 연결할 수 있으며, 국경 체험과自驾 테마를 함께 계획할 수 있습니다.' },
+    ],
+  },
+};
+
+const t = copy[locale];
+const schemas = [
+  buildWebPageSchema(pagePath, pageTitle, pageDescription, locale),
+  buildCollectionPageSchema(pagePath, pageTitle, pageDescription, locale),
+];
+---
+
+<BaseLayout title={`${pageTitle} | dajilin.net`} description={pageDescription} schemas={schemas} locale={locale}>
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-hero">
+          <div class="page-copy">
+            <div class="eyebrow">{t.eyebrow}</div>
+            <h1>{isZh ? pageTitle : t.eyebrow}</h1>
+            <p>{isZh ? pageDescription : t.intro}</p>
+          </div>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.whatIsThis}</h2>
+          <p>{t.whatIsThisBody}</p>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.audience}</h2>
+          <ul>
+            {t.audienceList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.highlights}</h2>
+          <ul>
+            {t.highlightsList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.howToPlan}</h2>
+          <p>{t.howToPlanBody}</p>
+          <ul>
+            {t.howToPlanList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.officialEntry}</h2>
+          <p>{t.officialEntryBody}</p>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.notes}</h2>
+          <ul>
+            {t.notesList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.faqTitle}</h2>
+          <div class="faq-list">
+            {t.faqs.map((faq) => (
+              <article class="faq-item">
+                <h3>{faq.q}</h3>
+                <p>{faq.a}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <aside class="page-card">
+        <h3>{isZh ? '建议继续浏览' : 'Continue Reading'}</h3>
+        <ul class="page-list">
+          <li><a href={localizePath('/self-drive', locale)}>{isZh ? '查看自驾攻略主页' : 'View Self-Drive Guide main page'}</a></li>
+          <li><a href={localizePath('/self-drive/play', locale)}>{isZh ? '查看自驾攻略怎么玩' : 'View how to travel Self-Drive'}</a></li>
+          <li><a href={localizePath('/self-drive/stations', locale)}>{isZh ? '查看驿站服务说明' : 'View station services'}</a></li>
+          <li><a href={localizePath('/self-drive/supplies', locale)}>{isZh ? '查看补给与住宿建议' : 'View supplies and stays'}</a></li>
+        </ul>
+
+        <div class="detail-side-card">
+          <h3>{t.consultEntry}</h3>
+          <div class="cta-row">
+            <button class="button" type="button" data-open-ai-widget data-ai-page-url={pagePath}>
+              {isZh ? '先问 AI 助手' : 'Ask AI Assistant'}
+            </button>
+            <a class="button-secondary" href={localizePath('/cooperation', locale)}>
+              {isZh ? '提交咨询' : 'Submit Consultation'}
+            </a>
+          </div>
+        </div>
+
+</aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

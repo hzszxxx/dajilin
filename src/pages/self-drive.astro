@@ -1,0 +1,82 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { buildCollectionPageSchema } from '@/lib/schema';
+import { selfDrivePages } from '@/lib/content-pages';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+const copy: Record<
+  Locale,
+  { title: string; description: string; schemaName: string; heading: string; sideTitle: string; sideDesc: string }
+> = {
+  zh: {
+    title: '自驾攻略 | dajilin.net',
+    description: '围绕吉林自驾旅行、驿站服务、沿线补给、住宿建议和主题路线，建立可持续扩展的自驾攻略内容专区。',
+    schemaName: '自驾攻略',
+    heading: '自驾攻略',
+    sideTitle: '路线说明',
+    sideDesc: '吉林自驾攻略是重要的自驾走廊，沿线驿站提供补给、住宿和旅游服务。',
+  },
+  en: {
+    title: 'Self-Drive Guide | dajilin.net',
+    description: 'A self-drive guide hub for Jilin travel, covering route planning, station services, supplies, stays, and themed routes.',
+    schemaName: 'Self-Drive Guide',
+    heading: 'Self-Drive Guide',
+    sideTitle: 'Route Notes',
+    sideDesc: 'Self-drive in Jilin offers important corridors with stations providing supplies, stays, and tourism services.',
+  },
+  ja: {
+    title: '自驾攻略 | dajilin.net',
+    description: '吉林の自動車旅行、驛站サービス、補給、宿泊、テーマルートを整理したコンテンツエリアです。',
+    schemaName: '自驾攻略',
+    heading: '自驾攻略',
+    sideTitle: 'ルート案内',
+    sideDesc: '吉林FCFFF攻略は吉林の重要なディズァーコラー，沿線の驛站が補給・宿泊・観光サービスを提供します。',
+  },
+  ko: {
+    title: '자가운전 가이드 | dajilin.net',
+    description: '지린 자가운전 여행, 거점 서비스, 보급, 숙박, 테마 루트를 정리한 콘텐츠 허브입니다.',
+    schemaName: '자가운전 가이드',
+    heading: '자가운전 가이드',
+    sideTitle: '루트 안내',
+    sideDesc: '지가운전 가이드는 지린의 중요한 자가운전 통행로로, 연선 거점이 보급·숙박·관광 서비스를 제공합니다.',
+  },
+};
+const t = copy[locale];
+---
+
+<BaseLayout title={t.title} description={t.description} schemas={[buildCollectionPageSchema('/self-drive', t.schemaName, t.description, locale)]} locale={locale}>
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-copy">
+          <div class="eyebrow">Self-Drive Guide</div>
+          <h1>{t.heading}</h1>
+          <p>{t.description}</p>
+        </div>
+
+        <div class="detail-grid">
+          {selfDrivePages.map((page) => (
+            <a class="detail-link-card" href={localizePath(page.pathname, locale)}>
+              <h3>{locale === 'zh' ? page.title : page.eyebrow}</h3>
+              <p>{locale === 'zh' ? page.description : t.description}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+      <aside class="page-card">
+        <h3>{t.sideTitle}</h3>
+        <p>{t.sideDesc}</p>
+        <ul class="page-list">
+          {selfDrivePages.map((page) => (
+            <li><a href={localizePath(page.pathname, locale)}>{locale === 'zh' ? page.shortTitle : page.eyebrow}</a></li>
+          ))}
+        </ul>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

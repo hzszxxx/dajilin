@@ -1,0 +1,57 @@
+---
+import SectionTitle from '@/components/astro/destinations/SectionTitle.astro';
+import { getLocaleFromPathname, type Locale } from '@/lib/i18n';
+
+type ExploreItem = {
+  title: string;
+  href: string;
+  description: string;
+};
+
+interface Props {
+  items: ExploreItem[];
+}
+
+const { items } = Astro.props;
+const locale = getLocaleFromPathname(Astro.url.pathname);
+const copy: Record<Locale, { eyebrow: string; title: string; description: string }> = {
+  zh: {
+    eyebrow: '继续探索',
+    title: '继续探索',
+    description: '从目的地延展到主题玩法、工业研学、路线与官方说明，形成完整的吉林文旅内容路径。',
+  },
+  en: {
+    eyebrow: 'Explore More',
+    title: 'Explore more',
+    description: 'Extend from destinations to themes, study tours, routes, and official services.',
+  },
+  ja: {
+    eyebrow: 'さらに探索',
+    title: 'さらに探索',
+    description: '目的地からテーマ、産業研修、ルート、公式サービスへ拡張します。',
+  },
+  ko: {
+    eyebrow: '더 탐색하기',
+    title: '더 탐색하기',
+    description: '목적지에서 테마, 산업 연수, 루트, 공식 서비스로 확장합니다.',
+  },
+};
+---
+
+<section class="dst-section dst-section-last">
+  <div class="container">
+    <SectionTitle
+      eyebrow={copy[locale].eyebrow}
+      title={copy[locale].title}
+      description={copy[locale].description}
+    />
+    <div class="dst-explore-grid">
+      {items.map((item) => (
+        <a class="dst-explore-card" href={item.href}>
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

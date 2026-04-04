@@ -1,0 +1,132 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import DetailPage from '@/components/astro/DetailPage.astro';
+import { buildCollectionPageSchema } from '@/lib/schema';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+import type { DetailPage as DetailPageType } from '@/lib/content-pages';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+
+const page: DetailPageType = {
+  section: 'study-tours',
+  slug: 'hongqi',
+  pathname: '/guides/hongqi',
+  title: '一汽红旗工业研学介绍页',
+  shortTitle: '一汽红旗研学',
+  description: '围绕一汽与红旗的工业文明、品牌文化和研学价值，建立当前最适合公开主推的工业研学内容页。',
+  eyebrow: 'FAW Hongqi Study',
+  intro: '一汽与红旗是当前最适合公开主推的工业研学资源。红旗品牌代表了中国汽车工业的发展历程，一汽集团则是中国汽车产业的奠基者之一。页面重点是说明看点、适合人群、内容边界和咨询方式。',
+  audience: [
+    '学生研学团体（K12及高等院校）',
+    '品牌与工业文明兴趣用户',
+    '企业与机构参访用户',
+    '亲子家庭与历史文化爱好者',
+  ],
+  highlights: [
+    '品牌辨识度强，中国汽车工业代表性符号',
+    '工业文明与城市名片结合紧密',
+    '红旗历史文化展与现代化生产线结合',
+    '更适合做说明与咨询，而非先做强销售',
+  ],
+  sections: [
+    {
+      title: '一汽/红旗研学看什么',
+      body: '核心是工业文明、品牌文化、制造认知和城市名片的组合体验。红旗品牌从1958年创立至今，承载了中国汽车工业的历史与梦想。',
+      bullets: [
+        '红旗历史文化展：了解品牌发展历程',
+        '现代化生产车间：观摩先进制造工艺',
+        '红旗车型展示：近距离接触代表性产品',
+        '品牌文化墙与影像资料',
+      ],
+    },
+    {
+      title: '线路说明',
+      body: '一汽红旗研学线路通常以展馆参观、生产线观摩和互动体验为主线，适合半日或一日安排。',
+      bullets: [
+        '半日线路：红旗文化展+品牌故事+车型展示',
+        '一日线路：增加生产车间参观+互动体验环节',
+        '可根据团体类型调整参观深度与互动内容',
+      ],
+    },
+    {
+      title: '参访类型',
+      body: '根据不同对象和目的，红旗研学可分为教育研学、商务参访、公众开放日三种主要类型。',
+      bullets: [
+        '教育研学：偏汽车知识科普与职业认知',
+        '商务参访：偏行业交流与对标学习',
+        '公众开放日：偏品牌体验与公众参与',
+      ],
+    },
+    {
+      title: '适合人群分析',
+      body: '红旗研学的核心受众是学生研学团体和对汽车工业、品牌文化感兴趣的用户。',
+      bullets: [
+        'K12学生：适合汽车科普与品牌故事类内容',
+        '大学生：适合产业分析与技术认知类参访',
+        '企业管理者：适合品牌战略与企业管理类交流',
+        '亲子家庭：适合历史文化与产品体验类活动',
+      ],
+    },
+    {
+      title: '注意事项',
+      body: '一汽红旗作为知名企业，参访需遵守企业规定与安全要求。',
+      bullets: [
+        '参访需提前预约，以官方确认时间为准',
+        '生产线区域禁止拍照与录音',
+        '请勿携带易燃易爆物品进入厂区',
+        '研学团体需遵守带队安排与时间规定',
+        '部分VIP区域可能不对外开放',
+      ],
+    },
+  ],
+  notes: [
+    '不默认写立即预订',
+    '以官方或合作接待安排为准',
+    '适合作为工业研学主推页',
+    '可与长春工业文明线路联动',
+  ],
+  faqs: [
+    {
+      question: '一汽红旗研学更适合什么人群？',
+      answer: '适合学校研学、企业参访和对工业文明、品牌文化感兴趣的用户。K12学生偏科普体验，成人团体偏行业交流。',
+    },
+    {
+      question: '参访时间通常多久？',
+      answer: '半日参访约2-3小时，一日参访约5-6小时（含午餐与休息）。具体可结合需求定制。',
+    },
+    {
+      question: '平台能直接安排所有接待细节吗？',
+      answer: '当前以说明和咨询为主，具体安排需要结合官方或合作方规则。',
+    },
+    {
+      question: '可以参观真正的汽车生产线吗？',
+      answer: '生产线参观需根据企业当时的生产状态与安全情况确定，部分时间段可能不开放。',
+    },
+  ],
+  ctas: [
+    { label: '查看长春工业研学总入口', href: '/guides/changchun-industry' },
+    { label: '查看中车长客参访', href: '/guides/crrc' },
+    { label: '查看工业文明线路', href: '/guides/changchun-industry-line' },
+    { label: '咨询研学安排', href: '/cooperation' },
+  ],
+};
+
+const localizedPath = localizePath(page.pathname, locale);
+const localizedTitle = locale === 'zh' ? page.title : page.eyebrow;
+const localizedDescription = locale === 'zh' ? page.description : `FAW Hongqi industrial study tour overview.`;
+---
+
+<BaseLayout
+  title={`${localizedTitle} | dajilin.net`}
+  description={localizedDescription}
+  schemas={[buildCollectionPageSchema(localizedPath, localizedTitle, localizedDescription, locale)]}
+  locale={locale}
+>
+  <Header />
+  <main class="page-shell">
+    <DetailPage page={page} />
+  </main>
+  <Footer />
+</BaseLayout>

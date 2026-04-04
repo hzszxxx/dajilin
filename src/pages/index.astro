@@ -1,0 +1,645 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { siteDescription, siteName } from '@/lib/site';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+import { buildCollectionPageSchema } from '@/lib/schema';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+
+const localizedSeo: Record<Locale, { title: string; description: string }> = {
+  zh: {
+    title: 'dajilin.net | 吉林文旅资源入口',
+    description: siteDescription,
+  },
+  en: {
+    title: 'dajilin.net | Jilin Travel Portal',
+    description: 'A travel gateway for Jilin destinations, Self-Drive Guide, study tours, official services, and AI planning.',
+  },
+  ja: {
+    title: 'dajilin.net | 吉林観光ポータル',
+    description: '吉林の目的地、自驾攻略、産業研修、公式サービス、AI旅程提案をまとめた観光ポータル。',
+  },
+  ko: {
+    title: 'dajilin.net | 지린 관광 포털',
+    description: '지린 목적지, 自驾攻略, 산업 연수, 공식 서비스, AI 일정 추천을 제공하는 관광 포털.',
+  },
+};
+
+const pageText: Record<
+  Locale,
+  {
+    heroKicker: string;
+    heroTitle: string;
+    heroLead: string;
+    heroPrimary: string;
+    heroSecondary: string;
+    sectionAHeading: string;
+    sectionADesc: string;
+    sectionBHeading: string;
+    sectionBDesc: string;
+    sectionCHeading: string;
+    sectionCDesc: string;
+    sectionDHeading: string;
+    sectionDDesc: string;
+    mapHeading: string;
+    mapDesc: string;
+    mapPrimary: string;
+    mapSecondary: string;
+    seasonHeading: string;
+    seasonDesc: string;
+    editorialHeading: string;
+    editorialDesc: string;
+    aiHeading: string;
+    aiDesc: string;
+    aiPrimary: string;
+    aiSecondary: string;
+    exploreHeading: string;
+  }
+> = {
+  zh: {
+    heroKicker: '吉林文旅平台',
+    heroTitle: '开启你的吉林旅程',
+    heroLead: '从城市文化到山地自然，从边境公路到主题玩法，建立你的吉林旅行主线。',
+    heroPrimary: '探索目的地',
+    heroSecondary: 'AI 帮我规划',
+    sectionAHeading: '旅行灵感入口',
+    sectionADesc: '先从四个核心入口切入，快速找到与你行程匹配的内容。',
+    sectionBHeading: '发现吉林的特色体验',
+    sectionBDesc: '按主题浏览内容，或直接进入 AI 导览生成一版个性化行程。',
+    sectionCHeading: '本周推荐路线',
+    sectionCDesc: '编辑精选的 3 条路线入口，适合快速决策。',
+    sectionDHeading: '吉林旅行从这里开始',
+    sectionDDesc: '通过目的地、季节和路线组合，构建适合你的吉林旅行路径。',
+    mapHeading: '吉林旅行从这里开始',
+    mapDesc: '通过目的地、季节和路线组合，构建适合你的吉林旅行路径。',
+    mapPrimary: '查看目的地地图入口',
+    mapSecondary: '查看 自驾攻略路线',
+    seasonHeading: '按季节规划',
+    seasonDesc: '四季对应不同目的地策略，减少试错成本。',
+    editorialHeading: '专题与资讯',
+    editorialDesc: '活动、研学、服务与攻略内容持续更新。',
+    aiHeading: '不知道怎么玩？让 AI 帮你规划',
+    aiDesc: '输入时间、预算和偏好，先得到一版建议路线，再决定是否转人工顾问。',
+    aiPrimary: '进入 AI 导览',
+    aiSecondary: '转人工顾问',
+    exploreHeading: '继续探索',
+  },
+  en: {
+    heroKicker: 'Jilin Cultural & Tourism',
+    heroTitle: 'Start Your Story in Jilin',
+    heroLead: 'From city culture to mountain nature and border highways, build your Jilin travel route.',
+    heroPrimary: 'Explore Destinations',
+    heroSecondary: 'Plan with AI',
+    sectionAHeading: 'Inspiration for your trip',
+    sectionADesc: 'Start from four core entry points and quickly find what fits your itinerary.',
+    sectionBHeading: 'Discover unique experiences in Jilin',
+    sectionBDesc: 'Browse by topics or ask AI to generate a personalized route.',
+    sectionCHeading: 'Weekly Recommended Routes',
+    sectionCDesc: 'Three editor-picked routes to help you decide fast.',
+    sectionDHeading: 'Your Jilin adventure starts here',
+    sectionDDesc: 'Combine destination, season, and route to build your journey.',
+    mapHeading: 'Your Jilin adventure starts here',
+    mapDesc: 'Combine destination, season, and route to build your journey.',
+    mapPrimary: 'View destination map entry',
+    mapSecondary: 'View Self-Drive Guide',
+    seasonHeading: 'Plan by Season',
+    seasonDesc: 'Each season has a different destination strategy.',
+    editorialHeading: 'Topics & Updates',
+    editorialDesc: 'Events, study tours, services, and travel guides are updated continuously.',
+    aiHeading: 'Not sure where to start? Let AI guide you',
+    aiDesc: 'Tell us your time, budget, and preferences to get a practical route first.',
+    aiPrimary: 'Open AI Guide',
+    aiSecondary: 'Talk to Consultant',
+    exploreHeading: 'Explore More',
+  },
+  ja: {
+    heroKicker: '吉林観光プラットフォーム',
+    heroTitle: '吉林の旅を始めよう',
+    heroLead: '都市文化から山岳自然、国境ルートまで、吉林旅行の主線を作れます。',
+    heroPrimary: '目的地を見る',
+    heroSecondary: 'AIで計画',
+    sectionAHeading: '旅のインスピレーション',
+    sectionADesc: '4つの主要入口から、あなたの行程に合う内容を素早く見つけます。',
+    sectionBHeading: '吉林ならではの体験を見つける',
+    sectionBDesc: 'テーマ別で閲覧するか、AIで個別ルートを生成できます。',
+    sectionCHeading: '今週のおすすめルート',
+    sectionCDesc: '編集部が選んだ3ルートで素早く意思決定。',
+    sectionDHeading: '吉林の旅はここから始まる',
+    sectionDDesc: '目的地・季節・ルートを組み合わせて行程を作ります。',
+    mapHeading: '吉林の旅はここから始まる',
+    mapDesc: '目的地・季節・ルートを組み合わせて行程を作ります。',
+    mapPrimary: '目的地マップを見る',
+    mapSecondary: '自驾攻略を見る',
+    seasonHeading: '季節で計画',
+    seasonDesc: '四季ごとに最適な目的地戦略があります。',
+    editorialHeading: '特集と最新情報',
+    editorialDesc: 'イベント、産業研修、サービス、攻略情報を継続更新。',
+    aiHeading: 'どこへ行くか迷ったらAIに相談',
+    aiDesc: '日程・予算・好みを入力し、まず実行可能なルートを取得。',
+    aiPrimary: 'AIガイドへ',
+    aiSecondary: '相談員へ',
+    exploreHeading: 'さらに探す',
+  },
+  ko: {
+    heroKicker: '지린 관광 플랫폼',
+    heroTitle: '지린 여행을 시작하세요',
+    heroLead: '도시 문화부터 산악 자연, 국경 도로까지 지린 여행의 메인 루트를 만드세요.',
+    heroPrimary: '목적지 탐색',
+    heroSecondary: 'AI로 계획',
+    sectionAHeading: '여행 영감 찾기',
+    sectionADesc: '4개의 핵심 진입점에서 일정에 맞는 콘텐츠를 빠르게 찾습니다.',
+    sectionBHeading: '지린의 특별한 경험 찾기',
+    sectionBDesc: '테마별로 보거나 AI로 맞춤 루트를 생성할 수 있습니다.',
+    sectionCHeading: '이번 주 추천 루트',
+    sectionCDesc: '편집 추천 3개 루트로 빠르게 결정하세요.',
+    sectionDHeading: '지린 여행은 여기서 시작됩니다',
+    sectionDDesc: '목적지, 계절, 루트를 조합해 여행 경로를 만드세요.',
+    mapHeading: '지린 여행은 여기서 시작됩니다',
+    mapDesc: '목적지, 계절, 루트를 조합해 여행 경로를 만드세요.',
+    mapPrimary: '목적지 맵 보기',
+    mapSecondary: '自驾攻略 보기',
+    seasonHeading: '계절별 계획',
+    seasonDesc: '계절마다 다른 목적지 전략이 필요합니다.',
+    editorialHeading: '테마와 소식',
+    editorialDesc: '행사, 산업 연수, 서비스, 가이드 콘텐츠를 지속 업데이트합니다.',
+    aiHeading: '어디부터 갈지 모르겠다면 AI에게 물어보세요',
+    aiDesc: '시간, 예산, 취향을 입력하면 실행 가능한 루트를 먼저 제안합니다.',
+    aiPrimary: 'AI 가이드 열기',
+    aiSecondary: '상담사 연결',
+    exploreHeading: '더 보기',
+  },
+};
+
+const seo = localizedSeo[locale];
+const copy = pageText[locale];
+const title = seo.title;
+const description = seo.description;
+const languageTagMap: Record<Locale, string> = { zh: 'zh-CN', en: 'en', ja: 'ja', ko: 'ko' };
+const guidesNameMap: Record<Locale, string> = {
+  zh: '攻略与资讯',
+  en: 'Guides & News',
+  ja: 'ガイド情報',
+  ko: '가이드 & 소식',
+};
+const orgDescriptionMap: Record<Locale, string> = {
+  zh: '吉林文旅资源整合与内容引流平台，聚焦目的地、工业研学、自驾攻略与官方服务说明。',
+  en: 'A Jilin travel portal focused on destinations, study tours, Self-Drive Guide, official services, and AI guidance.',
+  ja: '目的地・産業研修・自驾攻略・公式サービス・AIガイドを中心とした吉林観光ポータル。',
+  ko: '목적지, 산업 연수, 自驾攻略, 공식 서비스, AI 가이드를 중심으로 하는 지린 관광 포털입니다.',
+};
+const schemas = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': 'https://dajilin.net/#organization',
+    name: 'dajilin.net',
+    url: 'https://dajilin.net',
+    description: orgDescriptionMap[locale],
+    areaServed: 'CN',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': 'https://dajilin.net/#website',
+    url: 'https://dajilin.net',
+    name: 'dajilin.net',
+    publisher: { '@id': 'https://dajilin.net/#organization' },
+    inLanguage: languageTagMap[locale],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': `https://dajilin.net${Astro.url.pathname}#webpage`,
+    url: `https://dajilin.net${Astro.url.pathname}`,
+    name: siteName,
+    description,
+    inLanguage: languageTagMap[locale],
+    isPartOf: { '@id': 'https://dajilin.net/#website' },
+    about: { '@id': 'https://dajilin.net/#organization' },
+  },
+  buildCollectionPageSchema('/guides', guidesNameMap[locale], description, locale),
+];
+
+const localizedBlock: Record<
+  Locale,
+  {
+    heroPlans: { title: string; summary: string; tag: string; href: string }[];
+    heroHighlights: string[];
+    trustFacts: { value: string; label: string }[];
+    quickChannels: { title: string; body: string; href: string; image: string }[];
+    discoveryTags: string[];
+    editorialCards: { title: string; body: string; href: string }[];
+    eventCards: { title: string; body: string; href: string }[];
+    seasonCards: { season: string; summary: string; links: { label: string; href: string }[] }[];
+    aiQuestions: string[];
+    topicCards: { title: string; body: string; href: string }[];
+  }
+> = {
+  zh: {
+    heroPlans: [
+      { title: '长春城市人文 3 日线', summary: '适合第一次来吉林，节奏轻、信息密度高。', tag: '城市文化', href: '/destinations/changchun' },
+      { title: '长白山四季景观 5 日线', summary: '景观体验与山地线路结合，适合深度旅行。', tag: '自然探索', href: '/destinations/changbai-mountain' },
+      { title: '延边风情 + 自驾攻略', summary: '边境文化、在地美食与自驾体验联动。', tag: '边境路线', href: '/self-drive' },
+    ],
+    heroHighlights: ['吉林省文旅内容索引', '季节优先路线推荐', 'AI 导览 + 顾问协同服务', '持续更新目的地信息'],
+    trustFacts: [
+      { value: '4 季', label: '全年可规划出行' },
+      { value: '3 大', label: '核心目的地入口' },
+      { value: '5 类', label: '重点内容频道' },
+      { value: 'AI + 人工', label: '双轨导览服务' },
+    ],
+    quickChannels: [
+      { title: '目的地', body: '吉林重点城市与区域入口。', href: '/destinations', image: '/images/home/changchun.jpg' },
+      { title: '玩法体验', body: '主题玩法与路线建议。', href: '/themes', image: '/images/home/yanbian.jpg' },
+      { title: '行前规划', body: '交通、行程与服务说明。', href: '/guides', image: '/images/home/changbai.jpg' },
+      { title: '官方服务', body: '官方渠道与办理提示。', href: '/official-services', image: '/images/home/hero-jilin.jpg' },
+    ],
+    discoveryTags: ['亲子出行', '长白山', '城市漫游', '边境自驾', '工业研学', '自驾攻略', '冰雪季', '美食线路'],
+    editorialCards: [
+      { title: '春季吉林出行建议', body: '用 3-5 天覆盖城市与自然，适合第一次来吉林。', href: '/themes' },
+      { title: '自驾攻略驿站服务梳理', body: '沿线补给、休整和服务点位的一站式入口。', href: '/self-drive/station-services' },
+      { title: '官方服务入口汇总', body: '证件、规则和官方咨询入口统一整理。', href: '/official-services' },
+    ],
+    eventCards: [
+      { title: '冰雪季重点活动', body: '关注雪季热门活动与区域节庆安排。', href: '/themes/ice-snow' },
+      { title: '工业研学专题', body: '围绕一汽/中车等产业线的研学主题内容。', href: '/study-tours' },
+      { title: '吉林攻略资讯更新', body: '持续更新路线建议、目的地内容与实用信息。', href: '/guides' },
+    ],
+    seasonCards: [
+      {
+        season: '春',
+        summary: '林海复苏与城市文化同步上线，适合轻步调深呼吸。',
+        links: [
+          { label: '长春城市线', href: '/destinations/changchun' },
+          { label: '延边风情线', href: '/destinations/yanbian' },
+        ],
+      },
+      {
+        season: '夏',
+        summary: '避暑与山地体验优先，长白山与边境线路进入最佳窗口。',
+        links: [
+          { label: '长白山路线', href: '/destinations/changbai-mountain' },
+          { label: '自驾攻略概览', href: '/self-drive/overview' },
+        ],
+      },
+      {
+        season: '秋',
+        summary: '层林与公路最有层次，适合摄影、自驾与内容型旅行。',
+        links: [
+          { label: '自驾攻略', href: '/self-drive/how-to-travel' },
+          { label: '延边体验', href: '/destinations/yanbian' },
+        ],
+      },
+      {
+        season: '冬',
+        summary: '冰雪吉林进入高光季，雪景、温泉与城市活动更集中。',
+        links: [
+          { label: '冰雪主题', href: '/themes/ice-snow' },
+          { label: '长白山玩法', href: '/destinations/changbai-mountain' },
+        ],
+      },
+    ],
+    aiQuestions: ['我有 3 天，第一次去吉林怎么安排？', '亲子出行，长白山和长春怎么选？', '想自驾，几天更合适？'],
+    topicCards: [
+      { title: '工业研学', body: '学校、机构与企业团队可用的说明与咨询入口。', href: '/study-tours' },
+      { title: '自驾攻略', body: '路线概览、驿站服务与补给建议。', href: '/self-drive' },
+      { title: '官方服务入口', body: '查看官方渠道说明和规则提示。', href: '/official-services' },
+      { title: '攻略资讯', body: '持续更新目的地、路线与专题内容。', href: '/guides' },
+      { title: '主题玩法', body: '冰雪、亲子、文化、摄影等主题化浏览入口。', href: '/themes' },
+    ],
+  },
+  en: {
+    heroPlans: [
+      { title: 'Changchun City Route · 3 Days', summary: 'Best for first-time visitors with a light rhythm.', tag: 'City Culture', href: '/destinations/changchun' },
+      { title: 'Changbai Mountain Route · 5 Days', summary: 'Mountain landscapes and deep seasonal travel.', tag: 'Nature', href: '/destinations/changbai-mountain' },
+      { title: 'Yanbian + Self-Drive Guide', summary: 'Border culture, local food, and self-drive travel.', tag: 'Border Route', href: '/self-drive' },
+    ],
+    heroHighlights: ['Jilin tourism knowledge base', 'Season-first route planning', 'AI guide + consultant service', 'Continuously updated destination content'],
+    trustFacts: [
+      { value: '4 Seasons', label: 'Year-round planning available' },
+      { value: '3 Core', label: 'Primary destination entries' },
+      { value: '5 Channels', label: 'Key content channels' },
+      { value: 'AI + Human', label: 'Dual-track guidance' },
+    ],
+    quickChannels: [
+      { title: 'Destinations', body: 'Entry points for key cities and regions in Jilin.', href: '/destinations', image: '/images/home/changchun.jpg' },
+      { title: 'Experiences', body: 'Theme-based experiences and route ideas.', href: '/themes', image: '/images/home/yanbian.jpg' },
+      { title: 'Pre-trip Planning', body: 'Transport, itinerary, and service information.', href: '/guides', image: '/images/home/changbai.jpg' },
+      { title: 'Official Services', body: 'Official channels and processing guidance.', href: '/official-services', image: '/images/home/hero-jilin.jpg' },
+    ],
+    discoveryTags: ['Family Travel', 'Changbai Mountain', 'City Walks', 'Border Drive', 'Study Tours', 'Self-Drive Guide', 'Snow Season', 'Food Routes'],
+    editorialCards: [
+      { title: 'Spring Travel Suggestions in Jilin', body: 'Cover city and nature in 3-5 days for first-time visits.', href: '/themes' },
+      { title: 'Self-Drive Guide Station Services', body: 'A single entry for supply, rest, and station services.', href: '/self-drive/station-services' },
+      { title: 'Official Service Entries', body: 'Unified access to rules, channels, and official consultation.', href: '/official-services' },
+    ],
+    eventCards: [
+      { title: 'Top Snow Season Events', body: 'Track key winter activities and regional festivals.', href: '/themes/ice-snow' },
+      { title: 'Industrial Study Tour Feature', body: 'Themes around FAW/CRRC and industrial learning routes.', href: '/study-tours' },
+      { title: 'Jilin Guide Updates', body: 'Continuous route and destination content updates.', href: '/guides' },
+    ],
+    seasonCards: [
+      { season: 'Spring', summary: 'Forest recovery and urban culture come together for easy-paced travel.', links: [{ label: 'Changchun City Line', href: '/destinations/changchun' }, { label: 'Yanbian Culture Line', href: '/destinations/yanbian' }] },
+      { season: 'Summer', summary: 'Cool-weather mountain travel enters peak season.', links: [{ label: 'Changbai Mountain', href: '/destinations/changbai-mountain' }, { label: 'Self-Drive Guide Overview', href: '/self-drive/overview' }] },
+      { season: 'Autumn', summary: 'Great for photography, self-drive, and scenic road trips.', links: [{ label: 'Self-Drive Guide Self-drive', href: '/self-drive/how-to-travel' }, { label: 'Yanbian Experience', href: '/destinations/yanbian' }] },
+      { season: 'Winter', summary: 'Snow landscapes, hot springs, and winter events are at their peak.', links: [{ label: 'Ice & Snow Theme', href: '/themes/ice-snow' }, { label: 'Changbai Mountain Guide', href: '/destinations/changbai-mountain' }] },
+    ],
+    aiQuestions: ['I have 3 days. How should I plan a first trip to Jilin?', 'For a family trip, should I choose Changbai Mountain or Changchun?', 'For self-driving Self-Drive Guide, how many days should I plan?'],
+    topicCards: [
+      { title: 'Study Tours', body: 'Guides and consultation entries for schools, institutions, and teams.', href: '/study-tours' },
+      { title: 'Self-Drive Guide', body: 'Overview, station services, and supply suggestions.', href: '/self-drive' },
+      { title: 'Official Services', body: 'Official channels and process guidance.', href: '/official-services' },
+      { title: 'Guides & News', body: 'Continuously updated destination and route content.', href: '/guides' },
+      { title: 'Theme Experiences', body: 'Ice-snow, family, culture, and photography themes.', href: '/themes' },
+    ],
+  },
+  ja: {
+    heroPlans: [
+      { title: '長春 都市文化 3日ルート', summary: '初めての吉林に適した軽めの行程。', tag: '都市文化', href: '/destinations/changchun' },
+      { title: '長白山 四季景観 5日ルート', summary: '自然景観を中心にした深度旅行。', tag: '自然探索', href: '/destinations/changbai-mountain' },
+      { title: '延辺 + 自驾攻略', summary: '国境文化・美食・ドライブ体験を連動。', tag: '国境ルート', href: '/self-drive' },
+    ],
+    heroHighlights: ['吉林観光コンテンツ索引', '季節優先のルート提案', 'AIガイド + 相談員連携', '目的地情報を継続更新'],
+    trustFacts: [
+      { value: '4季', label: '通年で計画可能' },
+      { value: '3大', label: '主要目的地入口' },
+      { value: '5カテゴリ', label: '重点コンテンツ' },
+      { value: 'AI + 人', label: '二軸ガイド体制' },
+    ],
+    quickChannels: [
+      { title: '目的地', body: '吉林の主要都市・地域への入口。', href: '/destinations', image: '/images/home/changchun.jpg' },
+      { title: '体験テーマ', body: 'テーマ体験とルート提案。', href: '/themes', image: '/images/home/yanbian.jpg' },
+      { title: '出発前計画', body: '交通・行程・サービス説明。', href: '/guides', image: '/images/home/changbai.jpg' },
+      { title: '公式サービス', body: '公式チャネルと手続き案内。', href: '/official-services', image: '/images/home/hero-jilin.jpg' },
+    ],
+    discoveryTags: ['親子旅行', '長白山', '都市散策', '国境ドライブ', '産業研修', '自驾攻略', '雪季', '美食ルート'],
+    editorialCards: [
+      { title: '春の吉林旅行提案', body: '3-5日で都市と自然を効率的に体験。', href: '/themes' },
+      { title: '自驾攻略 驛站サービス整理', body: '補給・休憩・サービス情報の集約入口。', href: '/self-drive/station-services' },
+      { title: '公式サービス入口まとめ', body: '規則・チャネル・相談窓口を統合。', href: '/official-services' },
+    ],
+    eventCards: [
+      { title: '雪季の重点イベント', body: '冬季イベントと地域催事を追跡。', href: '/themes/ice-snow' },
+      { title: '産業研修特集', body: '一汽/中車など産業線の研修コンテンツ。', href: '/study-tours' },
+      { title: '吉林ガイド更新', body: '目的地・ルート情報を継続更新。', href: '/guides' },
+    ],
+    seasonCards: [
+      { season: '春', summary: '森林の回復と都市文化が同時に楽しめる季節。', links: [{ label: '長春都市線', href: '/destinations/changchun' }, { label: '延辺文化線', href: '/destinations/yanbian' }] },
+      { season: '夏', summary: '避暑と山地体験の最適シーズン。', links: [{ label: '長白山ルート', href: '/destinations/changbai-mountain' }, { label: '自驾攻略概览', href: '/self-drive/overview' }] },
+      { season: '秋', summary: '紅葉・道路景観・撮影ドライブに最適。', links: [{ label: '自驾攻略旅行', href: '/self-drive/how-to-travel' }, { label: '延辺体験', href: '/destinations/yanbian' }] },
+      { season: '冬', summary: '雪景・温泉・都市イベントが集中。', links: [{ label: '氷雪テーマ', href: '/themes/ice-snow' }, { label: '長白山ガイド', href: '/destinations/changbai-mountain' }] },
+    ],
+    aiQuestions: ['3日間で初めて吉林へ行く場合のおすすめは？', '家族旅行なら長白山と長春のどちらが良い？', '自驾攻略を車で回る場合、何日必要？'],
+    topicCards: [
+      { title: '産業研修', body: '学校・機関・企業向けの案内と相談入口。', href: '/study-tours' },
+      { title: '自驾攻略', body: 'ルート概要、驛站サービス、補給情報。', href: '/self-drive' },
+      { title: '公式サービス', body: '公式チャネルと手続き案内。', href: '/official-services' },
+      { title: 'ガイド情報', body: '目的地とルート内容を継続更新。', href: '/guides' },
+      { title: 'テーマ体験', body: '氷雪・親子・文化・撮影テーマを閲覧。', href: '/themes' },
+    ],
+  },
+  ko: {
+    heroPlans: [
+      { title: '창춘 도시문화 3일 루트', summary: '처음 지린을 방문하는 일정에 적합합니다.', tag: '도시 문화', href: '/destinations/changchun' },
+      { title: '창바이산 사계절 5일 루트', summary: '자연 경관 중심의 심화 여행.', tag: '자연 탐험', href: '/destinations/changbai-mountain' },
+      { title: '옌볜 + 自驾攻略', summary: '국경 문화, 미식, 자가운전 체험 연계.', tag: '국경 루트', href: '/self-drive' },
+    ],
+    heroHighlights: ['지린 관광 콘텐츠 인덱스', '계절 우선 루트 추천', 'AI 가이드 + 상담사 협업', '목적지 정보 지속 업데이트'],
+    trustFacts: [
+      { value: '4계절', label: '연중 여행 계획 가능' },
+      { value: '3대', label: '핵심 목적지 진입점' },
+      { value: '5개', label: '중점 콘텐츠 채널' },
+      { value: 'AI + 사람', label: '이중 가이드 체계' },
+    ],
+    quickChannels: [
+      { title: '목적지', body: '지린 핵심 도시와 지역 진입점.', href: '/destinations', image: '/images/home/changchun.jpg' },
+      { title: '체험', body: '테마 체험과 루트 제안.', href: '/themes', image: '/images/home/yanbian.jpg' },
+      { title: '사전 계획', body: '교통, 일정, 서비스 안내.', href: '/guides', image: '/images/home/changbai.jpg' },
+      { title: '공식 서비스', body: '공식 채널과 처리 안내.', href: '/official-services', image: '/images/home/hero-jilin.jpg' },
+    ],
+    discoveryTags: ['가족 여행', '창바이산', '도시 산책', '국경 드라이브', '산업 연수', '自驾攻略', '설빙 시즌', '미식 루트'],
+    editorialCards: [
+      { title: '봄철 지린 여행 제안', body: '3-5일 일정으로 도시와 자연을 함께 경험.', href: '/themes' },
+      { title: '自驾攻略 거점 서비스', body: '보급, 휴식, 서비스 정보를 한 번에 확인.', href: '/self-drive/station-services' },
+      { title: '공식 서비스 입구 모음', body: '규정, 채널, 공식 상담 입구 정리.', href: '/official-services' },
+    ],
+    eventCards: [
+      { title: '설빙 시즌 주요 행사', body: '겨울 시즌 주요 행사와 지역 이벤트 확인.', href: '/themes/ice-snow' },
+      { title: '산업 연수 특집', body: 'FAW/CRRC 중심 산업 연수 콘텐츠.', href: '/study-tours' },
+      { title: '지린 가이드 업데이트', body: '목적지와 루트 콘텐츠 지속 업데이트.', href: '/guides' },
+    ],
+    seasonCards: [
+      { season: '봄', summary: '숲의 회복과 도시 문화가 함께 열리는 시즌.', links: [{ label: '창춘 도시선', href: '/destinations/changchun' }, { label: '옌볜 문화선', href: '/destinations/yanbian' }] },
+      { season: '여름', summary: '피서와 산악 체험의 최적 시즌.', links: [{ label: '창바이산 루트', href: '/destinations/changbai-mountain' }, { label: '自驾攻略概览', href: '/self-drive/overview' }] },
+      { season: '가을', summary: '단풍, 도로 경관, 촬영 드라이브에 적합.', links: [{ label: '自驾攻略', href: '/self-drive/how-to-travel' }, { label: '옌볜 체험', href: '/destinations/yanbian' }] },
+      { season: '겨울', summary: '설경, 온천, 도시 이벤트가 집중되는 시기.', links: [{ label: '설빙 테마', href: '/themes/ice-snow' }, { label: '창바이산 가이드', href: '/destinations/changbai-mountain' }] },
+    ],
+    aiQuestions: ['3일 일정으로 처음 지린을 가면 어떻게 계획할까요?', '가족 여행은 창바이산과 창춘 중 어디가 더 좋나요?', '自驾攻略 자가운전은 며칠이 적당한가요?'],
+    topicCards: [
+      { title: '산업 연수', body: '학교, 기관, 기업팀을 위한 안내와 상담 입구.', href: '/study-tours' },
+      { title: '自驾攻略', body: '루트 개요, 거점 서비스, 보급 제안.', href: '/self-drive' },
+      { title: '공식 서비스', body: '공식 채널과 처리 규정 안내.', href: '/official-services' },
+      { title: '가이드 & 소식', body: '목적지와 루트 콘텐츠를 지속 업데이트.', href: '/guides' },
+      { title: '테마 체험', body: '설빙, 가족, 문화, 촬영 테마를 탐색.', href: '/themes' },
+    ],
+  },
+};
+
+const heroPlans = localizedBlock[locale].heroPlans;
+const heroHighlights = localizedBlock[locale].heroHighlights;
+const trustFacts = localizedBlock[locale].trustFacts;
+const quickChannels = localizedBlock[locale].quickChannels;
+const discoveryTags = localizedBlock[locale].discoveryTags;
+const editorialCards = localizedBlock[locale].editorialCards;
+const eventCards = localizedBlock[locale].eventCards;
+const seasonCards = localizedBlock[locale].seasonCards;
+const aiQuestions = localizedBlock[locale].aiQuestions;
+const topicCards = localizedBlock[locale].topicCards;
+const localizeIfAvailable = (href: string) => localizePath(href, locale);
+
+---
+
+<BaseLayout title={title} description={description} schemas={schemas} locale={locale}>
+  <Header />
+
+  <main class="vs-home">
+    <section class="vs-hero section-animate">
+      <div class="container vs-hero-inner">
+        <p class="vs-kicker">{copy.heroKicker}</p>
+        <h1>{copy.heroTitle}</h1>
+        <p class="vs-lead">{copy.heroLead}</p>
+        <div class="vs-actions">
+          <a class="button" href={localizePath('/destinations', locale)}>{copy.heroPrimary}</a>
+          <button class="button-secondary" type="button" data-open-ai-widget data-ai-question={aiQuestions[0]}>
+            {copy.heroSecondary}
+          </button>
+        </div>
+        <div class="vs-highlights">
+          {heroHighlights.map((item) => (
+            <span>{item}</span>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="vs-section vs-channels">
+      <div class="container">
+        <header class="vs-head">
+          <h2>{copy.sectionAHeading}</h2>
+          <p>{copy.sectionADesc}</p>
+        </header>
+        <div class="vs-channel-grid stagger-children">
+          {quickChannels.map((item) => (
+            <a class="vs-channel-card" href={localizeIfAvailable(item.href)}>
+              <div class="vs-channel-image"><img src={item.image} alt={item.title} loading="lazy" /></div>
+              <div class="vs-channel-body">
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="vs-section vs-discovery">
+      <div class="container vs-discovery-inner">
+        <div>
+          <h2>{copy.sectionBHeading}</h2>
+          <p>{copy.sectionBDesc}</p>
+        </div>
+        <div class="vs-tag-row">
+          {discoveryTags.map((tag) => (
+            <a href="/themes">{tag}</a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="vs-section">
+      <div class="container">
+        <header class="vs-head">
+          <h2>{copy.sectionCHeading}</h2>
+          <p>{copy.sectionCDesc}</p>
+        </header>
+        <div class="vs-plan-grid stagger-children">
+          {heroPlans.map((plan) => (
+            <a class="vs-plan-card" href={localizeIfAvailable(plan.href)}>
+              <span>{plan.tag}</span>
+              <h3>{plan.title}</h3>
+              <p>{plan.summary}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="vs-section vs-map">
+      <div class="container vs-map-inner">
+        <div class="vs-map-copy">
+          <h2>{copy.mapHeading}</h2>
+          <p>{copy.mapDesc}</p>
+          <div class="vs-actions">
+            <a class="button" href={localizePath('/destinations', locale)}>{copy.mapPrimary}</a>
+            <a class="button-secondary" href="/self-drive">{copy.mapSecondary}</a>
+          </div>
+        </div>
+        <div class="vs-map-facts">
+          {trustFacts.map((fact) => (
+            <article>
+              <strong>{fact.value}</strong>
+              <p>{fact.label}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="vs-section">
+      <div class="container">
+        <header class="vs-head">
+          <h2>{copy.seasonHeading}</h2>
+          <p>{copy.seasonDesc}</p>
+        </header>
+        <div class="vs-season-grid stagger-children">
+          {seasonCards.map((card) => (
+            <article class="vs-season-card">
+              <h3>{locale === 'zh' ? `${card.season}季` : card.season}</h3>
+              <p>{card.summary}</p>
+              <div class="vs-season-links">
+                {card.links.map((link) => (
+                  <a href={localizeIfAvailable(link.href)}>{link.label}</a>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="vs-section">
+      <div class="container">
+        <header class="vs-head">
+          <h2>{copy.editorialHeading}</h2>
+          <p>{copy.editorialDesc}</p>
+        </header>
+        <div class="vs-editorial-grid">
+          {editorialCards.map((card) => (
+            <a class="vs-editorial-card" href={localizeIfAvailable(card.href)}>
+              <h3>{card.title}</h3>
+              <p>{card.body}</p>
+            </a>
+          ))}
+        </div>
+        <div class="vs-editorial-grid vs-editorial-grid-secondary">
+          {eventCards.map((card) => (
+            <a class="vs-editorial-card" href={localizeIfAvailable(card.href)}>
+              <h3>{card.title}</h3>
+              <p>{card.body}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="vs-section vs-ai">
+      <div class="container vs-ai-inner">
+        <div>
+          <h2>{copy.aiHeading}</h2>
+          <p>{copy.aiDesc}</p>
+          <div class="vs-actions">
+            <button class="button" type="button" data-open-ai-widget>{copy.aiPrimary}</button>
+            <a class="button-secondary" href="/cooperation">{copy.aiSecondary}</a>
+          </div>
+        </div>
+        <div class="vs-ai-questions">
+          {aiQuestions.map((q) => (
+            <button type="button" class="button-secondary" data-open-ai-widget data-ai-question={q}>
+              {q}
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="vs-section">
+      <div class="container">
+        <header class="vs-head">
+          <h2>{copy.exploreHeading}</h2>
+        </header>
+        <div class="vs-topic-grid">
+          {topicCards.map((card) => (
+            <a class="vs-topic-card" href={localizeIfAvailable(card.href)}>
+              <h3>{card.title}</h3>
+              <p>{card.body}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,32 @@
+---
+import { getLocaleFromPathname, type Locale } from '@/lib/i18n';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const locale = getLocaleFromPathname(Astro.url.pathname);
+const copy: Record<Locale, { eyebrow: string; ctaPrimary: string; ctaSecondary: string; aiQuestion: string }> = {
+  zh: { eyebrow: '吉林目的地', ctaPrimary: '浏览目的地', ctaSecondary: '使用 AI 导览', aiQuestion: '吉林旅游先从哪里看起？' },
+  en: { eyebrow: 'Jilin Destinations', ctaPrimary: 'Browse destinations', ctaSecondary: 'Use AI guide', aiQuestion: 'How should I start planning a Jilin trip?' },
+  ja: { eyebrow: '吉林の目的地', ctaPrimary: '目的地を見る', ctaSecondary: 'AIガイドを使う', aiQuestion: '吉林旅行はどこから見始めるべき？' },
+  ko: { eyebrow: '지린 목적지', ctaPrimary: '목적지 보기', ctaSecondary: 'AI 가이드 사용', aiQuestion: '지린 여행은 어디서부터 보면 좋을까요?' },
+};
+---
+
+<section class="dst-hero">
+  <div class="dst-hero-bg" aria-hidden="true"></div>
+  <div class="container dst-hero-inner">
+    <p class="dst-hero-eyebrow">{copy[locale].eyebrow}</p>
+    <h1>{title}</h1>
+    <p class="dst-hero-description">{description}</p>
+    <div class="dst-hero-actions">
+      <a class="button" href="#destination-grid">{copy[locale].ctaPrimary}</a>
+      <button class="button-secondary" type="button" data-open-ai-widget data-ai-question={copy[locale].aiQuestion}>
+        {copy[locale].ctaSecondary}
+      </button>
+    </div>
+  </div>
+</section>

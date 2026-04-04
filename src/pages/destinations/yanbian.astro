@@ -1,0 +1,234 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { buildWebPageSchema, buildTouristDestinationSchema } from '@/lib/schema';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname) as Locale;
+const isZh = locale === 'zh';
+
+const pageTitle = '延边旅游与边境文化体验指南';
+const pageDescription = '围绕延边的边境文化、美食体验和路线延展能力，建立更适合内容引流与主题玩法的区域入口。';
+const pagePath = '/destinations/yanbian';
+
+const copy: Record<Locale, {
+  eyebrow: string;
+  intro: string;
+  whatIsThis: string;
+  whatIsThisBody: string;
+  audience: string;
+  audienceList: string[];
+  highlights: string;
+  highlightsList: string[];
+  howToPlan: string;
+  howToPlanBody: string;
+  howToPlanList: string[];
+  officialEntry: string;
+  officialEntryBody: string;
+  notes: string;
+  notesList: string[];
+  consultEntry: string;
+  faqTitle: string;
+  faqs: { q: string; a: string }[];
+}> = {
+  zh: {
+    eyebrow: '延边',
+    intro: '延边适合做边境文化、美食与线路体验的专题型目的地。它不是单点游览，更适合和主题玩法、自驾路线一起理解。',
+    whatIsThis: '什么是延边体验',
+    whatIsThisBody: '延边地区最独特的价值不是单一景点，而是边境文化、朝鲜族民俗、美食体验和连续线路感的组合。这里靠近朝鲜半岛边境，有独特的地域文化和饮食传统。它更适合被理解为一个区域体验型目的地，而不是景点型目的地。',
+    audience: '适合哪些用户',
+    audienceList: ['对边境文化与民族风情感兴趣的用户', '喜欢美食与地方特色餐饮的旅行者', '自驾与线路型深度体验追求者', '希望与 331 国道、边境公路联动的用户', '内容型旅行者（摄影、纪录片、人文探索）'],
+    highlights: '有哪些看点',
+    highlightsList: ['图们口岸：边境口岸景观，可远眺对面城市', '延吉市：延边朝鲜族自治州首府，城市生活与朝鲜族文化中心', '朝鲜族民俗村：体验朝鲜族传统生活方式的区域', '金达莱花海：春季特色花卉景观', '珲春防川：最东端边境点，可一眼望三国', '延边美食：冷面、烤肉、泡菜等朝鲜族特色餐饮'],
+    howToPlan: '如何安排',
+    howToPlanBody: '延边的安排逻辑以区域体验和线路联动为核心：',
+    howToPlanList: ['延吉中心型：以延吉市为据点，辐射周边景点和美食，适合 2-3 天', '边境线型：沿着边境线路游览，串联图们、珲春等节点', '联动 331 国道：延边是 331 国道吉林段的重要组成部分，可作为路线一部分', '季节选择：春季看金达莱花，夏季凉爽适合避暑，秋季看边境色彩'],
+    officialEntry: '官方入口与说明',
+    officialEntryBody: '延边地区部分边境口岸和景区有特殊的进入规则和预约要求。前往边境地区建议提前了解相关规定，遵守边境管理条例。珲春防川等边境景点通常需要身份核验和登记。',
+    notes: '注意事项',
+    notesList: ['边境地区需遵守相关规定，不得拍摄军事设施', '部分边境景区需要提前预约和身份登记', '朝鲜族饮食文化独特，可提前了解饮食习惯', '冬季边境地区气温较低，需做好保暖', '延吉市区交通便利，但景点较分散，建议自驾或包车'],
+    consultEntry: '咨询入口',
+    faqTitle: '常见问题',
+    faqs: [
+      { q: '延边更适合什么样的旅行者？', a: '更适合希望体验区域文化、美食、边境氛围和线路感的用户。它不是单点游览型目的地。' },
+      { q: '延边和 331 国道有什么关系？', a: '延边地区是 331 国道吉林段的重要组成部分，两者可以联动理解，适合边境自驾主题。' },
+      { q: '去边境地区需要注意什么？', a: '需遵守边境管理规定，不得拍摄军事设施，部分区域需要预约和身份核验。' },
+      { q: '延边美食有什么推荐？', a: '冷面、烤肉、泡菜、米肠、打糕等朝鲜族特色餐饮是延边美食的代表，建议在延吉市的传统餐厅体验。' },
+    ],
+  },
+  en: {
+    eyebrow: 'Yanbian',
+    intro: 'Yanbian is ideal for themed destination experiences focused on border culture, cuisine, and route-based activities. Its not a single attraction but works best combined with themed activities and self-driving routes.',
+    whatIsThis: 'What is Yanbian Experience',
+    whatIsThisBody: 'Yanbian regions most unique value is not a single attraction but the combination of border culture, Korean ethnic customs, culinary experiences, and continuous route appeal. Located near the Korean Peninsula border, it has unique regional culture and culinary traditions.',
+    audience: 'Who is it suitable for',
+    audienceList: ['Travelers interested in border culture and ethnic customs', 'Food lovers seeking local and ethnic cuisine', 'Self-drive and route-based deep experience seekers', 'Users wanting to connect with Route 331 and border roads', 'Content travelers (photography, documentaries, cultural exploration)'],
+    highlights: 'Key Highlights',
+    highlightsList: ['Tumen Port: Border port scenery with views of the opposite city', 'Yanji City: Capital of Yanbian Korean Autonomous Prefecture, urban life and Korean culture center', 'Korean Ethnic Villages: Areas to experience traditional Korean lifestyle', 'Korean Rhododendron Blooms: Spring floral scenery', 'Hunchun Fangchuan: Easternmost border point, can see three countries', 'Yanbian Cuisine: Cold noodles, BBQ, kimchi and other Korean specialties'],
+    howToPlan: 'How to Plan',
+    howToPlanBody: 'Yanbian planning centers on regional experience and route connections:',
+    howToPlanList: ['Yanji-centered: Use Yanji as base, explore nearby attractions and food, suitable for 2-3 days', 'Border route type: Travel along border routes connecting Tumen, Hunchun and other points', 'Combined with Route 331: Yanbian is an important part of Jilin section of Route 331', 'Seasonal: Spring for rhododendron, summer for cool weather, autumn for border colors'],
+    officialEntry: 'Official Entry Points',
+    officialEntryBody: 'Some border ports and scenic areas in Yanbian have special entry rules and reservation requirements. When visiting border areas, familiarize yourself with relevant regulations and follow border management rules.',
+    notes: 'Important Notes',
+    notesList: ['Border areas require compliance with regulations; no photography of military facilities', 'Some border attractions require advance reservation and identity registration', 'Korean cuisine has unique traditions; familiarize yourself with eating customs', 'Winter border temperatures are low; dress warmly', 'Yanji city transport is convenient but attractions are scattered; rental car or chartered vehicle recommended'],
+    consultEntry: 'Consultation',
+    faqTitle: 'FAQ',
+    faqs: [
+      { q: 'What type of traveler is Yanbian best for?', a: 'Its best for travelers seeking regional culture, food, border atmosphere, and route-based experiences. Its not an attraction-hopping destination.' },
+      { q: 'What is the relationship between Yanbian and Route 331?', a: 'Yanbian is an important part of Route 331 Jilin section. They can be understood together for border self-drive themes.' },
+      { q: 'What should I note when visiting border areas?', a: 'Follow border management regulations, no photography of military facilities, some areas require reservation and identity verification.' },
+      { q: 'What food recommendations in Yanbian?', a: 'Cold noodles, BBQ, kimchi, blood sausage, rice cake and other Korean specialties are representatives. Experience them in traditional Yanji restaurants.' },
+    ],
+  },
+  ja: {
+    eyebrow: '延辺',
+    intro: '延辺は国境文化、グルメ、ルート体験为主题とした目的地に最適です。单一観光지ではなく、テーマ玩法や自驾ルートと一緒に理解するのがおすすめです。',
+    whatIsThis: '延辺体験とは',
+    whatIsThisBody: '延辺地域の最もユニークな価値は单一観光地ではなく、国境文化、朝鮮族民俗、グルメ体験、連続ルート感の組み合わせです。朝鮮半島国境に近く、独特な地域文化と飲食伝統があります。',
+    audience: 'こんなユーザーに最適',
+    audienceList: ['国境文化と民族风情に興味がある旅行者', '美食と地方特色餐饮を愛する旅行者', '自驾とルート型深度体験追求者', '331国道、国境道路と連動したいユーザー', 'コンテンツ型旅行者（撮影、ドキュメンタリー、人文探求）'],
+    highlights: '見どころ',
+    highlightsList: ['図們口岸：国境税関景观、対岸の都市を眺めることができる', '延吉市：延辺朝鮮族自治州都 Dey、高速道路生活と朝鲜族文化の中心', '朝鲜族民俗村：朝鲜族伝統生活様式を体験できるエリア', '金達萊花海：春季特色花木景观', '琿春防川：最東端の国境点、三개를一眼で見渡せる', '延辺グルメ：冷面、烤肉、泡菜などの朝鲜族特色料理'],
+    howToPlan: '周り方',
+    howToPlanBody: '延辺の旅程計画は区域体験とルート連動为核心に构成されます:',
+    howToPlanList: ['延吉中心型：延吉市を根据地として周边景点とグルメ辐射、2-3日に適切', '国境ルート型：国境沿いに観光し、图們、琿春などの节点を串联', '331国道連動：延辺は331国道吉林段の重要组成部分、の一部としてRouteに接続可能', '季節選択：春は金達萊花、夏は涼しく避暑に適切、秋は国境の色彩'],
+    officialEntry: '公式入口と説明',
+    officialEntryBody: '延辺地域の一部の国境口岸と景区には特別な进入規則と予約要件があります。国境地域への访问は事前に相关规定を理解し、国境管理条例に従ってください。',
+    notes: '注意事項',
+    notesList: ['国境地域では相关规定に従い、軍事施設は撮影禁止', '一部の国境景区は事前予約と身分登記が必要', '朝鲜族飲食文化は独特で、事前に饮食习惯的了解をお勧めします', '冬季の国境地域は気温が低く、保暖が必要です', '延吉市街の交通は便利だが景点が分散しているため、自家用車または借り上げ車が推奨'],
+    consultEntry: '相談入口',
+    faqTitle: 'よくある質問',
+    faqs: [
+      { q: '延辺はどのような旅行者に最適ですか？', a: 'より区域文化、グルメ、国境雰囲気、ルート感を体験したいユーザーに適しています。单一観光地型ではありません。' },
+      { q: '延辺と331国道の関係は何ですか？', a: '延辺地域は331国道吉林段の重要组成部分で、两者は連動して理解でき、国境自驾テーマに向いています。' },
+      { q: '国境地域への訪問は何に注意すべきですか？', a: '国境管理规定に従い、軍事施設は撮影禁止で、一部の地域では予約と身分確認が必要です。' },
+      { q: '延辺のグルメ有何推荐？', a: '冷面、烤肉、泡菜、ミートブック、トックなど朝鲜族特色料理が延辺グルメの代表で、延吉市の伝統餐厅での体験をお勧めします。' },
+    ],
+  },
+  ko: {
+    eyebrow: '연변',
+    intro: '연변은 국경 문화, 미식, 노선 체험을 위한 주제형 목적지에 적합합니다. 단일 관광지가 아니라 테마玩法이나自驾 노선과 함께 이해하는 것이 좋습니다.',
+    whatIsThis: '연변 체험이란',
+    whatIsThisBody: '연변 지역의 가장 독특한 가치는 단일 관광지가 아니라 국경 문화, 조선족 민속, 미식 체험, 연속 노선 감각의 조합입니다. 조선반도 국경에 가까워 독특한 지역 문화와 음식 전통이 있습니다.',
+    audience: '이런 사용자에게 적합',
+    audienceList: ['국경 문화와 민족 풍속에 관심이 있는 여행자', '음식과 지방 특색 요리를 좋아하는 여행자', '자가운전과 노선형 심층 체험 추구자', '331 국도, 국경 도로와 연계하고 싶은 사용자', '콘텐츠형 여행자(사진, 다큐멘터리, 인문 탐구)'],
+    highlights: '주요 볼거리',
+    highlightsList: ['두만강 국항: 국경 항구 풍경, 건너편 도시를 바라볼 수 있음', '연길시: 연변 조선족 자치주 수도, 도시 생활과 조선족 문화 중심', '조선족 민속촌: 조선족 전통 생활 방식을 체험할 수 있는 지역', '진달래 꽃밭: 봄철 특색 꽃 풍경', '훈춘 방천: 최동단 국경점, 삼개국을 한눈에 볼 수 있음', '연변 미식: 냉면, 불고기, 김치 등 조선족 특색 요리'],
+    howToPlan: '일정 잡기',
+    howToPlanBody: '연변의 일정 계획은 지역 체험과 노선 연동을为核心으로 구성됩니다:',
+    howToPlanList: ['연길 중심형: 연길시를 거점으로 주변景点와 미식을 탐방, 2-3일에 적합', '국경 노선형: 국경선을 따라 관광하며 두만,훈춘 등을 노드として 연결', '331 국도 연동: 연변은 331 국도 지린 구间的 중요 구성 부분으로 노선과 연결 가능', '계절 선택: 봄은 진달래, 여름은 시원한 피서, 가을은 국경 색채'],
+    officialEntry: '공식 입구와 설명',
+    officialEntryBody: '연변 지역 일부 국경 항구와 관광지에는 특별한 입장 규칙과 예약 요구 사항이 있습니다. 국경 지역 방문 시事前に相关规定을 이해하고 국경 관리 조례를 준수하세요.',
+    notes: '주의사항',
+    notesList: ['국경 지역에서는相关规定을 준수하고, 군사 시설 촬영은 금지됩니다', '일부 국경 관광지에는事前 예약과 신분 등록이 필요합니다', '조선족 음식 문화가独特하여事前に 음식 습관을的了解하는 것이 좋습니다', '겨울 국경 지역 기온이 낮아保暖 준비가 필요합니다', '연길시 내부 교통은便利하지만 관광지가分散되어 있어自驾 또는 전세차를 권장합니다'],
+    consultEntry: '상담 입구',
+    faqTitle: '자주 묻는 질문',
+    faqs: [
+      { q: '연변은 어떤 여행자에게最適입니까?', a: '지역 문화, 미식, 국경 분위기, 노선 감각을体験하고 싶은 사용자에게 더 적합합니다. 단일 관광지가 아닙니다.' },
+      { q: '연변과 331 국도의 관계는 무엇입니까?', a: '연변은 331 국도 지린 구간의 중요한 구성 부분으로, 둘 다 국경自驾 테마로 연결하여 이해할 수 있습니다.' },
+      { q: '국경 지역 방문 시 무엇을 주의해야 합니까?', a: '국경 관리 규정을 준수하고, 군사 시설 촬영은 금지되며, 일부 지역에서는 예약과 신원 확인이 필요합니다.' },
+      { q: '연변 미식에는 무엇이 추천합니까?', a: '냉면, 불고기, 김치, 순대, 떡등이 조선족 특색 요리의 대표로, 연길시의 전통 식당에서 체험하는 것을 권장합니다.' },
+    ],
+  },
+};
+
+const t = copy[locale];
+const schemas = [
+  buildWebPageSchema(pagePath, pageTitle, pageDescription, locale),
+  buildTouristDestinationSchema(pagePath, pageTitle, pageDescription, locale),
+];
+---
+
+<BaseLayout title={`${pageTitle} | dajilin.net`} description={pageDescription} schemas={schemas} locale={locale}>
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-hero">
+          <div class="page-copy">
+            <div class="eyebrow">{t.eyebrow}</div>
+            <h1>{isZh ? pageTitle : t.eyebrow}</h1>
+            <p>{isZh ? pageDescription : t.intro}</p>
+          </div>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.whatIsThis}</h2>
+          <p>{t.whatIsThisBody}</p>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.audience}</h2>
+          <ul>
+            {t.audienceList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.highlights}</h2>
+          <ul>
+            {t.highlightsList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.howToPlan}</h2>
+          <p>{t.howToPlanBody}</p>
+          <ul>
+            {t.howToPlanList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.officialEntry}</h2>
+          <p>{t.officialEntryBody}</p>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.notes}</h2>
+          <ul>
+            {t.notesList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.faqTitle}</h2>
+          <div class="faq-list">
+            {t.faqs.map((faq) => (
+              <article class="faq-item">
+                <h3>{faq.q}</h3>
+                <p>{faq.a}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <aside class="page-card">
+        <h3>{isZh ? '建议继续浏览' : 'Continue Reading'}</h3>
+        <ul class="page-list">
+          <li><a href={localizePath('/destinations', locale)}>{isZh ? '查看所有目的地' : 'View all destinations'}</a></li>
+          <li><a href={localizePath('/themes/border-and-yanbian', locale)}>{isZh ? '查看边境与延边主题' : 'View border & Yanbian theme'}</a></li>
+          <li><a href={localizePath('/self-drive', locale)}>{isZh ? '查看自驾攻略' : 'View Self-Drive Guide'}</a></li>
+          <li><a href={localizePath('/themes', locale)}>{isZh ? '查看主题玩法' : 'View theme experiences'}</a></li>
+        </ul>
+
+        <div class="detail-side-card">
+          <h3>{t.consultEntry}</h3>
+          <div class="cta-row">
+            <button class="button" type="button" data-open-ai-widget data-ai-page-url={pagePath}>
+              {isZh ? '先问 AI 助手' : 'Ask AI Assistant'}
+            </button>
+            <a class="button-secondary" href={localizePath('/cooperation', locale)}>
+              {isZh ? '提交咨询' : 'Submit Consultation'}
+            </a>
+          </div>
+        </div>
+
+</aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

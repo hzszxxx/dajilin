@@ -1,0 +1,121 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { buildCollectionPageSchema } from '@/lib/schema';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+
+const enterprises: Record<Locale, { name: string; desc: string; href: string; category: string }[]> = {
+  zh: [
+    { name: '中国一汽·红旗', desc: '中国汽车工业代表性品牌，拥有整车制造、研发技术展示与文化展馆，适合工业参观与品牌研学。', href: 'https://www.faw.com.cn/', category: '汽车制造' },
+    { name: '中车长客', desc: '轨道交通装备制造龙头企业，具备整车生产线与技术创新展示，是工业参访与科普研学的优质资源。', href: 'https://www.crrcgc.cc/', category: '轨道交通' },
+    { name: '长光卫星', desc: '中国重要的商业遥感卫星制造与运营基地，开放航天科普参观与卫星技术展示，体现吉林高端制造能力。', href: 'http://www.charmingglight.com/', category: '航空航天' },
+    { name: '吉林石化', desc: '东北地区重要化工基地，具备完整的化工产业链展示能力，适合化学工业与工程类研学群体。', href: 'https://www.petrochina.com.cn/jlsh/', category: '石油化工' },
+    { name: '皓月集团', desc: '以优质牛肉深加工为核心的农业产业化国家重点龙头企业，具备现代化农业产业链参观与食品安全研学条件。', href: 'http://www.haoyuegroup.com/', category: '食品加工' },
+  ],
+  en: [
+    { name: 'FAW Hongqi', desc: 'China\'s iconic automotive brand with vehicle manufacturing, R&D displays, and cultural pavilions ideal for industrial visits.', href: 'https://www.faw.com.cn/', category: 'Automotive' },
+    { name: 'CRRC Changchun', desc: 'Leading rail transit equipment manufacturer with production lines and innovation exhibits, ideal for industrial visits and science education.', href: 'https://www.crrcgc.cc/', category: 'Rail Transit' },
+    { name: 'Changguang Satellite', desc: 'Major commercial remote-sensing satellite manufacturing and operation base in China, with aerospace science programs.', href: 'http://www.charmingglight.com/', category: 'Aerospace' },
+    { name: 'Jilin Petrochemical', desc: 'Key petrochemical base in Northeast China with complete industrial chain displays, suitable for chemistry and engineering study tours.', href: 'https://www.petrochina.com.cn/jlsh/', category: 'Petrochemical' },
+    { name: 'HaoYue Group', desc: 'National key agricultural enterprise specializing in premium beef processing, offering modern agribusiness tours and food safety programs.', href: 'http://www.haoyuegroup.com/', category: 'Food Processing' },
+  ],
+  ja: [
+    { name: '一汽紅旗', desc: '中国自動車産業を代表するブランドで、整车製造·研究開発·文化展示館を備え、工业研修に最適。', href: 'https://www.faw.com.cn/', category: '自動車' },
+    { name: '中車長客', desc: '軌道交通装備製造の有力企業で、整车生産ラインと技術革新展示があり、工业参観と科学研修の優良リソース。', href: 'https://www.crrcgc.cc/', category: '軌道交通' },
+    { name: '長光衛星', desc: '中国重要な商業遥感衛星製造·運営基地で、宇宙科学普及参観と衛星技術展示を提供。', href: 'http://www.charmingglight.com/', category: '航空宇宙' },
+    { name: '吉林石化', desc: '東北地区重要な化学工業基地で、完全な化学産業チェーン展示を提供し、化学工業·エンジニアリング研修に適する。', href: 'https://www.petrochina.com.cn/jlsh/', category: '石油化学' },
+    { name: '皓月グループ', desc: '高品質牛肉深加工为核心的農業産業国家重点龙头企业で、現代農業チェーン参観と食品安全研修を提供。', href: 'http://www.haoyuegroup.com/', category: '食品加工' },
+  ],
+  ko: [
+    { name: '차이나 FAW 홍치', desc: '중국 자동차 산업의 대표 브랜드로, 완제 제조, R&D 기술 전시, 문화 전시관을 갖추고 산업 참관에 적합합니다.', href: 'https://www.faw.com.cn/', category: '자동차 제조' },
+    { name: 'CRRC 창춘', desc: '轨道交通 장비 제조 선두 기업으로, 완제 생산 라인과 기술 혁신 전시관을 갖추고 산업 참관과 과학 체험 학습에 적합합니다.', href: 'https://www.crrcgc.cc/', category: '轨道交通' },
+    { name: '장광위성', desc: '중국 중요한 상업용 원격탐사 위성 제조 및 운영 기지로, 우주 과학 체험 학습 프로그램을 제공합니다.', href: 'http://www.charmingglight.com/', category: '항공우주' },
+    { name: '지린石化', desc: '중국 동북 지역의 중요한 석유화학 기지로, 완전한 화학 산업 체인 전시관을 갖추고 화학 공학과 산업 체험 학습에 적합합니다.', href: 'https://www.petrochina.com.cn/jlsh/', category: '석유화학' },
+    { name: '호월그룹', desc: '고품질 소고기深加工为核心的 농업산업国家重点 농업龙头企业로, 현대 농업 산업 체인 참관과 식품 안전 체험 학습을 제공합니다.', href: 'http://www.haoyuegroup.com/', category: '식품가공' },
+  ],
+};
+
+const copy: Record<
+  Locale,
+  { title: string; description: string; schemaName: string; eyebrow: string; heading: string; sideTitle: string }
+> = {
+  zh: {
+    title: '工业研学 | dajilin.net',
+    description: '围绕吉林省代表性工业企业，提供参观资源、研学对接和行程规划支持。',
+    schemaName: '工业研学',
+    eyebrow: 'Industrial Study Tours',
+    heading: '工业研学',
+    sideTitle: '研学入口',
+  },
+  en: {
+    title: 'Study Tours | dajilin.net',
+    description: 'Jilin\'s key industrial enterprises open for study tours, school visits, and team programs.',
+    schemaName: 'Study Tours',
+    eyebrow: 'Industrial Study Tours',
+    heading: 'Study Tours',
+    sideTitle: 'Study Tour Entry',
+  },
+  ja: {
+    title: '産業研修 | dajilin.net',
+    description: '吉林省の代表的な工業企業を対象として、研修リソースと行程計画のサポートを提供します。',
+    schemaName: '産業研修',
+    eyebrow: 'Industrial Study Tours',
+    heading: '産業研修',
+    sideTitle: '研修入口',
+  },
+  ko: {
+    title: '산업 연수 | dajilin.net',
+    description: '지린성 대표 산업 기업을 대상으로 연수 자원 및 일정 계획 지원을 제공합니다.',
+    schemaName: '산업 연수',
+    eyebrow: 'Industrial Study Tours',
+    heading: '산업 연수',
+    sideTitle: '연수 입구',
+  },
+};
+const t = copy[locale];
+const ent = enterprises[locale];
+---
+
+<BaseLayout title={t.title} description={t.description} schemas={[buildCollectionPageSchema('/study-tours', t.schemaName, t.description, locale)]} locale={locale}>
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-copy">
+          <div class="eyebrow">{t.eyebrow}</div>
+          <h1>{t.heading}</h1>
+          <p>{t.description}</p>
+        </div>
+
+        <div class="enterprise-grid">
+          {ent.map((item) => (
+            <a class="enterprise-card" href={item.href} target="_blank" rel="noopener noreferrer">
+              <div class="enterprise-card-inner">
+                <span class="enterprise-category">{item.category}</span>
+                <h3>{item.name}</h3>
+                <p>{item.desc}</p>
+              </div>
+              <div class="enterprise-card-arrow" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+      <aside class="page-card">
+        <h3>{t.sideTitle}</h3>
+        <ul class="page-list page-list-full">
+          {ent.map((item) => (
+            <li><a href={item.href} target="_blank" rel="noopener noreferrer">{item.name}</a></li>
+          ))}
+        </ul>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,314 @@
+---
+export const prerender = false;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { getLocaleFromPathname } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+
+// Get order ID from query params
+const orderId = Astro.url.searchParams.get('orderId');
+const paymentMethod = Astro.url.searchParams.get('method') || 'mock';
+
+const t = {
+  zh: {
+    title: '支付成功 | dajilin.net',
+    heading: '支付成功',
+    message: '感谢您的订单！您的支付已成功确认。',
+    orderNumber: '订单号',
+    paymentMethod: '支付方式',
+    nextSteps: '接下来',
+    nextStepsDesc: '我们将尽快处理您的订单，并可能通过短信或邮箱与您联系确认细节。',
+    viewOrders: '查看订单',
+    backToShop: '返回商城',
+    paymentLabels: {
+      wechat: '微信支付',
+      alipay: '支付宝',
+      banktransfer: '银行转账',
+      cod: '货到付款',
+      mock: '模拟支付',
+    },
+  },
+  en: {
+    title: 'Payment Success | dajilin.net',
+    heading: 'Payment Successful',
+    message: 'Thank you for your order! Your payment has been confirmed.',
+    orderNumber: 'Order Number',
+    paymentMethod: 'Payment Method',
+    nextSteps: 'Next Steps',
+    nextStepsDesc: 'We will process your order as soon as possible and may contact you via SMS or email to confirm details.',
+    viewOrders: 'View Orders',
+    backToShop: 'Back to Shop',
+    paymentLabels: {
+      wechat: 'WeChat Pay',
+      alipay: 'Alipay',
+      banktransfer: 'Bank Transfer',
+      cod: 'Cash on Delivery',
+      mock: 'Mock Payment',
+    },
+  },
+  ja: {
+    title: '支払い成功 | dajilin.net',
+    heading: 'お支払い完了',
+    message: 'ご注文ありがとうございます！お支払いが確認されました。',
+    orderNumber: '注文番号',
+    paymentMethod: 'お支払い方法',
+    nextSteps: '次のステップ',
+    nextStepsDesc: 'できるだけ早く注文を処理し、SMSまたはメールで詳細を確認させていただく場合があります。',
+    viewOrders: '注文を見る',
+    backToShop: 'ショップに戻る',
+    paymentLabels: {
+      wechat: 'WeChat Pay',
+      alipay: 'Alipay',
+      banktransfer: '銀行振込',
+      cod: '代引き',
+      mock: 'モック支払い',
+    },
+  },
+  ko: {
+    title: '결제 성공 | dajilin.net',
+    heading: '결제 완료',
+    message: '주문해 주셔서 감사합니다! 결제가 확인되었습니다.',
+    orderNumber: '주문번호',
+    paymentMethod: '결제 방법',
+    nextSteps: '다음 단계',
+    nextStepsDesc: ' 최대한 빨리 주문을 처리하고 SMS 또는 이메일을 통해 세부 사항을 확인 연락드릴 수 있습니다.',
+    viewOrders: '주문 보기',
+    backToShop: '샵으로 돌아가기',
+    paymentLabels: {
+      wechat: '위챗.pay',
+      alipay: '알리.pay',
+      banktransfer: '은행转账',
+      cod: '착불',
+      mock: '모의 결제',
+    },
+  },
+};
+
+const text = t[locale] || t.zh;
+---
+
+<BaseLayout title={text.title} description={text.message} locale={locale}>
+  <Header />
+  <main class="page-shell payment-success-shell">
+    <div class="container">
+      <div class="success-card">
+        <div class="success-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9 12l2 2 4-4" />
+          </svg>
+        </div>
+
+        <h1>{text.heading}</h1>
+        <p class="message">{text.message}</p>
+
+        <div class="order-info">
+          <div class="info-row">
+            <span class="info-label">{text.orderNumber}</span>
+            <span class="info-value order-id">{orderId || 'N/A'}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">{text.paymentMethod}</span>
+            <span class="info-value">{text.paymentLabels[paymentMethod as keyof typeof text.paymentLabels] || paymentMethod}</span>
+          </div>
+        </div>
+
+        <div class="next-steps">
+          <h2>{text.nextSteps}</h2>
+          <p>{text.nextStepsDesc}</p>
+        </div>
+
+        <div class="actions">
+          <a href={locale === 'zh' ? '/orders/list' : `/${locale}/orders/list`} class="btn btn-secondary">
+            {text.viewOrders}
+          </a>
+          <a href={locale === 'zh' ? '/shop' : `/${locale}/shop`} class="btn btn-primary">
+            {text.backToShop}
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+  <Footer />
+
+  <style>
+    .payment-success-shell {
+      padding: 60px 0 100px;
+      background: linear-gradient(180deg, #f8fbfb 0%, #eef4f3 48%, #f8fbfc 100%);
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+    }
+
+    .success-card {
+      max-width: 500px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 48px 40px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .success-icon {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(5, 150, 105, 0.15), rgba(16, 185, 129, 0.1));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      color: #059669;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 1.8rem;
+      color: var(--text-strong);
+    }
+
+    .message {
+      margin: 0 0 32px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .order-info {
+      background: #f8fafb;
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+    }
+
+    .info-row:first-child {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .info-label {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .info-value {
+      color: var(--text-strong);
+      font-weight: 600;
+    }
+
+    .order-id {
+      font-family: monospace;
+      font-size: 0.85rem;
+      background: #fff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+    }
+
+    .next-steps {
+      text-align: left;
+      margin-bottom: 32px;
+      padding: 20px 24px;
+      background: rgba(15, 118, 110, 0.04);
+      border-radius: 16px;
+      border: 1px solid rgba(15, 118, 110, 0.1);
+    }
+
+    .next-steps h2 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      color: var(--primary);
+    }
+
+    .next-steps p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 28px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.35);
+    }
+
+    .btn-secondary {
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: #fff;
+    }
+
+    .btn-secondary:hover {
+      border-color: rgba(15, 118, 110, 0.32);
+      color: var(--primary);
+    }
+
+    @media (max-width: 560px) {
+      .success-card {
+        padding: 32px 24px;
+        margin: 0 16px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+<Footer />
+
+  <script>
+    import { updateOrderPaymentStatus, type Order } from '@/lib/cart';
+
+    // Get order ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('orderId');
+
+    // Mark order as paid on page load (mock payment success)
+    if (orderId) {
+      try {
+        updateOrderPaymentStatus(orderId, 'paid');
+        console.log('Order payment status updated to paid:', orderId);
+      } catch (err) {
+        console.error('Failed to update payment status:', err);
+      }
+    }
+  </script>
+</BaseLayout>
