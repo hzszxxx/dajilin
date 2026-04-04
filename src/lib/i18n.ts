@@ -272,11 +272,7 @@ export const getNavItems = (locale: Locale) => {
     { href: localizePath('/themes', locale), label: labels.themes },
     { href: localizePath('/study-tours', locale), label: labels.studyTours },
     { href: localizePath('/self-drive', locale), label: labels.route331 },
-    { href: localizePath('/official-services', locale), label: labels.services },
-    { href: localizePath('/guides', locale), label: labels.guides },
-    { href: localizePath('/cooperation', locale), label: labels.cooperation },
     { href: localizePath('/ai-assistant', locale), label: labels.ai },
-    { href: localizePath('/shop', locale), label: labels.shop },
   ];
 };
 
