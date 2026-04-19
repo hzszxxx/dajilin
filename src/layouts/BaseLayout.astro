@@ -8,11 +8,28 @@ interface Props {
   description: string;
   schemas?: Array<Record<string, unknown>>;
   locale?: 'zh' | 'en' | 'ja' | 'ko';
+  /** Open Graph image URL. Defaults to /images/home/hero-jilin.jpg */
+  ogImage?: string;
+  /** Twitter card type. Defaults to 'summary_large_image' */
+  twitterCard?: 'summary' | 'summary_large_image';
 }
 
-const { title, description, schemas = [], locale } = Astro.props;
+const ogLocaleMap: Record<string, string> = {
+  zh: 'zh_CN',
+  en: 'en_US',
+  ja: 'ja_JP',
+  ko: 'ko_KR',
+};
+
+const { title, description, schemas = [], locale, ogImage, twitterCard = 'summary_large_image' } = Astro.props;
 const resolvedLocale = locale ?? getLocaleFromPathname(Astro.url.pathname);
 const htmlLang = getHtmlLang(resolvedLocale);
+const ogLocale = ogLocaleMap[resolvedLocale] ?? 'zh_CN';
+const siteUrl = Astro.url.origin;
+const resolvedOgImage = ogImage
+  ? new URL(ogImage, Astro.url).href
+  : `${siteUrl}/images/home/hero-jilin.jpg`;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 
 const connectSources = new Set(["'self'"]);
 const publicApiBaseUrl = String(import.meta.env.PUBLIC_GN_API_BASE_URL || '').trim();
@@ -47,13 +64,19 @@ const csp = [
     <meta name="robots" content="index,follow" />
     <meta http-equiv="Content-Security-Policy" content={csp} />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link rel="canonical" href={canonicalUrl} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={new URL(Astro.url.pathname, Astro.site)} />
+    <meta property="og:url" content={canonicalUrl} />
     <meta property="og:site_name" content="dajilin.net" />
-    <meta name="theme-color" content="#0f766e" />
+    <meta property="og:locale" content={ogLocale} />
+    <meta name="theme-color" content="#1e5f8a" />
+    <meta property="og:image" content={resolvedOgImage} />
+    <meta name="twitter:card" content={twitterCard} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={resolvedOgImage} />
     {schemas.map((schema) => (
       <script type="application/ld+json" set:html={JSON.stringify(schema)} />
     ))}

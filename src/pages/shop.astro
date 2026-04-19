@@ -4,7 +4,7 @@ import Header from '@/components/astro/Header.astro';
 import Footer from '@/components/astro/Footer.astro';
 import { buildCollectionPageSchema } from '@/lib/schema';
 import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
-import { shopProducts } from '@/lib/cart';
+import { products, toShopProduct } from '@/lib/products';
 
 const locale = getLocaleFromPathname(Astro.url.pathname);
 
@@ -90,10 +90,10 @@ const copy: Record<
 
 const t = copy[locale];
 
-// Group products by category
-const tourismProducts = shopProducts.filter((p) => p.category === 'tourism');
-const creativeProducts = shopProducts.filter((p) => p.category === 'creative');
-const specialtyProducts = shopProducts.filter((p) => p.category === 'specialty');
+// Group products by category (food → specialty, service → tourism)
+const tourismProducts = products.filter((p) => p.category === 'service').map(toShopProduct);
+const creativeProducts = products.filter((p) => p.category === 'creative').map(toShopProduct);
+const specialtyProducts = products.filter((p) => p.category === 'food').map(toShopProduct);
 
 const categoryProducts = [
   { key: 'tourism', label: t.categories.tourism, products: tourismProducts },
@@ -120,13 +120,12 @@ const categoryProducts = [
               {category.products.map((product) => (
                 <article class="product-card">
                   <div class="product-visual">
-                    <div class={`product-image-placeholder ${product.imagePlaceholder}`}>
-                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.5">
-                        <rect x="3" y="3" width="18" height="18" rx="2" />
-                        <circle cx="8.5" cy="8.5" r="1.5" />
-                        <path d="M21 15l-5-5L5 21" />
-                      </svg>
-                    </div>
+                    <img
+                      src={product.imageUrl}
+                      alt={locale === 'zh' ? product.name : product.nameEn}
+                      class="product-image"
+                      loading="lazy"
+                    />
                     {!product.inStock && (
                       <span class="product-out-badge">{t.outOfStock}</span>
                     )}
@@ -415,6 +414,13 @@ const categoryProducts = [
 
     .add-to-cart-btn.is-added {
       background: #059669;
+    }
+
+    .product-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
     }
 
     @media (max-width: 768px) {

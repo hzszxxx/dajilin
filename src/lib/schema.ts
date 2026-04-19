@@ -1,6 +1,6 @@
 import type { Locale } from '@/lib/i18n';
 
-const SITE_URL = import.meta.env.SITE || 'https://dajilin.net';
+const SITE_URL = (import.meta.env.SITE || import.meta.env.SITE_URL || 'https://dajilin.net').replace(/\/$/, '');
 const ORG_ID = `${SITE_URL}/#organization`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
 
@@ -10,6 +10,13 @@ const languageTagMap: Record<Locale, string> = {
   ja: 'ja',
   ko: 'ko',
 };
+
+/** Social media profiles for sameAs */
+const socialProfiles = [
+  'https://weibo.com/dajilin',
+  'https://www.xiaohongshu.com/dajilin',
+  'https://www.douyin.com/dajilin',
+];
 
 const orgDescriptionMap: Record<Locale, string> = {
   zh: '吉林文旅资源整合与内容引流平台，聚焦目的地、工业研学、331国道与官方服务说明。',
@@ -26,6 +33,24 @@ export const organizationSchema = {
   url: SITE_URL,
   description: orgDescriptionMap.zh,
   areaServed: 'CN',
+  logo: `${SITE_URL}/images/logo.svg`,
+  telephone: process.env.CONTACT_PHONE || '+86-431-950-0000',
+  email: 'info@dajilin.net',
+  address: {
+    '@type': 'PostalAddress',
+    addressCountry: 'CN',
+    addressRegion: '吉林省',
+    addressCity: '长春市',
+    streetAddress: '人民大街若干号',
+  },
+  sameAs: socialProfiles,
+  contactPoint: {
+    '@type': 'ContactPoint',
+    email: 'info@dajilin.net',
+    telephone: process.env.CONTACT_PHONE || '+86-431-950-0000',
+    contactType: 'customer service',
+    availableLanguage: ['Chinese', 'English', 'Japanese', 'Korean'],
+  },
 };
 
 export const webSiteSchema = {
@@ -91,18 +116,68 @@ export const buildCollectionPageSchema = (pathname: string, name: string, descri
   },
 });
 
-export const buildTouristDestinationSchema = (pathname: string, name: string, description: string, locale: Locale = 'zh') => ({
-  '@context': 'https://schema.org',
-  '@type': 'TouristDestination',
-  '@id': `${SITE_URL}${pathname}#destination`,
-  url: `${SITE_URL}${pathname}`,
-  name,
-  description,
-  inLanguage: languageTagMap[locale],
-  isPartOf: {
-    '@id': WEBSITE_ID,
-  },
-});
+export type TouristDestinationOptions = {
+  addressLocality?: string;
+  addressRegion?: string;
+  latitude?: number;
+  longitude?: number;
+  image?: string;
+  rating?: number;
+  reviewCount?: number;
+};
+
+export const buildTouristDestinationSchema = (
+  pathname: string,
+  name: string,
+  description: string,
+  locale: Locale = 'zh',
+  options: TouristDestinationOptions = {}
+) => {
+  const { addressLocality = '吉林省', addressRegion = '吉林省', latitude, longitude, image, rating, reviewCount } = options;
+
+  const schema: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'TouristDestination',
+    '@id': `${SITE_URL}${pathname}#destination`,
+    url: `${SITE_URL}${pathname}`,
+    name,
+    description,
+    inLanguage: languageTagMap[locale],
+    isPartOf: {
+      '@id': WEBSITE_ID,
+    },
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality,
+      addressRegion,
+      addressCountry: 'CN',
+    },
+  };
+
+  if (latitude !== undefined && longitude !== undefined) {
+    schema.geo = {
+      '@type': 'GeoCoordinates',
+      latitude,
+      longitude,
+    };
+  }
+
+  if (image) {
+    schema.image = image;
+  }
+
+  if (rating !== undefined) {
+    schema.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: rating,
+      reviewCount: reviewCount ?? 1,
+      bestRating: 5,
+      worstRating: 1,
+    };
+  }
+
+  return schema;
+};
 
 export const buildTouristTripSchema = (pathname: string, name: string, description: string, locale: Locale = 'zh') => ({
   '@context': 'https://schema.org',
@@ -115,6 +190,119 @@ export const buildTouristTripSchema = (pathname: string, name: string, descripti
   isPartOf: {
     '@id': WEBSITE_ID,
   },
+});
+
+export type HowToStep = {
+  name: string;
+  text: string;
+};
+
+export type FAQItem = {
+  question: string;
+  answer: string;
+};
+
+export const buildHowToSchema = (
+  pathname: string,
+  name: string,
+  description: string,
+  steps: HowToStep[],
+  locale: Locale = 'zh'
+) => ({
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  '@id': `${SITE_URL}${pathname}#howto`,
+  url: `${SITE_URL}${pathname}`,
+  name,
+  description,
+  inLanguage: languageTagMap[locale],
+  isPartOf: {
+    '@id': WEBSITE_ID,
+  },
+  about: {
+    '@id': ORG_ID,
+  },
+  step: steps.map((step) => ({
+    '@type': 'HowToStep',
+    name: step.name,
+    text: step.text,
+  })),
+});
+
+export const buildFAQPageSchema = (
+  pathname: string,
+  name: string,
+  faqs: FAQItem[],
+  locale: Locale = 'zh'
+) => ({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  '@id': `${SITE_URL}${pathname}#faq`,
+  url: `${SITE_URL}${pathname}`,
+  name,
+  inLanguage: languageTagMap[locale],
+  isPartOf: {
+    '@id': WEBSITE_ID,
+  },
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.answer,
+    },
+  })),
+});
+
+export const buildArticleSchema = (
+  pathname: string,
+  name: string,
+  description: string,
+  authorName: string = 'dajilin.net',
+  datePublished: string = new Date().toISOString().split('T')[0],
+  locale: Locale = 'zh'
+) => ({
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  '@id': `${SITE_URL}${pathname}#article`,
+  url: `${SITE_URL}${pathname}`,
+  name,
+  description,
+  inLanguage: languageTagMap[locale],
+  isPartOf: {
+    '@id': WEBSITE_ID,
+  },
+  about: {
+    '@id': ORG_ID,
+  },
+  author: {
+    '@type': 'Organization',
+    name: authorName,
+    url: SITE_URL,
+  },
+  publisher: {
+    '@id': ORG_ID,
+  },
+  datePublished,
+  articleSection: 'Travel Guide',
+  genre: 'Travel Guide',
+});
+
+export type BreadcrumbItem = {
+  name: string;
+  url: string;
+};
+
+export const buildBreadcrumbListSchema = (pathname: string, items: BreadcrumbItem[], locale: Locale = 'zh') => ({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  '@id': `${SITE_URL}${pathname}#breadcrumb`,
+  itemListElement: items.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.name,
+    item: item.url.startsWith('http') ? item.url : `${SITE_URL}${item.url}`,
+  })),
 });
 
 export const buildItemListSchema = (pathname: string, name: string, items: { url: string; name: string }[], locale: Locale = 'zh') => ({

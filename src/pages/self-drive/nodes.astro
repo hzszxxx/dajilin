@@ -1,0 +1,415 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { buildWebPageSchema, buildItemListSchema, buildBreadcrumbListSchema, buildFAQPageSchema } from '@/lib/schema';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname) as Locale;
+const isZh = locale === 'zh';
+
+const pageTitle = isZh ? '331国道吉林段节点一览' : 'Route 331 Jilin Node Guide';
+const pageDescription = isZh
+  ? '331国道吉林段沿途重要节点一览：延吉、图们、珲春、长白，各节点位置、特色和游览方式。'
+  : 'Key nodes along Route 331 Jilin section: Yanji, Tumen, Hunchun, Changbai — locations, highlights and travel tips.';
+const pagePath = '/self-drive/nodes';
+
+type NodeItem = {
+  slug: string;
+  name: string;
+  eyebrow: string;
+  position: number;
+  geo: { lat: number; lng: number };
+  description: string;
+  highlights: string[];
+  visitNote: string;
+  recommendedDuration: string;
+};
+
+const nodes: NodeItem[] = [
+  {
+    slug: 'yanji',
+    name: '延吉',
+    eyebrow: '延边首府 · 331国道起点',
+    position: 1,
+    geo: { lat: 42.9067, lng: 129.5083 },
+    description: '延吉是延边朝鲜族自治州首府，也是331国道吉林段最重要的服务节点和补给起点。延吉集朝鲜族文化体验、城市美食和旅游服务于一体，是进入延边地区的门户城市。',
+    highlights: ['延边大学与弹幕墙', '朝鲜族民俗村', '西市场美食', '延吉驿站服务中心'],
+    visitNote: '禁止拍摄军事设施；部分区域需身份证登记。',
+    recommendedDuration: '2-3天',
+  },
+  {
+    slug: 'tumen',
+    name: '图们',
+    eyebrow: '中朝边境 · 331国道口岸节点',
+    position: 2,
+    geo: { lat: 42.9667, lng: 129.8467 },
+    description: '图们是331国道的重要边境节点，拥有中朝边境口岸，可远眺对面城市。图们的核心价值在于边境景观体验和口岸文化，适合与延吉组合成2-3天的边境体验路线。',
+    highlights: ['图们口岸观景台', '图们江界', '边境公园', '图们市容体验'],
+    visitNote: '口岸区域禁止拍摄军事设施；边境公园需遵守游览规定。',
+    recommendedDuration: '半天至1天',
+  },
+  {
+    slug: 'hunchun',
+    name: '珲春',
+    eyebrow: '三国交界 · 331国道最东端',
+    position: 3,
+    geo: { lat: 42.9047, lng: 130.3614 },
+    description: '珲春是中国最东端的城市，位于中俄朝三国交界处，是331国道吉林段的东端起点。防川风景区可一眼望三国，是延边地区最独特的边境奇观所在地。',
+    highlights: ['防川风景区（一望三国）', '防川土字牌', '珲春鸿星驿站', '俄罗斯风情街'],
+    visitNote: '防川景区需身份证入场；禁止拍摄军事设施；部分区域需提前预约。',
+    recommendedDuration: '1-2天',
+  },
+  {
+    slug: 'changbai',
+    name: '长白',
+    eyebrow: '331国道吉林段南端 · 边境县城',
+    position: 4,
+    geo: { lat: 41.4478, lng: 127.4833 },
+    description: '长白是331国道吉林段南端的重要节点，靠近长白山自然保护区，拥有独特的边境县城风貌和自然景观。长白也是进入长白山景区的重要门户之一。',
+    highlights: ['长白山天池（北坡）', '长白边境县城', '望天鹅景观', '331国道终点标志'],
+    visitNote: '长白山景区需预约；冬季道路可能有季节性管制。',
+    recommendedDuration: '2-3天（含长白山）',
+  },
+];
+
+const copy: Record<Locale, {
+  eyebrow: string;
+  intro: string;
+  nodeListTitle: string;
+  howToRead: string;
+  howToReadBody: string;
+  planNote: string;
+  planNoteBody: string;
+  routeFlow: string;
+  routeFlowBody: string;
+  relatedPages: string;
+  ctaLabel: string;
+  cta2Label: string;
+  visitNote: string;
+  duration: string;
+  highlights: string;
+  faqs: { q: string; a: string }[];
+}> = {
+  zh: {
+    eyebrow: '自驾节点',
+    intro: '以下是331国道吉林段最重要的四个节点：延吉、图们、珲春和长白。每个节点都有独特的地理和文化价值，适合不同主题和时长的自驾组合。',
+    nodeListTitle: '节点列表',
+    howToRead: '如何理解这些节点',
+    howToReadBody: '这些节点不是独立景区，而是331国道线路上的服务和文化节点。珲春是东端起点（最东端城市），延吉是西侧门户和最大补给站，长白是南端节点，图们是中间连接点。自驾331国道的价值在于线路感而非单点游览。',
+    planNote: '行程规划提示',
+    planNoteBody: '延吉可作为全程根据地和第一站；图们+珲春可组合成2-3天边境线；长白山方向可单独安排2-3天。各节点间距离约100-150公里，沿途有加油站和补给点。',
+    routeFlow: '推荐路线节奏',
+    routeFlowBody: '2天：延吉+图们；3天：延吉+图们+珲春；5天以上：可加入长白和长白山。',
+    relatedPages: '相关页面',
+    ctaLabel: '查看自驾攻略',
+    cta2Label: '提交路线咨询',
+    visitNote: '游览提示',
+    duration: '建议时长',
+    highlights: '核心看点',
+    faqs: [
+      { q: '331国道吉林段有多少个节点？', a: '331国道吉林段主要节点有4个：延吉（起点/门户）、图们（边境连接）、珲春（最东端/三国交界）、长白（南端/长白山门户）。此外还有多个服务驿站。' },
+      { q: '这些节点间距多远？', a: '延吉至图们约60公里，延吉至珲春约120公里（高速），珲春至长白约200公里。具体间距视路线选择而定，建议使用导航提前确认。' },
+      { q: '哪个节点最值得多停留？', a: '如果是首次到延边，延吉和珲春最值得多停留。延吉有丰富的朝鲜族文化和美食，珲春有独特的边境奇观（一望三国）。' },
+      { q: '各节点需要提前预约吗？', a: '延吉和珲春的住宿建议提前预订（尤其旺季）。珲春防川景区建议提前确认开放状态和预约要求。口岸区域一般无需预约，但需携带身份证。' },
+    ],
+  },
+  en: {
+    eyebrow: 'Self-Drive Nodes',
+    intro: 'The four key nodes of Route 331 Jilin section: Yanji, Tumen, Hunchun, and Changbai. Each offers unique geographic and cultural value for different self-drive route combinations.',
+    nodeListTitle: 'Node List',
+    howToRead: 'How to Understand These Nodes',
+    howToReadBody: 'These nodes are not standalone attractions but service and cultural nodes along Route 331. Hunchun is the eastern terminus (easternmost city), Yanji is the western gateway and largest supply base, Changbai is the southern node, and Tumen is the middle connector. The value of Route 331 self-drive lies in the route experience, not single-attraction visits.',
+    planNote: 'Trip Planning Tips',
+    planNoteBody: 'Yanji as base and first stop; Tumen + Hunchun combined for 2-3 day border line; Changbai alone for 2-3 days. Distances between nodes are approximately 100-150km with gas stations along the way.',
+    routeFlow: 'Recommended Route Rhythm',
+    routeFlowBody: '2 days: Yanji + Tumen; 3 days: Yanji + Tumen + Hunchun; 5+ days: add Changbai and Changbai Mountain.',
+    relatedPages: 'Related Pages',
+    ctaLabel: 'View Self-Drive Guide',
+    cta2Label: 'Submit Route Consultation',
+    visitNote: 'Visit Notes',
+    duration: 'Recommended Duration',
+    highlights: 'Key Highlights',
+    faqs: [
+      { q: 'How many nodes does Route 331 Jilin section have?', a: 'Route 331 Jilin has 4 main nodes: Yanji (start/gateway), Tumen (border connector), Hunchun (easternmost/three-country junction), Changbai (southern/Changbai Mountain gateway). Plus multiple service stations.' },
+      { q: 'How far apart are these nodes?', a: 'Yanji to Tumen ~60km, Yanji to Hunchun ~120km (expressway), Hunchun to Changbai ~200km. Use navigation to confirm exact distances based on your route.' },
+      { q: 'Which node deserves the most time?', a: 'For first-time visitors to Yanbian, Yanji and Hunchun deserve the most time. Yanji has rich Korean ethnic culture and food; Hunchun has the unique border spectacle (seeing three countries).' },
+      { q: 'Do I need advance reservations at these nodes?', a: 'Book Yanji and Hunchun accommodation in advance, especially during peak season. Confirm Hunchun Fangchuan opening status and reservation requirements in advance. Port areas generally do not require reservation but bring your ID.' },
+    ],
+  },
+  ja: {
+    eyebrow: '自驾ノード',
+    intro: '331国道吉林段最重要的4つのノード：延吉·図們·琿春·長白。各ノードは独自の地理的·文化的価値を持ち、様々なテーマと日程の自驾組み合わせに適しています。',
+    nodeListTitle: 'ノードリスト',
+    howToRead: 'これらのノードをどう理解するか',
+    howToReadBody: 'これらのノードは独立した観光地ではなく、331国道線路上の服務と文化のノードです。琿春は東端の出発点（最東端都市）、延吉は西側ゲートウェイと最大の补给站、長白は南端のノード、図們は中間接続点です。331国道自驾の価値は線路感にあり、单一点観光ではありません。',
+    planNote: '旅程計画のポイント',
+    planNoteBody: '延吉を全程の根拠地·第一駅として；図們+琿春は2-3日の国境ライン组合；長白方向は別途2-3日を提案。各ノード間の距離は約100-150kmで、沿途に加油站と补给点があります。',
+    routeFlow: '推奨ルートリズム',
+    routeFlowBody: '2日：延吉+図們；3日：延吉+図們+琿春；5日以上：長白と長白山を追加。',
+    relatedPages: '関連ページ',
+    ctaLabel: '自驾攻略を見る',
+    cta2Label: '旅程相談を提出',
+    visitNote: '游览メモ',
+    duration: '推奨期間',
+    highlights: 'コア見どころ',
+    faqs: [
+      { q: '331国道吉林段には何個のノードがありますか？', a: '主なノードは4つ：延吉（出発点/ゲートウェイ）、図們（国境接続）、琿春（最東端/三国交界）、長白（南端/長白山ゲートウェイ）。複数のサービス驛站もあります。' },
+      { q: 'これらのノード間の距離は？', a: '延吉～図們は約60km、延吉～琿春は約120km（高速道路）、琿春～長白は約200km。ルートの選択により具体的な距離是不同的ので、ナビゲーションで事前に確認してください。' },
+      { q: 'どのノードに最も長く滞在するべきですか？', a: '初めて延辺に来る場合、延吉と琿春に最も長く滞在する価値があります。延吉は豊富な朝鲜族文化と美食、琿春は独特な国境の奇観（一望三国）があります。' },
+      { q: '各ノードは事前予約が必要ですか？', a: '延吉と琿春の宿泊は事前に予約することをお勧めします（特にピーク季）。琿春防川景区の開放状態と予約要件を事前に確認のこと。口岸区域は一般的に予約は不要ですが、身分証明書が必要です。' },
+    ],
+  },
+  ko: {
+    eyebrow: '自驾 노드',
+    intro: '331 국도 지린 구간 가장 중요한 4개 노드: 연길·두만·훈춘·장백. 각 노드는 고유한 지리적·문화적 가치를持ち 있으며, 다양한 테마와 일정 自驾 조합에 적합합니다.',
+    nodeListTitle: '노드 목록',
+    howToRead: '이러한 노드를 어떻게 이해하나요',
+    howToReadBody: '이러한 노드는 독립 관광지가 아니라 331 국도 노선상의 서비스와 문화 노드입니다.훈춘은 동단 출발점(최동단 도시), 연길은 서측 게이트웨이·최대 보급站, 장백은 남단 노드, 두만은 중간 연결점입니다. 331 국도自驾의 가치는 노선감에 있지, 단일 관광지가 아닙니다.',
+    planNote: '일정 계획 팁',
+    planNoteBody: '연길을 전 구간의 거점·제1역으로; 두만+훈춘은 2-3일国境 라인 조합; 장백 방향은 별도로 2-3일 권장. 각 노드 간 거리는 약 100-150km,沿途에 주유소와 보급점이 있습니다.',
+    routeFlow: '권장 노선 리듬',
+    routeFlowBody: '2일: 연길+두만; 3일: 연길+두만+훈춘; 5일 이상: 장백과 장백산 추가.',
+    relatedPages: '관련 페이지',
+    ctaLabel: '自驾 가이드 보기',
+    cta2Label: '노선 상담 제출',
+    visitNote: '방문 참고',
+    duration: '권장 기간',
+    highlights: '핵심 놀거리',
+    faqs: [
+      { q: '331 국도 지린 구간에 몇 개의 노드가 있나요?', a: '주요 노드는 4개: 연길(출발점/게이트웨이), 두만(국경 연결),훈춘(최동단/삼개국 접경), 장백(남단/장백산 게이트웨이). 또한 여러 서비스 거점이 있습니다.' },
+      { q: '이 노드들 사이의 거리는 얼마나 되나요?', a: '연길~두만 약 60km, 연길~훈춘 약 120km(고속도로),훈춘~장백 약 200km. 노선 선택에 따라 구체적인 거리가 다르므로 내비게이션으로事前に 확인하세요.' },
+      { q: '어떤 노드에 가장 오래 머물러야 하나요?', a: '처음 연변에 오시는 분들은 연길과훈춘에 가장 오래 머물 가치가 있습니다. 연길은 풍부한 조선족 문화와 미식,훈춘은 고유한 국경의 기관(一望三国)이 있습니다.' },
+      { q: '각 노드는 사전 예약이 필요한가요?', a: '연길과훈춘 숙박은事前に 예약하세요(특히 성수기).훈춘 방천景区의 개방 상태와 예약 요건을事前に 확인하세요. 항구区域는 일반적으로 예약이 필요 없지만 신분증이 필요합니다.' },
+    ],
+  },
+};
+
+const t = copy[locale];
+
+// Build ItemList for Schema
+const itemListNodes = nodes.map((node) => ({
+  url: localizePath(`/self-drive/nodes/${node.slug}`, locale),
+  name: `${node.name} — ${node.eyebrow}`,
+}));
+
+const breadcrumbs = [
+  { name: isZh ? '首页' : 'Home', url: localizePath('/', locale) },
+  { name: isZh ? '自驾攻略' : 'Self-Drive', url: localizePath('/self-drive/overview', locale) },
+  { name: isZh ? '节点一览' : 'Node Guide', url: pagePath },
+];
+
+const schemas = [
+  buildWebPageSchema(pagePath, pageTitle, pageDescription, locale),
+  buildItemListSchema(pagePath, pageTitle, itemListNodes, locale),
+  buildBreadcrumbListSchema(pagePath, breadcrumbs, locale),
+  buildFAQPageSchema(pagePath, pageTitle, t.faqs, locale),
+];
+---
+
+<BaseLayout title={`${pageTitle} | dajilin.net`} description={pageDescription} schemas={schemas} locale={locale} ogImage="/images/home/hunchun.jpg">
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-hero">
+          <div class="page-copy">
+            <div class="eyebrow">{t.eyebrow}</div>
+            <h1>{pageTitle}</h1>
+            <p>{t.intro}</p>
+          </div>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.howToRead}</h2>
+          <p>{t.howToReadBody}</p>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.planNote}</h2>
+          <p>{t.planNoteBody}</p>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.routeFlow}</h2>
+          <p>{t.routeFlowBody}</p>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.nodeListTitle}</h2>
+          <div class="node-grid">
+            {nodes.map((node) => (
+              <article class="node-card">
+                <div class="node-header">
+                  <span class="node-position">#{node.position}</span>
+                  <h3>{node.name}</h3>
+                  <p class="node-eyebrow">{node.eyebrow}</p>
+                </div>
+                <p class="node-desc">{node.description}</p>
+                <div class="node-meta">
+                  <div class="meta-item">
+                    <span class="meta-label">{t.duration}</span>
+                    <span class="meta-value">{node.recommendedDuration}</span>
+                  </div>
+                  <div class="meta-item">
+                    <span class="meta-label">{t.visitNote}</span>
+                    <span class="meta-value">{node.visitNote}</span>
+                  </div>
+                </div>
+                <div class="node-highlights">
+                  <span class="meta-label">{t.highlights}</span>
+                  <ul>
+                    {node.highlights.map((h) => <li>{h}</li>)}
+                  </ul>
+                </div>
+                <a href={localizePath(`/self-drive/nodes/${node.slug}`, locale)} class="button button-secondary node-link">
+                  {isZh ? '查看详情' : 'View Details'} &rarr;
+                </a>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.faqTitle ?? 'FAQ'}</h2>
+          <div class="faq-list">
+            {t.faqs.map((faq) => (
+              <article class="faq-item">
+                <h3>{faq.q}</h3>
+                <p>{faq.a}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <aside class="page-card">
+        <h3>{t.relatedPages}</h3>
+        <ul class="page-list">
+          <li><a href={localizePath('/self-drive/overview', locale)}>{isZh ? '331国道概览' : 'Route 331 Overview'}</a></li>
+          <li><a href={localizePath('/self-drive/how-to-travel', locale)}>{isZh ? '自驾攻略怎么玩' : 'How to Travel'}</a></li>
+          <li><a href={localizePath('/self-drive/stations', locale)}>{isZh ? '驿站服务说明' : 'Station Services'}</a></li>
+          <li><a href={localizePath('/destinations/yanbian', locale)}>{isZh ? '延边目的地页' : 'Yanbian Destination'}</a></li>
+          <li><a href={localizePath('/faq', locale)}>{isZh ? '常见问题' : 'FAQ'}</a></li>
+        </ul>
+
+        <div class="detail-side-card">
+          <h3>{isZh ? '快速规划' : 'Quick Planning'}</h3>
+          <div class="cta-row">
+            <button class="button" type="button" data-open-ai-widget data-ai-page-url={pagePath}>
+              {t.ctaLabel.replace('查看', '先问')}
+            </button>
+            <a class="button-secondary" href={localizePath('/cooperation', locale)}>
+              {t.cta2Label}
+            </a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .node-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  .node-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .node-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .node-position {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-accent, #c0392b);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .node-card h3 {
+    font-size: 1.25rem;
+    margin: 0;
+  }
+  .node-eyebrow {
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    margin: 0;
+  }
+  .node-desc {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--color-text);
+    flex: 1;
+  }
+  .node-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+  .meta-label {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-muted);
+  }
+  .meta-value {
+    color: var(--color-text);
+  }
+  .node-highlights {
+    font-size: 0.85rem;
+  }
+  .node-highlights ul {
+    margin: 0.25rem 0 0 1rem;
+    padding: 0;
+  }
+  .node-highlights li {
+    color: var(--color-text);
+  }
+  .node-link {
+    align-self: flex-start;
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .faq-item {
+    padding: 1rem;
+    background: var(--color-surface);
+    border-radius: 8px;
+  }
+  .faq-item h3 {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+  .faq-item p {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--color-text);
+  }
+  .cta-row {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+</style>

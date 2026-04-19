@@ -3,7 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/astro/Header.astro';
 import Footer from '@/components/astro/Footer.astro';
 import DetailPage from '@/components/astro/DetailPage.astro';
-import { buildCollectionPageSchema } from '@/lib/schema';
+import { buildCollectionPageSchema, buildArticleSchema } from '@/lib/schema';
 import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
 import type { DetailPage as DetailPageType } from '@/lib/content-pages';
 
@@ -116,13 +116,18 @@ const page: DetailPageType = {
 
 const localizedPath = localizePath(page.pathname, locale);
 const localizedTitle = locale === 'zh' ? page.title : page.eyebrow;
-const localizedDescription = locale === 'zh' ? page.description : `CRRC Changchun corporate visit overview for enterprise and institutional visitors.`;
+const localizedDescription = locale === 'zh' ? page.description : `CRRC Changchun enterprise visit guide for corporate and institutional groups.`;
+
+const schemas = [
+  buildCollectionPageSchema(localizedPath, localizedTitle, localizedDescription, locale),
+  buildArticleSchema(localizedPath, localizedTitle, localizedDescription, 'dajilin.net', '2026-01-01', locale),
+];
 ---
 
 <BaseLayout
   title={`${localizedTitle} | dajilin.net`}
   description={localizedDescription}
-  schemas={[buildCollectionPageSchema(localizedPath, localizedTitle, localizedDescription, locale)]}
+  schemas={schemas}
   locale={locale}
 >
   <Header />

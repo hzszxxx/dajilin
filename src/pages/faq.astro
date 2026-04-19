@@ -1,0 +1,516 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { buildWebPageSchema, buildFAQPageSchema, buildBreadcrumbListSchema } from '@/lib/schema';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname) as Locale;
+const isZh = locale === 'zh';
+
+const pageTitle = isZh ? '常见问题与AI解答' : 'Frequently Asked Questions';
+const pageDescription = isZh
+  ? '关于延边、331国道、自驾攻略、驿站服务、边境旅行的常见问题，由AI助手与人工编辑共同解答。'
+  : 'Common questions about Yanbian, Route 331, self-drive guides, station services, and border travel, answered by AI and editors.';
+const pagePath = '/faq';
+
+type FAQ = { q: string; a: string };
+
+const copy: Record<Locale, { eyebrow: string; intro: string; sections: { title: string; faqs: FAQ[] }[] }> = {
+  zh: {
+    eyebrow: '常见问题',
+    intro: '以下问题由AI助手与人工编辑共同整理，涵盖延边目的地、331国道自驾、驿站服务、边境旅行须知等核心主题。',
+    sections: [
+      {
+        title: '延边与边境目的地',
+        faqs: [
+          {
+            q: '延边最值得去的景点有哪些？',
+            a: '延边地区最值得去的景点包括：延吉市（朝鲜族文化中心）、珲春防川风景区（一眼望三国）、图们口岸（边境景观）、金达莱花海（春季花卉）、朝鲜族民俗村（民族文化体验）。延边不是单点游览型目的地，更适合区域体验和线路联动的玩法。',
+          },
+          {
+            q: '去延边旅游最佳季节是什么时候？',
+            a: '延边四季皆宜：春季（4-5月）看金达莱花，夏季（6-8月）凉爽适合避暑，秋季（9-10月）边境色彩丰富，冬季可体验冰雪和朝鲜族冬季民俗。夏季是传统旺季，建议提前预订住宿。',
+          },
+          {
+            q: '珲春防川一眼望三国怎么体验？',
+            a: '防川风景区位于珲春市最东端，是中俄朝三国交界处。站在防川观景台上，可以同时看到中国、俄罗斯（哈桑区）和朝鲜（罗先特区）三国领土。景区需携带身份证入场，禁止拍摄军事设施。珲春是331国道吉林段的东端起点。',
+          },
+          {
+            q: '延边美食有什么推荐？',
+            a: '延边美食以朝鲜族特色为主：冷面（延吉西市场或服务大楼冷面）、烤肉（延吉丰茂羊肉串）、泡菜和辣白菜、米肠、打糕、土豆饺子。延吉是东北朝鲜族美食最集中的城市，建议在延吉市传统餐厅体验。',
+          },
+          {
+            q: '延边和331国道是什么关系？',
+            a: '331国道（丹阿线）是中国沿边公路的重要组成部分，吉林段途经延边地区，连接延吉、珲春、图们等重要节点。延边是331国道吉林段的核心体验区域，两者可以联动理解，适合边境自驾主题旅行。',
+          },
+        ],
+      },
+      {
+        title: '331国道自驾攻略',
+        faqs: [
+          {
+            q: '331国道吉林段自驾需要多长时间？',
+            a: '331国道吉林段全长约1390公里，根据时间安排建议：2天1夜适合延吉+珲春单线；3-5天可覆盖延吉+图们+珲春完整边境线。如果要深度体验沿途驿站和景点，建议安排5-7天。',
+          },
+          {
+            q: '331国道自驾需要准备什么证件？',
+            a: '边境地区需携带身份证（必需）。前往口岸区域（如图们口岸、珲春口岸、圈河口岸）需遵守规定：禁止拍摄军事设施，部分口岸区域需要登记。建议提前了解各口岸的开放时间和预约要求。',
+          },
+          {
+            q: '331国道沿途路况如何？',
+            a: '331国道吉林段以高速公路和国道为主，路况总体良好。延吉至珲春段为高速公路，延吉至图们段有国道连接。沿途加油站间隔约50-100公里，建议在延吉出发前确保油箱满格并完成车辆检查。',
+          },
+          {
+            q: '331国道沿途有哪些驿站可以住宿？',
+            a: '331国道吉林段主要驿站包括：延吉服务中心（延边大学附近，城市补给便利）和珲春鸿星驿站（珲春市区，靠近防川景区）。驿站提供住宿、餐饮、车辆维修等服务，建议旺季提前预订。',
+          },
+          {
+            q: '自驾延边边境地区有哪些注意事项？',
+            a: '边境注意事项：禁止拍摄军事设施和禁区；部分区域需身份证登记；遵守边境管理人员指引；冬季边境地区气温低，需做好保暖和车辆防冻措施；沿途景点较分散，建议自驾或包车出行。',
+          },
+        ],
+      },
+      {
+        title: '驿站服务与行程安排',
+        faqs: [
+          {
+            q: '延吉驿站提供哪些服务？',
+            a: '延吉服务中心位于延边大学附近，提供：住宿（经济型和标准间）、餐饮（朝鲜族特色餐）、停车场、车辆维修工具、手机充电、热水供应。驿站周边商业配套完善，可作为331国道的理想出发点和补给站。',
+          },
+          {
+            q: '珲春鸿星驿站怎么预订？',
+            a: '珲春鸿星驿站可通过dajilin.net官方服务页提交咨询，或直接联系驿站。鸿星驿站位于珲春市区，是331国道吉林段东端最重要的服务节点，同时靠近防川风景区，建议提前1-2天预订。',
+          },
+          {
+            q: '延边旅行需要提前多久预订住宿？',
+            a: '淡季（11月-次年3月）可当天预订；旺季（4-5月花季、7-8月暑期、10月国庆）建议提前3-7天预订。延吉和珲春是主要住宿节点，临时前往可能满房。建议通过正规平台或官方咨询渠道预订。',
+          },
+          {
+            q: '延边亲子游有什么推荐路线？',
+            a: '延边亲子游推荐：延吉市区（朝鲜族文化体验、延大校园）为主，辐射图们（口岸景观、简单边境认知），不建议前往军事禁区。延吉西市场可以让孩子体验朝鲜族日常生活，朝鲜族民俗村有互动体验项目。',
+          },
+        ],
+      },
+      {
+        title: '官方服务与信息验证',
+        faqs: [
+          {
+            q: '如何验证延边旅行信息的真实性？',
+            a: '建议通过以下官方渠道验证：延边朝鲜族自治州文化广播电视和旅游局官网、各县市官方公众号、以及dajilin.net官方信息页。边境地区规定可能随时更新，出发前应再次确认。对于口岸通行规定，应以官方实时通知为准。',
+          },
+          {
+            q: 'dajilin.net是什么平台？',
+            a: 'dajilin.net是吉林文旅资源整合与内容引流平台，聚焦延边目的地、331国道自驾、工业研学、官方服务说明等主题。平台提供AI助手问答、自驾攻略、驿站信息和行程规划建议，所有信息经人工编辑审核。',
+          },
+          {
+            q: '在延边遇到旅行纠纷怎么办？',
+            a: '延边地区旅行纠纷可联系：延边州文化广播电视和旅游局（官方投诉电话）、所在县市消费者协会。如涉及边境管理问题，应联系边境管理部门或当地公安局。dajilin.net提供官方服务咨询入口，协助用户对接正确部门。',
+          },
+          {
+            q: '图们口岸和珲春口岸有什么区别？',
+            a: '图们口岸是对朝口岸（连接朝鲜南阳），可远眺对面城市，是边境景观体验型口岸；珲春有多个口岸，包括对俄公路口岸（连接俄罗斯哈桑区）和中朝圈河口岸（连接朝鲜罗先特区），功能更综合，是331国道的东端起点。',
+          },
+        ],
+      },
+    ],
+  },
+  en: {
+    eyebrow: 'FAQ',
+    intro: 'The following questions are compiled by AI and human editors, covering Yanbian destinations, Route 331 self-drive, station services, and border travel guidelines.',
+    sections: [
+      {
+        title: 'Yanbian & Border Destinations',
+        faqs: [
+          {
+            q: 'What are the must-visit attractions in Yanbian?',
+            a: 'Top Yanbian attractions include: Yanji City (Korean ethnic culture center), Hunchun Fangchuan (see three countries), Tumen Port (border scenery), Korean Rhododendron Blooms (spring), and Korean Ethnic Villages. Yanbian is best understood as a regional experience destination rather than a single-attraction destination.',
+          },
+          {
+            q: 'When is the best season to visit Yanbian?',
+            a: 'Yanbian is suitable year-round: Spring (Apr-May) for rhododendron flowers, Summer (Jun-Aug) for cool weather and escape from heat, Autumn (Sep-Oct) for border colors, Winter for snow and Korean ethnic winter traditions. Summer is peak season — book accommodation in advance.',
+          },
+          {
+            q: 'How do I experience seeing three countries at Hunchun Fangchuan?',
+            a: 'Fangchuan Scenic Area is at the easternmost point of Hunchun, where China, Russia (Khasan), and North Korea (Rason) meet. From the observation platform you can see all three countries simultaneously. Bring your ID card. Photography of military facilities is strictly prohibited.',
+          },
+          {
+            q: 'What food should I try in Yanbian?',
+            a: 'Yanbian cuisine is primarily Korean ethnic: cold noodles (try Xishi Market or Fuwu Dlou in Yanji), BBQ (Fengmao lamb skewers), kimchi and pickled vegetables, blood sausage, rice cakes, and potato dumplings. Yanji has the most concentrated Korean food in northeast China.',
+          },
+          {
+            q: 'What is the relationship between Yanbian and Route 331?',
+            a: 'Route 331 (Dan-A Line) is a major Chinese border highway. Its Jilin section passes through Yanbian, connecting Yanji, Hunchun, Tumen and other key nodes. Yanbian is the core experience area of Route 331 Jilin section — they are best understood together for border self-drive themes.',
+          },
+        ],
+      },
+      {
+        title: 'Route 331 Self-Drive Guide',
+        faqs: [
+          {
+            q: 'How long does it take to drive Route 331 Jilin section?',
+            a: 'Route 331 Jilin section is approximately 1,390km. Recommended durations: 2 days 1 night for Yanji + Hunchun; 3-5 days for complete Yanji + Tumen + Hunchun border line. For deep station and attraction experiences, plan 5-7 days.',
+          },
+          {
+            q: 'What documents do I need for Route 331 self-drive?',
+            a: 'ID card is required for all border areas. When visiting port areas (Tumen, Hunchun, Quanhe), follow regulations: no photography of military facilities, some areas require registration. Check port opening hours and reservation requirements in advance.',
+          },
+          {
+            q: 'What is the road condition on Route 331?',
+            a: 'Route 331 Jilin section is mostly expressway and national highway with good overall conditions. Yanji to Hunchun is expressway; Yanji to Tumen is national highway. Gas stations are approximately 50-100km apart. Fill up and do a vehicle check in Yanji before departing.',
+          },
+          {
+            q: 'What stations along Route 331 offer accommodation?',
+            a: 'Main stations on Route 331 Jilin: Yanji Service Center (near Yanbian University, urban supplies) and Hunchun Hongxing Station (Hunchun city, near Fangchuan). Stations offer accommodation, dining, vehicle repair tools, charging, and hot water. Book in advance during peak season.',
+          },
+          {
+            q: 'What should I note when self-driving in Yanbian border areas?',
+            a: 'Border notes: no photography of military facilities or restricted zones; some areas require ID registration; follow border management staff instructions; winter border temperatures are very low — keep warm and prepare your vehicle for cold; attractions are scattered — self-drive or chartered vehicle recommended.',
+          },
+        ],
+      },
+      {
+        title: 'Station Services & Trip Planning',
+        faqs: [
+          {
+            q: 'What services does the Yanji Station offer?',
+            a: 'Yanji Service Center near Yanbian University offers: accommodation (economy and standard rooms), dining (Korean ethnic meals), parking, vehicle repair tools, phone charging, hot water. Surrounding commercial facilities are comprehensive — ideal starting point and supply base for Route 331.',
+          },
+          {
+            q: 'How do I book Hunchun Hongxing Station?',
+            a: 'Book through the official services page on dajilin.net or contact the station directly. Hongxing Station is in Hunchun city, the most important service node at the eastern end of Route 331 Jilin, close to Fangchuan Scenic Area. Book 1-2 days in advance recommended.',
+          },
+          {
+            q: 'How far in advance should I book accommodation in Yanbian?',
+            a: 'Off-season (Nov-Mar): same-day booking is fine. Peak season (Apr-May flower season, Jul-Aug summer, Oct National Day): book 3-7 days ahead. Yanji and Hunchun are main accommodation nodes — last-minute booking during peak season may result in no availability.',
+          },
+          {
+            q: 'What family-friendly routes do you recommend for Yanbian?',
+            a: 'Family-friendly Yanbian: Yanji city (Korean ethnic culture, Yanbian University campus) as base, radiate to Tumen (port scenery, basic border awareness). Avoid military restricted zones. Yanji West Market lets children experience Korean daily life; Korean Ethnic Villages have interactive programs.',
+          },
+        ],
+      },
+      {
+        title: 'Official Services & Information Verification',
+        faqs: [
+          {
+            q: 'How do I verify the authenticity of Yanbian travel information?',
+            a: 'Verify through official channels: Yanbian Korean Autonomous Prefecture Culture, Radio, TV and Tourism Bureau official website, county/city official WeChat accounts, and dajilin.net official information pages. Border area regulations may change — reconfirm before departure. For port crossing rules, rely on official real-time notices.',
+          },
+          {
+            q: 'What is dajilin.net?',
+            a: 'dajilin.net is a Jilin cultural and travel resource integration platform focused on Yanbian destinations, Route 331 self-drive, industrial study tours, and official service guides. The platform provides AI assistant Q&A, self-drive guides, station information, and trip planning advice. All information is reviewed by human editors.',
+          },
+          {
+            q: 'What should I do if I encounter travel disputes in Yanbian?',
+            a: 'For travel disputes in Yanbian, contact: Yanbian Prefecture Culture, Radio, TV and Tourism Bureau (official complaint hotline) or the consumer association in the respective city/county. For border management issues, contact border management authorities or local public security bureau. dajilin.net provides an official service consultation portal to help connect you with the right department.',
+          },
+          {
+            q: "What's the difference between Tumen Port and Hunchun Port?",
+            a: "Tumen Port is a North Korea-facing port (connecting to North Korea's Namyang), offering border scenery and views of the opposite city — primarily an experience-style port. Hunchun has multiple ports including a Russia-facing highway port (connecting to Russia's Khasan District) and the China-North Korea Quanhe Port (connecting to North Korea's Rason SEZ) — more comprehensive in function and the eastern starting point of Route 331.",
+          },
+        ],
+      },
+    ],
+  },
+  ja: {
+    eyebrow: 'よくある質問',
+    intro: 'AIと人類編集者が共同制作した、延辺目的地、331国道自驾、驛站サービス、国境旅行の山ガイドです。',
+    sections: [
+      {
+        title: '延辺と国境目的地',
+        faqs: [
+          {
+            q: '延辺に行くならどこに行くべきですか？',
+            a: '延辺の見どころ：延吉市（朝鮮族文化の中心）、琿春防川（一望三国）、図們口岸（国境の景色）、金達萊の花海（春の花）、朝鲜族民俗村（民族文化体験）。延辺は单一観光地ではなく、地域体験とルート連動の玩法に最適です。',
+          },
+          {
+            q: '延辺への旅行に最適な季節はいつですか？',
+            a: '延辺は四季通じて可能：春（4-5月）は金達萊の花、夏（6-8月）は涼しく避暑に最適、秋（9-10月）は国境の色彩、冬は冰雪と朝鲜族の冬民俗体験。画像は夏がピーク季이며、事前に宿舎を予約することをお勧めします。',
+          },
+          {
+            q: '琿春防川で三国を一望する歩き方は？',
+            a: '防川景区は琿春市最東端、中露朝三国の交界處にあります。防川観光台上から中国・ロシア（ハサン区）・朝鮮（羅先特区）の三カ国を同時に望むことができます。入園には身分証明書が必要で、軍事施設の撮影は禁止です。',
+          },
+          {
+            q: '延辺のグルメは何を食べべきですか？',
+            a: '延辺グルメは朝鲜族の特色料理：冷面（延吉西市場または服务大楼冷面）、烤肉（延吉豊茂羊肉串）、泡菜・辣白菜、ミートブック、トック糕、土豆饺子など。延吉は東北朝鲜族グルメが最も集まる都市で、延吉の伝統餐厅での体験をお勧めします。',
+          },
+          {
+            q: '延辺と331国道の関係は何ですか？',
+            a: '331国道（丹阿線）は中国沿辺公路の重要構成部分で、吉林段は延辺地域を経由し、延吉・琿春・図們などの重要节点を連絡します。延辺は331国道吉林段の核心体験エリアで、两者連動で理解すると、国境自驾テーマ之旅に最適です。',
+          },
+        ],
+      },
+      {
+        title: '331国道自驾攻略',
+        faqs: [
+          {
+            q: '331国道吉林段を自驾要走多久？',
+            a: '331国道吉林段的全延長は約1390km。建議：2泊3日は延吉+琿春のみ；3-5日は延吉+図們+琿春完整国境線をカバー可能。沿線の驛站や景点をディープに体験するには5-7日が適切。',
+          },
+          {
+            q: '331国道自驾にはどんな書類が必要ですか？',
+            a: '国境地域には身分証明書が必要（必需）。口岸区域（図們・琿春・圈河）を訪問時は規定を遵守：軍事施設の撮影は禁止で、一部の区域では登記が必要。各口岸の営業時間と予約要件を事前に確認のこと。',
+          },
+          {
+            q: '331国道の沿途的路況はどうですか？',
+            a: '331国道吉林段は高速道路と国道为主，路況は全体的に良好。延吉から琿春までは高速道路で、延吉から図們までは国道を連絡。沿途加油站の間隔は約50-100kmで、延吉出発前に燃料満タン・車両点検のこと。',
+          },
+          {
+            q: '331国道沿途で住宿できる驛站はどこですか？',
+            a: '主な驛站：延吉服务中心（延辺大学近く、都市补给便利）と琿春鴻星驛站（琿春市街地、防川景区に近い）。驛站は宿泊・飲食・車両修理工具・充電・給湯などのサービスを提供。ピーク季には事前に予約のこと。',
+          },
+          {
+            q: '延辺の国境地域を自驾での注意点は？',
+            a: '国境の注意：軍事施設や立入禁止区域の撮影は禁止；一部の区域では身分登記が必要；国境管理者の指示に従う；冬は気温が低いので保暖と車両防凍の準備のこと；景点が分散しているので自驾または借り上げ車が推奨。',
+          },
+        ],
+      },
+      {
+        title: '驛站サービスと旅程計画',
+        faqs: [
+          {
+            q: '延吉驛站はどのようなサービスがありますか？',
+            a: '延吉服务中心は延辺大学通りにあり、住宿（経済型と標準ルーム）、飲食（朝鲜族特色餐）、駐車場幅•車両修理工具、モバイル充電、給湯を提供。周边の商業施設が充実しており、331国道の理想出発点・补给站として最適。',
+          },
+          {
+            q: '琿春鴻星驛站の予約方法は？',
+            a: 'dajilin.net公式サービスページから相談を提出するか、驛站に直接連絡のこと。琿春鴻星驛站は琿春市街にあり、331国道吉林段東端最も重要なサービス节点で、同時に防川景区に近い。ピーク季には1-2日前に予約することを推奨。',
+          },
+          {
+            q: '延辺への旅行、宿舎はいつ予約すべきですか？',
+            a: 'オフ季（11月-3月）は当日予約可。ピーク季（4-5月花季、7-8月暑期、10月国慶節）は3-7日前に予約することを推奨。延吉と琿春が主な宿舎节点で、ピーク季に突然訪問すると満室の可能性があります。',
+          },
+          {
+            q: '延辺でのファミリー旅行有什么推荐的？',
+            a: '延辺ファミリー旅行の推奨：延吉市街（朝鲜族文化体験、延大キャンパス）を主とし、図們（口岸景观、简单な国境認知）に延伸。軍事禁区への訪問は避ける。延吉西市場で子どもに朝鲜族の日常を体験させ、朝鲜族民俗村にはインタラクティブ体验項目がある。',
+          },
+        ],
+      },
+      {
+        title: '公式サービスと情報検証',
+        faqs: [
+          {
+            q: '延辺旅行情報の信憑性を確認 방법은？',
+            a: '公式渠道を通じて検証：延辺朝鲜族自治州文化广播电视旅游局官网、各县市公式公众号、dajilin.net公式情報ページ。国境地域の規定は突然変わる可能性があるので、出発前に再確認のこと。口岸通行規定については公式リアルタイム通知を基準とする。',
+          },
+          {
+            q: 'dajilin.netは何のプラットフォームですか？',
+            a: 'dajilin.netは吉林文旅資源整合・コンテンツ引流プラットフォームで、延辺目的地・331国道自驾・工业研修・公式サービス説明に焦点。AI助手による问答・自驾攻略・驛站情報・旅程計画提案を提供。全情報は人類編集者が審査。',
+          },
+          {
+            q: '延辺で旅行トラブルに巻き込まれた場合は？',
+            a: '延辺地域の旅行トラブルは延辺州文化广播电视旅游局（公式苦情電話）または所在县市消費者協会に連絡を。国境管理問題に関係する場合は国境管理部门または地元公安局に連絡を。dajilin.netは公式サービス相談入口を提供し、ユーザー的正确部门への对接を支援。',
+          },
+          {
+            q: '図們口岸と琿春口岸の違いは？',
+            a: '図們口岸は対岸口岸（朝鮮南阳に連絡）で、対岸の都市を遠望できる国境景观体験型口岸。琿春は複数の口岸があり、対露公路口岸（ロシアハサン区に連絡）と中朝圈河口岸（朝鮮羅先特区に連絡）を含み、機能がより綜合的で、331国道の東端出発点。',
+          },
+        ],
+      },
+    ],
+  },
+  ko: {
+    eyebrow: 'FAQ',
+    intro: 'AI와 인력 편집자가 공동 제작한 연변 목적지, 331 국도自驾, 거점 서비스, 국경 여행 가이드입니다.',
+    sections: [
+      {
+        title: '연변과 국경目的地',
+        faqs: [
+          {
+            q: '연변에서 가장 가볼 만한 곳은 어디인가요?',
+            a: '연변 주요 명소: 연길시(조선족 문화 센터),훈춘 방천(삼개국 조망),두만강 항구(국경 경관),진달래 꽃밭(봄 꽃),조선족 민속촌(민족 문화 체험). 연변은 단일 관광지가 아니라 지역 체험과 노선 연동의玩法에 적합합니다.',
+          },
+          {
+            q: '연변 여행의 최적 계절은 언제인가요?',
+            a: '연변은 사계절 모두适宜: 봄(4-5월) 진달래, 여름(6-8월) 시원한 피서, 가을(9-10월) 국경 색채, 겨울 눈과 눈꽃. 여름이 성수기이므로，提前 예약을 권장합니다.',
+          },
+          {
+            q: '훈춘 방천에서 삼개국을 보는 방법은?',
+            a: '방천 Scenic Area는훈춘시 최동단, 중국·러시아(하산 구간)·북한(라선特区) 삼개국 접경处에 있습니다. 방천 관광대에서 중국·러시아·북한 3개국을 동시에 볼 수 있습니다. 입장은 신분증이 필요하며 군사시설 촬영은 금지입니다.',
+          },
+          {
+            q: '연변에서 먹어야 할 음식은 무엇인가요?',
+            a: '연변 미식은 조선족特色 요리: 냉면(연길 서시장 또는 服务大楼冷面), 불고기(연길丰茂羊肉串), 김치·辣白菜, 순대, 떡,土豆饺子 등. 연길은 동북 조선족 미식이 가장 집중된 도시로, 연길시의 전통 식당에서 체험하는 것을 권장합니다.',
+          },
+          {
+            q: '연변과 331 국도의 관계는 무엇인가요?',
+            a: '331 국도(단아선)는 중국 연변 도로의 중요 구성 부분으로, 지린 구간은 연변 지역을 경유하며 연길·훈춘·두만 등 주요 노드를 연결합니다. 연변은 331 국도 지린 구간의 핵심 체험 지역으로, 둘 다 국경自驾 테마로 연결하여 이해할 수 있습니다.',
+          },
+        ],
+      },
+      {
+        title: '331 국도 自驾 가이드',
+        faqs: [
+          {
+            q: '331 국도 지린 구간을自驾하면 얼마나 걸리나요?',
+            a: '331 국도 지린 구간은 약 1,390km. 권장: 2박 3일은 연길+훈춘; 3-5일은 연길+두만+훈춘 완전国境선 커버 가능.沿途 거점과 명소를 깊이 체험하려면 5-7일이 적당합니다.',
+          },
+          {
+            q: '331 국도自驾에 필요한 서류는?',
+            a: '국경 지역에는 신분증(必需). 항구区域(두만,훈춘,권하) 방문 시 규정 준수: 군사시설 촬영 금지, 일부 지역은 등록 필요. 각 항구의 영업 시간과 예약 요건 사전 확인.',
+          },
+          {
+            q: '331 국도沿途路况は怎么样?',
+            a: '331 국도 지린 구간은 대부분 고속도로와 국도, 전반적으로路况 양호. 연길→훈춘은 고속도로, 연길→두만은 국도로 연결.沿途 주유소 간격 약 50-100km, 연길 출발 전 연료 탱크 가득·차량 점검 필수.',
+          },
+          {
+            q: '331 국도沿途 숙박 가능한 거점은 어디인가요?',
+            a: '주요 거점: 연길服务中心(연변 대학 근처, 도시 보급便利)과훈춘 홍성 거점(훈춘 시가지, 방천景区 근처). 거점은 숙박·식음·차량修理工具·충전·급탕 제공. 성수기에는 사전 예약 권장.',
+          },
+          {
+            q: '연변 국경 지역自驾 시 주의사항은?',
+            a: '국경 주의: 군사시설 및 출입 금지 구역 촬영 금지; 일부 지역은 신분 등록 필요; 국경 관리자 지시 준수; 겨울은 기온이 낮아保暖과 차량 동파 방지 필수; 명소가 분산되어 있어自驾 또는 전세차 권장.',
+          },
+        ],
+      },
+      {
+        title: '거점 서비스와 일정 계획',
+        faqs: [
+          {
+            q: '연길 거점은 어떤 서비스를 제공하나요?',
+            a: '연길服务中心은연변 대학 옆에 있으며, 숙박(경제형과 표준 룸), 식음(조선족特色 식사), 주차장, 차량修理工具, 모바일 충전, 급탕 제공. 주변 상업 시설이 갖춰져 있어 331 국도의 이상적인 출발점과 보급 거점입니다.',
+          },
+          {
+            q: '훈춘 홍성 거점은 어떻게 예약하나요?',
+            a: 'dajilin.net 공식 서비스 페이지에서 상담을 제출하거나 거점에 직접 연락하세요.훈춘 홍성 거점은훈춘 시가지에 있으며, 331 국도 지린 구간 동단 가장 중요한 서비스 노드로 동시에 방천景区에 가깝습니다. 성수기에는 1-2일 전에 예약하는 것을 권장합니다.',
+          },
+          {
+            q: '연변 여행 시 숙박은 얼마나，提前 예약을 해야 하나요?',
+            a: '비수기(11월-3월): 당일 예약 가능. 성수기(4-5월 꽃 시즌, 7-8월 여름 휴가, 10월 국경절): 3-7일 전에 예약 권장. 연길과훈춘이 주요 숙박 노드로, 성수기 갑작스러운 방문은 만실 가능성이 있습니다.',
+          },
+          {
+            q: '연변 가족 여행 시 권장 노선은?',
+            a: '연변 가족 여행 권장: 연길 시가지(조선족 문화 체험, 연변 대학 캠퍼스)를 중심으로, 두만(항구 경관, 간단한 국경 인지)으로 확대. 군사 엄금 구역 방문은 피할 것. 연길 서시장에서 자녀에게 조선족의 일상생활을 체험시키고, 조선족 민속촌에는インタラク티브 체험 프로그램이 있습니다.',
+          },
+        ],
+      },
+      {
+        title: '공식 서비스와 정보 검증',
+        faqs: [
+          {
+            q: '연변 여행 정보의信憑性を確認하는 방법은?',
+            a: '공식 채널을 통해 검증: 연변 조선족 자치주 문화广播电视旅游局 공식 웹사이트,各县시 공식公众号, dajilin.net 공식 정보 페이지. 국경 지역 규정은 수시로 변경될 수 있으므로 출발 전에再確認 필수. 항구 통행 규정은 공식 실시간 공지를 기준으로 합니다.',
+          },
+          {
+            q: 'dajilin.net은 어떤 플랫폼인가요?',
+            a: 'dajilin.net은 지린 문화 旅游 자원 통합 및 콘텐츠引流 플랫폼으로, 연변 목적지, 331 국도自驾, 산업 연수, 공식 서비스 설명에 중점을 둡니다. AI 비서 응답,自驾 가이드, 거점 정보, 일정 계획 제안을 제공하며, 모든 정보는 인력 편집자가 심사합니다.',
+          },
+          {
+            q: '연변에서 여행 분쟁에巻き込まれたら怎么办?',
+            a: '연변 지역 여행 분쟁은 연변주 문화广播电视旅游局(공식 불만 전화) 또는 소재县市 소비자 협회에 연락하세요. 국경 관리 문제 관련 시는 국경 관리 부서 또는 현지公安局에 연락하세요. dajilin.net은 공식 서비스 상담 입구를 제공하여 사용자를 정확한 부서에对接하도록 지원합니다.',
+          },
+          {
+            q: '두만 항구와훈춘 항구의 차이점은?',
+            a: '두만 항구는 대북 항구(북한 남양에 연결)로, 건너편 도시를 바라볼 수 있는 국경 경관 체험형 항구입니다.훈춘은 여러 항구가 있으며, 대러시아 도로 항구(러시아 하산 구간에 연결)와 중조 권하 항구(북한 라선特区에 연결)를 포함하여 기능이 더 종합적이고, 331 국도의 동단 출발점입니다.',
+          },
+        ],
+      },
+    ],
+  },
+};
+
+const t = copy[locale];
+
+// Build flat FAQ list for FAQPage schema
+const allFAQs = t.sections.flatMap((section) =>
+  section.faqs.map((faq) => ({ question: faq.q, answer: faq.a }))
+);
+
+const breadcrumbs = [
+  { name: isZh ? '首页' : 'Home', url: localizePath('/', locale) },
+  { name: isZh ? '常见问题' : 'FAQ', url: localizePath('/faq', locale) },
+];
+
+const schemas = [
+  buildWebPageSchema(pagePath, pageTitle, pageDescription, locale),
+  buildFAQPageSchema(pagePath, pageTitle, allFAQs, locale),
+  buildBreadcrumbListSchema(pagePath, breadcrumbs, locale),
+];
+---
+
+<BaseLayout title={`${pageTitle} | dajilin.net`} description={pageDescription} schemas={schemas} locale={locale} ogImage="/images/home/yanbian.jpg">
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-hero">
+          <div class="page-copy">
+            <div class="eyebrow">{t.eyebrow}</div>
+            <h1>{pageTitle}</h1>
+            <p>{t.intro}</p>
+          </div>
+        </div>
+
+        {t.sections.map((section) => (
+          <div class="detail-block">
+            <h2>{section.title}</h2>
+            <div class="faq-list">
+              {section.faqs.map((faq) => (
+                <article class="faq-item">
+                  <h3>{faq.q}</h3>
+                  <p>{faq.a}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        <div class="detail-block">
+          <h3>{isZh ? '没有找到答案？' : 'Did not find your answer?'}</h3>
+          <p>{isZh ? '使用页面底部的AI助手提问，或提交咨询表单。' : 'Ask the AI assistant at the bottom of the page, or submit a consultation form.'}</p>
+          <div class="cta-row">
+            <button class="button" type="button" data-open-ai-widget data-ai-page-url={pagePath}>
+              {isZh ? '先问 AI 助手' : 'Ask AI Assistant'}
+            </button>
+            <a class="button-secondary" href={localizePath('/cooperation', locale)}>
+              {isZh ? '提交咨询' : 'Submit Consultation'}
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <aside class="page-card">
+        <h3>{isZh ? '相关页面' : 'Related Pages'}</h3>
+        <ul class="page-list">
+          <li><a href={localizePath('/destinations/yanbian', locale)}>{isZh ? '延边目的地页' : 'Yanbian Destination'}</a></li>
+          <li><a href={localizePath('/self-drive/overview', locale)}>{isZh ? '331国道概览' : 'Route 331 Overview'}</a></li>
+          <li><a href={localizePath('/self-drive/how-to-travel', locale)}>{isZh ? '自驾攻略' : 'Self-Drive Guide'}</a></li>
+          <li><a href={localizePath('/self-drive/stations', locale)}>{isZh ? '驿站信息' : 'Station Info'}</a></li>
+          <li><a href={localizePath('/official-services', locale)}>{isZh ? '官方服务说明' : 'Official Services'}</a></li>
+        </ul>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .faq-item {
+    padding: 1rem;
+    background: var(--color-surface);
+    border-radius: 8px;
+  }
+  .faq-item h3 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-heading);
+  }
+  .faq-item p {
+    color: var(--color-text);
+    line-height: 1.7;
+    font-size: 0.95rem;
+  }
+  .cta-row {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+</style>

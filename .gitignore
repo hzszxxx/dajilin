@@ -19,6 +19,10 @@ pnpm-debug.log*
 data/*.json
 !data/.gitkeep
 
+# Ghost CMS (sensitive data - never commit)
+ghost/
+!ghost/README.md
+
 # macOS
 .DS_Store
 

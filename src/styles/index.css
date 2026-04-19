@@ -1,52 +1,66 @@
 :root {
-  /* Primary - Teal */
-  --primary: #0f766e;
-  --primary-strong: #115e59;
-  --primary-light: #14b8a6;
+  /* === 新配色体系：白山黑水·冰雪吉林 === */
 
-  /* Secondary - Blue */
+  /* Primary - 冬日冰蓝（替代原深青） */
+  --primary: #1e5f8a;
+  --primary-strong: #154a6a;
+  --primary-light: #4a9fbf;
+
+  /* Secondary - 深夜蓝（锚点色） */
   --secondary: #1e3a8a;
   --secondary-light: #3b82f6;
 
-  /* Accent */
-  --accent: #f59e0b;
-  --accent-warm: #d97706;
+  /* Accent - 暖琥珀（CTA/温度感） */
+  --accent: #c47d1a;
+  --accent-warm: #a8621a;
+  --accent-light: #f5d08a;
+
+  /* Ice & Snow - 冰霜色系（新增） */
+  --ice-blue: #cce8f4;
+  --ice-deep: #7bb8d4;
+  --snow: #f0f8ff;
 
   /* Backgrounds */
-  --bg: #f5f8f6;
-  --bg-gradient: linear-gradient(180deg, #f9fcfb 0%, #edf6f4 100%);
+  --bg: #f4f8fb;
+  --bg-gradient: linear-gradient(160deg, #f8fcff 0%, #eef4fa 60%, #f4f8fb 100%);
   --surface: #ffffff;
-  --surface-soft: #eaf6f3;
-  --surface-alt: #f0fdfa;
+  --surface-soft: #e8f4fa;
+  --surface-alt: #f0f8ff;
 
   /* Text */
-  --text: #1f2937;
-  --text-strong: #111827;
-  --muted: #54606d;
+  --text: #1a2e3d;
+  --text-strong: #0f1f2e;
+  --muted: #5a7385;
 
   /* Borders & Lines */
-  --line: rgba(31, 41, 55, 0.12);
-  --line-strong: rgba(31, 41, 55, 0.2);
+  --line: rgba(30, 95, 138, 0.12);
+  --line-strong: rgba(30, 95, 138, 0.24);
 
-  /* Shadows */
-  --shadow-sm: 0 8px 16px rgba(15, 23, 42, 0.06);
-  --shadow: 0 18px 40px rgba(15, 118, 110, 0.12);
-  --shadow-lg: 0 24px 48px rgba(15, 23, 42, 0.14);
+  /* Shadows - 蓝调阴影（替代原青绿） */
+  --shadow-sm: 0 8px 16px rgba(21, 74, 106, 0.06);
+  --shadow: 0 18px 40px rgba(21, 74, 106, 0.10);
+  --shadow-lg: 0 24px 48px rgba(21, 74, 106, 0.14);
 
   /* Card specific */
   --card-radius: 22px;
   --card-padding: 24px;
   --card-border: 1px solid var(--line);
-  --card-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
-  --card-shadow-hover: 0 20px 34px rgba(15, 23, 42, 0.12);
+  --card-shadow: 0 14px 28px rgba(21, 74, 106, 0.08);
+  --card-shadow-hover: 0 20px 34px rgba(21, 74, 106, 0.14);
 
-  /* Legacy variables - mapped to new system */
+  /* Seasonal tokens */
+  --season-spring: #8cb894;
+  --season-summer: #4a9fbf;
+  --season-autumn: #c47d1a;
+  --season-winter: #7bb8d4;
+
+  /* Legacy variables - remapped to new system */
   --brand-teal: var(--primary);
   --brand-teal-strong: var(--primary-strong);
-  --brand-sky: #0ea5e9;
-  --travel-lime: #84cc16;
+  --brand-sky: #4a9fbf;
+  --travel-lime: #8cb894;
   --travel-amber: var(--accent);
-  --travel-ice: #e0f2fe;
+  --travel-ice: var(--ice-blue);
   --travel-bg: var(--bg);
   --travel-text: var(--text);
   --travel-muted: var(--muted);
@@ -122,7 +136,7 @@ img {
   border-radius: 14px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, var(--primary) 0%, #1e7d77 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, #2a7fac 100%);
   color: #fff;
   font-size: 1.4rem;
   font-weight: 700;
@@ -260,16 +274,34 @@ img {
 }
 
 .button {
-  padding: 12px 20px;
+  padding: 13px 22px;
   background: var(--primary);
   color: #fff;
+  border-radius: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.button:hover {
+  background: var(--primary-strong);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(30, 95, 138, 0.3);
 }
 
 .button-secondary {
   padding: 12px 20px;
-  border: 1px solid var(--line);
+  border: 1.5px solid rgba(30, 95, 138, 0.3);
   color: var(--primary-strong);
   background: rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.button-secondary:hover {
+  background: var(--surface-soft);
+  border-color: var(--primary);
+  transform: translateY(-1px);
 }
 
 .hero-panel {
@@ -2841,7 +2873,9 @@ img {
   padding: 74px 0 46px;
   color: var(--surface);
   background:
-    linear-gradient(160deg, rgba(15, 23, 42, 0.58), rgba(30, 64, 175, 0.44)),
+    linear-gradient(180deg,
+      rgba(15, 31, 46, 0.18) 0%,
+      rgba(15, 31, 46, 0.38) 100%),
     url('/images/home/hero-jilin.jpg');
   background-size: cover;
   background-position: center 40%;

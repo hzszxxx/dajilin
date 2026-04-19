@@ -4,7 +4,7 @@ import Header from '@/components/astro/Header.astro';
 import Footer from '@/components/astro/Footer.astro';
 import DestinationsPage from '@/components/astro/destinations/DestinationsPage.astro';
 import { getLocaleFromPathname, type Locale } from '@/lib/i18n';
-import { buildCollectionPageSchema } from '@/lib/schema';
+import { buildCollectionPageSchema, buildBreadcrumbListSchema } from '@/lib/schema';
 import { destinationPages } from '@/lib/content-pages';
 
 const locale = getLocaleFromPathname(Astro.url.pathname);
@@ -42,17 +42,11 @@ const copy = localized[locale];
   title={copy.title}
   description={copy.description}
   schemas={[
-    {
-      '@context': 'https://schema.org',
-      '@type': 'CollectionPage',
-      '@id': 'https://dajilin.net/destinations#collection',
-      url: 'https://dajilin.net/destinations',
-      name: copy.pageTitle,
-      description: copy.description,
-      inLanguage: languageTagMap[locale],
-      isPartOf: { '@id': 'https://dajilin.net/#website' },
-    },
     buildCollectionPageSchema('/destinations', copy.pageTitle, copy.description, locale),
+    buildBreadcrumbListSchema('/destinations', [
+      { name: locale === 'zh' ? '首页' : locale === 'en' ? 'Home' : locale === 'ja' ? 'ホーム' : '홈', url: `/${locale === 'en' ? 'en' : locale === 'ja' ? 'ja' : locale === 'ko' ? 'ko' : ''}` },
+      { name: copy.pageTitle, url: '/destinations' },
+    ], locale),
   ]}
   locale={locale}
 >

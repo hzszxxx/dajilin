@@ -23,6 +23,14 @@ const localized = getPageLocalization(page, locale);
 const localizedTitle = localized.title;
 const localizedDescription = localized.description;
 
+// og:image per destination slug (falls back to hero-jilin.jpg)
+const ogImageMap: Record<string, string> = {
+  'changbai-mountain': '/images/home/changbai.jpg',
+  'yanbian': '/images/home/yanbian.jpg',
+  'changchun': '/images/home/changchun.jpg',
+};
+const ogImage = ogImageMap[page.slug] ?? '/images/home/hero-jilin.jpg';
+
 if (!page) {
   throw new Error(`Unknown destination page: ${Astro.params.slug}`);
 }
@@ -46,7 +54,7 @@ const schemas = [
 ];
 ---
 
-<BaseLayout title={`${localizedTitle} | dajilin.net`} description={localizedDescription} schemas={schemas} locale={locale}>
+<BaseLayout title={`${localizedTitle} | dajilin.net`} description={localizedDescription} schemas={schemas} locale={locale} ogImage={ogImage}>
   <Header />
   <main class="page-shell">
     <DetailPage page={page} />

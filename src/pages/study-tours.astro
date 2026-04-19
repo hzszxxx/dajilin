@@ -2,7 +2,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/astro/Header.astro';
 import Footer from '@/components/astro/Footer.astro';
-import { buildCollectionPageSchema } from '@/lib/schema';
+import { buildCollectionPageSchema, buildTouristTripSchema } from '@/lib/schema';
 import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
 
 const locale = getLocaleFromPathname(Astro.url.pathname);
@@ -79,7 +79,15 @@ const t = copy[locale];
 const ent = enterprises[locale];
 ---
 
-<BaseLayout title={t.title} description={t.description} schemas={[buildCollectionPageSchema('/study-tours', t.schemaName, t.description, locale)]} locale={locale}>
+<BaseLayout
+  title={t.title}
+  description={t.description}
+  schemas={[
+    buildCollectionPageSchema('/study-tours', t.schemaName, t.description, locale),
+    buildTouristTripSchema('/study-tours', t.schemaName, t.description, locale),
+  ]}
+  locale={locale}
+>
   <Header />
   <main class="page-shell">
     <div class="container page-grid">

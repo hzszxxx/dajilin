@@ -16,11 +16,15 @@ export interface DajilinGnConfig {
   apiBaseUrl: string;
 }
 
-const getEnv = (name: string, fallback: string): string =>
-  process.env[name] || fallback;
+const getEnv = (name: string, fallback: string): string => {
+  // Support both Node process.env and Vite import.meta.env
+  const env = (typeof process !== 'undefined' ? process.env : {}) as Record<string, string | undefined>;
+  const viteEnv = (import.meta as any).env as Record<string, string | undefined>;
+  return env[name] || viteEnv[name] || fallback;
+};
 
 const getRequiredEnv = (name: string): string => {
-  const value = process.env[name];
+  const value = getEnv(name, '');
   if (!value) {
     throw new Error(`Missing required environment variable: ${name}`);
   }
@@ -79,7 +83,7 @@ export const buildGnApiUrl = (path: string): string => {
  * Build a URL for a specific n8n webhook.
  */
 export const buildN8nWebhookUrl = (explicitUrlName: string, basePath: string): string => {
-  const explicitUrl = process.env[explicitUrlName];
+  const explicitUrl = getEnv(explicitUrlName, '');
   if (explicitUrl && explicitUrl.trim().length > 0) {
     return explicitUrl.replace(/\/$/, '');
   }

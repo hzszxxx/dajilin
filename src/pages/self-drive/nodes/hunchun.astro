@@ -1,0 +1,298 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { buildWebPageSchema, buildTouristDestinationSchema, buildFAQPageSchema } from '@/lib/schema';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname) as Locale;
+const isZh = locale === 'zh';
+
+const pageTitle = '珲春节点 | 331国道吉林段';
+const pageDescription = '珲春是331国道吉林段的最东端节点，中国最东端城市，一眼望三国的边境奇观所在地。';
+const pagePath = '/self-drive/nodes/hunchun';
+
+const copy: Record<Locale, {
+  eyebrow: string;
+  intro: string;
+  whatIsThis: string;
+  whatIsThisBody: string;
+  audience: string;
+  audienceList: string[];
+  highlights: string;
+  highlightsList: string[];
+  howToPlan: string;
+  howToPlanBody: string;
+  howToPlanList: string[];
+  officialEntry: string;
+  officialEntryBody: string;
+  notes: string;
+  notesList: string[];
+  consultEntry: string;
+  faqTitle: string;
+  faqs: { q: string; a: string }[];
+}> = {
+  zh: {
+    eyebrow: '珲春节点',
+    intro: '珲春是中国最东端的城市，位于中俄朝三国交界处，是331国道吉林段的东端起点，也是体验一眼望三国边境奇观的最佳节点。',
+    whatIsThis: '珲春是什么样的地方',
+    whatIsThisBody: '珲春是延边地区东端的口岸城市，与俄罗斯、朝鲜接壤。防川风景区是珲春最核心的景点，站在观景台上可以同时看到中国、俄罗斯和朝鲜三国领土，是独特的边境体验。',
+    audience: '适合哪些用户',
+    audienceList: ['对边境奇观和一眼望三国感兴趣的用户', '331国道自驾东端打卡人群', '人文地理和国境线题材爱好者', '希望体验中俄朝三国文化交融的旅行者'],
+    highlights: '有哪些看点',
+    highlightsList: [
+      '防川风景区：中俄朝三国交界处，一眼望三国的标志性边境奇观',
+      '防川土字牌：1886年清政府立的界碑，中国最东端的历史印记',
+      '珲春口岸：中俄公路口岸，可远眺俄罗斯对面城市',
+      '圈河口岸：中朝口岸，连接朝鲜罗先特区',
+      '珲春俄罗斯风情街：口岸城市特有的俄罗斯商品和餐饮街区',
+    ],
+    howToPlan: '如何安排',
+    howToPlanBody: '珲春适合作为331国道东端的终点或起点，通常与延吉配合安排：',
+    howToPlanList: [
+      '2天1夜：延吉出发 → 珲春防川 → 圈河口岸 → 住珲春 → 次日返回延吉',
+      '331国道完整段：延吉 → 图们 → 珲春（3个边境节点串联，适合时间充裕的深度自驾）',
+      '联防川+俄罗斯边境体验：珲春市区休整 + 俄罗斯风情街体验',
+    ],
+    officialEntry: '官方入口',
+    officialEntryBody: '防川风景区需购票进入，建议提前了解开放时间和预约要求。前往边境地区需携带身份证，口岸区域禁止拍摄军事设施。俄罗斯免签团体游可通过珲春口岸参团。',
+    notes: '注意事项',
+    notesList: [
+      '防川风景区需购票，部分区域需提前预约',
+      '边境地区禁止对军用设施拍照，遵守边境管理规定',
+      '珲春市区到防川约70公里，需安排足够行车时间',
+      '俄罗斯免签游需通过正规旅行社参团',
+      '防川观景台天气影响较大，大雾天视野受限',
+    ],
+    consultEntry: '咨询入口',
+    faqTitle: '常见问题',
+    faqs: [
+      { q: '珲春防川一眼望三国是怎么做到的？', a: '防川位于中俄朝三国交界处特殊的地理位置，站在防川的观景台上，向东可看到俄罗斯、向南可看到朝鲜、向西是中国，从而实现同时望见三国的体验。' },
+      { q: '从延吉到珲春多远？', a: '延吉到珲春约120公里，行车约1.5-2小时，全程高速和一级公路，路况良好。' },
+      { q: '珲春可以办俄罗斯签证吗？', a: '珲春有对俄口岸，可参加当地旅行社组织的俄罗斯免签团体游，通常提前1-2天报名即可，适合短途边境体验。' },
+      { q: '331国道经过珲春吗？', a: '经过。珲春是331国道吉林段的最东端节点，是331国道延边区段的重要途经点。' },
+    ],
+  },
+  en: {
+    eyebrow: 'Hunchun Node',
+    intro: 'Hunchun is the easternmost city in China, at the junction of China, Russia and North Korea. It is the eastern terminus of Jilin Route 331 and the best node for experiencing the sight-of-three-nations wonder.',
+    whatIsThis: 'What is Hunchun',
+    whatIsThisBody: 'Hunchun is a border port city on the eastern edge of Yanbian region, bordering Russia and North Korea. Fangchuan Scenic Area is the core attraction, where you can see China, Russia and North Korea simultaneously from the viewing platform.',
+    audience: 'Who is it suitable for',
+    audienceList: ['Users interested in border wonders and seeing three nations at once', 'Route 331 self-drive tourists heading to the eastern terminus', 'Human geography and border line enthusiasts', 'Travelers wanting to experience China-Russia-North Korea cultural blend'],
+    highlights: 'Key Highlights',
+    highlightsList: [
+      'Fangchuan Scenic Area: Junction of China-Russia-North Korea, iconic sight-of-three-nations border wonder',
+      'Fangchuan Tu Zi Pai: 1886 boundary marker, easternmost historical marker of China',
+      'Hunchun Port: China-Russia highway port, views of Russian city across',
+      'Quanhe Port: China-North Korea port connecting to Rason Special Economic Zone',
+      'Hunchun Russian Style Street: Distinctive Russian goods and dining street unique to the port city',
+    ],
+    howToPlan: 'How to Plan',
+    howToPlanBody: 'Hunchun works as the eastern terminus or starting point of Route 331, typically combined with Yanji:',
+    howToPlanList: [
+      '2 days 1 night: Yanji → Hunchun Fangchuan → Quanhe Port → Stay Hunchun → Return Yanji next day',
+      'Complete Route 331 section: Yanji → Tumen → Hunchun (three border nodes in series, suitable for thorough self-drive)',
+      'Fangchuan + Russian border experience: Hunchun city rest + Russian style street experience',
+    ],
+    officialEntry: 'Official Entry',
+    officialEntryBody: 'Fangchuan Scenic Area requires ticket purchase. Familiarize yourself with opening hours and reservation requirements in advance. ID required for border areas, photography of military facilities is prohibited in port zones.',
+    notes: 'Notes',
+    notesList: [
+      'Fangchuan requires ticket purchase, some areas need advance reservation',
+      'No photography of military facilities in border areas, follow border regulations',
+      'Hunchun city to Fangchuan is about 70km, allocate sufficient driving time',
+      'Russia visa-free group tours require booking through licensed travel agencies',
+      'Fangchuan viewing platform visibility is weather-dependent, limited on foggy days',
+    ],
+    consultEntry: 'Consultation',
+    faqTitle: 'FAQ',
+    faqs: [
+      { q: 'How does Hunchun Fangchuan achieve seeing three nations at once?', a: 'Fangchuan sits at the unique geographical junction of China, Russia and North Korea. From the viewing platform, looking east you see Russia, south you see North Korea, and west is China - all simultaneously.' },
+      { q: 'How far is Hunchun from Yanji?', a: 'Yanji to Hunchun is about 120km, approximately 1.5-2 hours by car, via expressway and first-class highway with good road conditions.' },
+      { q: 'Can I get a Russia visa in Hunchun?', a: 'Hunchun has a Russia port where you can join local travel agency organized visa-free group tours to Russia. Usually book 1-2 days in advance for short border experiences.' },
+      { q: 'Does Route 331 pass through Hunchun?', a: 'Yes. Hunchun is the easternmost node of Route 331 Jilin section, an important waypoint on the Yanbian section of Route 331.' },
+    ],
+  },
+  ja: {
+    eyebrow: '琿春ノード',
+    intro: '琿春は中国最東端の都市で、中露朝三國交界处に位置し、331国道吉林段の東端の起点です。一眼で三國を眺める国境の絶景を体験最佳ノードです。',
+    whatIsThis: '琿春是怎样的地方',
+    whatIsThisBody: '琿春は延辺地域東端の口岸都市で、ロシアと北朝鮮に接しています。防川风景区は琿春最もコアな観光地で、展望台に立つと中国・ロシア・北朝鮮三國の領土を同時に望むことができます。',
+    audience: 'こんなユーザーに最適',
+    audienceList: ['国境の絶景と一眼で三國に興味があるユーザー', '331国道自驾の東端打卡人群', '人文地理と国境線題材愛好家', '中露朝三国文化交融を体験したい旅行者'],
+    highlights: '見どころ',
+    highlightsList: [
+      '防川风景区：中露朝三国交界处、一眼で三国を望む标志的</minimax:tool_call>',
+      '防川土字牌：1886年清政府設立の界碑、中国最東端の歴史印记',
+      '琿春口岸：中露公路口岸、ロシア对面都市を遠瞰',
+      '圈河口岸：中朝口岸、北朝鮮羅先特区に连接',
+      '琿春ロシアン風街区：口岸都市特有のロシア商品と飲食街区',
+    ],
+    howToPlan: '周り方',
+    howToPlanBody: '琿春は331国道東端の終点または起点として適しており、通常延吉と配合して手配します:',
+    howToPlanList: [
+      '2泊3日：延吉出発 → 琿春防川 → 圈河口岸 → 琿春に泊 →翌日延吉に戻る',
+      '331国道完整段：延吉 → 图們 → 琿春（3つの国境ノード串联、時間が充裕な深度自驾に適切）',
+      '防川+ロシア国境体験：琿春市街休整 + ロシアン風街区体験',
+    ],
+    officialEntry: '公式入口',
+    officialEntryBody: '防川风景区はチケット購入が必要で、事前開園時間と予約要件の確認をお勧めします。国境地域への訪問は身分証明書が必要で、口岸区域での軍事施設撮影は禁止です。',
+    notes: '注意事項',
+    notesList: [
+      '防川风景区はチケット必要、一部の区域は事前予約が必要',
+      '国境地域での軍事施設への фотографияは禁止、国境管理规定を遵守',
+      '琿春市街から防川まで約70キロ、车両 enough timeが必要',
+      'ロシア visa-free 団体tourは正規旅行社を通じて参加',
+      '防川展望台は天気影響较大、濃霧日は視界受限',
+    ],
+    consultEntry: '相談入口',
+    faqTitle: 'よくある質問',
+    faqs: [
+      { q: '琿春防川一眼で三國是怎样实现的？', a: '防川は中露朝三國交界处の特殊な地理位置にあり、展望台に立って東を見ればロシア、南を見れば北朝鮮、西を見れば中国となり、同時に三國を望むことができます。' },
+      { q: '延吉から琿春까지多远？', a: '延吉から琿春まで約120キロ、車で1.5-2時間，全程高速と一级公路で路况良好です。' },
+      { q: '琿春でロシアビザは取れる？', a: '琿春にはロシア口岸があり、現地の旅行社を通じてロシアvisa-free団体tourに参加できます。通常1-2日前に応募すれば短距離国境体験ができます。' },
+      { q: '331国道は琿春を経由しますか？', a: '経由します。琿春は331国道吉林段の最東端ノードで、331国道延辺区段の重要経由点です。' },
+    ],
+  },
+  ko: {
+    eyebrow: '훈춘 노드',
+    intro: '훈춘은 중국 최동단 도시로, 중러북 three 나라 접경 处에 위치하며 331국도 지린 구간의 동쪽 기점입니다. 세 나라를 한눈에 보는 국경의 절경을 체험할 수 있는 최적의 노드입니다.',
+    whatIsThis: '훈춘은 어떤 곳',
+    whatIsThisBody: '훈춘은 연변 지역 최동단의 항구 도시로, 러시아와 북조선에 접합니다. 방천 Scenic Area는 훈춘의 핵심 관광지로서, 전망대에서 중국, 러시아, 북조선 three 나라 영토를 동시에 바라볼 수 있습니다.',
+    audience: '이런 사용자에게 적합',
+    audienceList: ['국경 절경과 세 나라를 한눈에 보는 것的兴趣 user', '331국도 자가운전 동쪽 종점打卡人群', '인문지와 국경선 소재愛好家', '중러북 three 나라 문화 교류를 체험하고 싶은 여행자'],
+    highlights: '주요 볼거리',
+    highlightsList: [
+      '방천风景区: 중러북 접경处, 세 나라를 동시에望む标志性 국경 절경',
+      '방천 토자패이: 1886년 청 정부가 세운 경계비, 중국 최동단 역사적 표식',
+      '훈춘 항구: 중러 도로 항구, 러시아 맞은편 도시를 원망',
+      '권하 항구: 중조 항구, 북조선 라선 특별경제구에 연결',
+      '훈춘 러시아 풍경街区: 항구 도시特有的 러시아 상품과 음식街区',
+    ],
+    howToPlan: '일정 잡기',
+    howToPlanBody: '훈춘은 331국도 동쪽 종점 또는 기점으로 적합하며, 보통 연길과 함께 배치합니다:',
+    howToPlanList: [
+      '2박 3일: 연길 출발 →훈춘 방천 →권하 항구 →훈춘 숙박 →다음날 연길 복귀',
+      '331국도 완전 구간: 연길 →두만 →훈춘 (3개 국경 노드 직렬, 시간 여유 있는 심층 자가운전)',
+      '방천+러시아 국경 체험:훈춘 시내 휴식 +러시아 풍경街区 체험',
+    ],
+    officialEntry: '공식 입구',
+    officialEntryBody: '방천风景区는 티켓 구매가 필요하며, 사전 개장 시간과 예약 요건 확인을 권장합니다. 국경 지역 방문 시 신분증 지참 필요, 항구区域での軍事施設 촬영은 금지입니다.',
+    notes: '주의사항',
+    notesList: [
+      '방천风景区는 티켓 필요, 일부区域는 사전 예약 필요',
+      '국경 지역 군사 시설 촬영 금지, 국경 관리 규정 준수',
+      '훈춘 시내에서 방천까지 약 70km, 충분한 운전 시간 배치 필요',
+      '러시아 무비자 단체 여행은 합법 여행사를 통해 참가',
+      '방천 전망대는 날씨 영향大, 안개 날씨 시 시야 제한',
+    ],
+    consultEntry: '상담 입구',
+    faqTitle: '자주 묻는 질문',
+    faqs: [
+      { q: '훈춘 방천 세 나라를 한눈에 보는 것이 어떻게 가능한가요?', a: '방천은 중러북 three 나라 접경处의 특수한 지리적 위치에 있어, 전망대에 서서 동쪽으로 보면 러시아, 남쪽으로 보면 북조선, 서쪽으로 보면 중국을 동시에 볼 수 있습니다.' },
+      { q: '연길에서훈춘까지多远距离？', a: '연길에서훈춘까지 약 120km, 차로 1.5-2시간, 전 구간 고속 및 1급 도로로 노면 양호합니다.' },
+      { q: '훈춘에서 러시아 비자는 받을 수 있나요?', a: '훈춘에는 러시아 항구가 있어 현지 여행사를 통해 러시아 무비자 단체 관광에 참여할 수 있습니다. 보통 1-2일 전에 신청하면 단거리 국경 체험이 가능합니다.' },
+      { q: '331국도가훈춘을 경유하나요?', a: '경유합니다.훈춘은 331국도 지린 구간의 최동단 노드로, 331국도 연변 구간의 중요 경유점입니다.' },
+    ],
+  },
+};
+
+const t = copy[locale];
+const schemas = [
+  buildWebPageSchema(pagePath, pageTitle, pageDescription, locale),
+  buildTouristDestinationSchema(pagePath, pageTitle, pageDescription, locale),
+  buildFAQPageSchema(pagePath, pageTitle, t.faqs.map((f: { q: string; a: string }) => ({ question: f.q, answer: f.a })), locale),
+];
+---
+
+<BaseLayout title={`${pageTitle} | dajilin.net`} description={pageDescription} schemas={schemas} locale={locale} ogImage="/images/home/hunchun.jpg">
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-hero">
+          <div class="page-copy">
+            <div class="eyebrow">{t.eyebrow}</div>
+            <h1>{isZh ? pageTitle : t.eyebrow}</h1>
+            <p>{isZh ? pageDescription : t.intro}</p>
+          </div>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.whatIsThis}</h2>
+          <p>{t.whatIsThisBody}</p>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.audience}</h2>
+          <ul>
+            {t.audienceList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.highlights}</h2>
+          <ul>
+            {t.highlightsList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.howToPlan}</h2>
+          <p>{t.howToPlanBody}</p>
+          <ul>
+            {t.howToPlanList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.officialEntry}</h2>
+          <p>{t.officialEntryBody}</p>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.notes}</h2>
+          <ul>
+            {t.notesList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.faqTitle}</h2>
+          <div class="faq-list">
+            {t.faqs.map((faq) => (
+              <article class="faq-item">
+                <h3>{faq.q}</h3>
+                <p>{faq.a}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <aside class="page-card">
+        <h3>{isZh ? '建议继续浏览' : 'Continue Reading'}</h3>
+        <ul class="page-list">
+          <li><a href={localizePath('/self-drive/overview', locale)}>{isZh ? '331国道吉林段概览' : 'Route 331 Jilin Overview'}</a></li>
+          <li><a href={localizePath('/self-drive/how-to-travel', locale)}>{isZh ? '自驾攻略' : 'Self-Drive Guide'}</a></li>
+          <li><a href={localizePath('/self-drive/nodes/tumen', locale)}>{isZh ? '图们节点' : 'Tumen Node'}</a></li>
+          <li><a href={localizePath('/destinations/yanbian', locale)}>{isZh ? '延边目的地页' : 'Yanbian Destination'}</a></li>
+        </ul>
+
+        <div class="detail-side-card">
+          <h3>{t.consultEntry}</h3>
+          <div class="cta-row">
+            <button class="button" type="button" data-open-ai-widget data-ai-page-url={pagePath}>
+              {isZh ? '先问 AI 助手' : 'Ask AI Assistant'}
+            </button>
+            <a class="button-secondary" href={localizePath('/cooperation', locale)}>
+              {isZh ? '提交咨询' : 'Submit Consultation'}
+            </a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

@@ -3,7 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/astro/Header.astro';
 import Footer from '@/components/astro/Footer.astro';
 import { getLocaleFromPathname, type Locale } from '@/lib/i18n';
-import { buildCollectionPageSchema, buildWebPageSchema } from '@/lib/schema';
+import { buildCollectionPageSchema, buildWebPageSchema, buildFAQPageSchema } from '@/lib/schema';
 
 const locale = getLocaleFromPathname(Astro.url.pathname);
 
@@ -308,6 +308,7 @@ const thisPath = '/self-drive/stations';
 const schemas = [
   buildWebPageSchema(thisPath, t.pageTitle, t.description, locale),
   buildCollectionPageSchema(thisPath, t.pageTitle, t.description, locale),
+  buildFAQPageSchema(thisPath, t.pageTitle, t.faqs, locale),
 ];
 ---
 

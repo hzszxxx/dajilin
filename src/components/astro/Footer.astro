@@ -45,7 +45,7 @@ const socialLinks = [
       </p>
       <div class="footer-social">
         {socialLinks.map((social) => (
-          <span aria-label={social.name} title={social.name} class="social-icon-placeholder">
+          <a aria-label={social.label} title={social.name} href={social.href} class="social-icon-link" target={social.href === "#" ? undefined : "_blank"} rel={social.href === "#" ? undefined : "noopener noreferrer"}>
             {social.icon === 'wechat' && (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M8.5 11.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm7 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM12 2C6.48 2 2 6.03 2 11c0 2.76 1.36 5.22 3.5 6.83V22l4.07-2.24c.78.14 1.59.22 2.43.22 5.52 0 10-4.03 10-9s-4.48-9-10-9zm-1.5 12.5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm3-2.5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm5 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm2.5 4h-5v-.83c0-1.2.9-2.17 2-2.17h1c1.1 0 2 .97 2 2.17V16z"/>
@@ -61,7 +61,7 @@ const socialLinks = [
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H9l3-5 2 3h3l-4 6h-2z"/>
               </svg>
             )}
-          </span>
+          </a>
         ))}
       </div>
     </div>

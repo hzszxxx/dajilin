@@ -1,0 +1,294 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { buildWebPageSchema, buildTouristDestinationSchema, buildFAQPageSchema } from '@/lib/schema';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname) as Locale;
+const isZh = locale === 'zh';
+
+const pageTitle = '图们节点 | 331国道吉林段';
+const pageDescription = '图们是331国道吉林段的重要边境节点，中朝边境城市，火车站可直接望向朝鲜，是体验边境氛围和人文景观的便捷节点。';
+const pagePath = '/self-drive/nodes/tumen';
+
+const copy: Record<Locale, {
+  eyebrow: string;
+  intro: string;
+  whatIsThis: string;
+  whatIsThisBody: string;
+  audience: string;
+  audienceList: string[];
+  highlights: string;
+  highlightsList: string[];
+  howToPlan: string;
+  howToPlanBody: string;
+  howToPlanList: string[];
+  officialEntry: string;
+  officialEntryBody: string;
+  notes: string;
+  notesList: string[];
+  consultEntry: string;
+  faqTitle: string;
+  faqs: { q: string; a: string }[];
+}> = {
+  zh: {
+    eyebrow: '图们节点',
+    intro: '图们是延边地区南端的中朝边境城市，331国道的重要节点。图们的特色是火车站台可以直接望见朝鲜，开车或乘车经过时就能感受到强烈的边境氛围。',
+    whatIsThis: '图们是什么样的地方',
+    whatIsThisBody: '图们是延边地区南端、紧邻朝鲜罗先特区的边境城市。与珲春相比，图们的边境感更直接——火车站台和观景平台可以清晰地看到对面朝鲜居民的生活场景，图们口岸的大桥直接连接朝鲜。由于处于铁路枢纽位置，图们的交通非常便利，从延吉出发仅需1小时。',
+    audience: '适合哪些用户',
+    audienceList: ['想快速体验边境感的城市短途游用户', '摄影和人文题材创作者', '331国道延边段自驾串联游客', '对朝鲜族文化和边境贸易感兴趣的用户'],
+    highlights: '有哪些看点',
+    highlightsList: [
+      '图们火车站观景台：在站台或观景台可直接望见对面朝鲜城市，视觉冲击力强',
+      '图们口岸大桥：连接中朝边境的公路桥，是边境线上的标志性景观',
+      '图们朝鲜族聚居区：能近距离感受边境居民日常生活氛围',
+      '日光山：可俯瞰图们城区和对面朝鲜城市，是拍摄边境全景的好机位',
+      '图们边境贸易区：边境小额贸易和朝鲜族特色商品',
+    ],
+    howToPlan: '如何安排',
+    howToPlanBody: '图们适合作为延边短途游的边境体验节点，通常与延吉或珲春组合安排：',
+    howToPlanList: [
+      '半日游：延吉出发 → 图们火车站观景台 → 图们口岸大桥 → 日光山 → 返回延吉（总行程约4-5小时）',
+      '延吉+图们+珲春三国境串联：延吉 → 图们（1小时）→ 珲春（1小时）→ 延吉，是331国道延边段的经典小环线',
+      '图们边境深度游：除观景点外，可逛边境贸易区，品尝图们特色餐饮',
+    ],
+    officialEntry: '官方入口',
+    officialEntryBody: '图们火车站有从延吉出发的城际列车，车程约1小时。图们口岸需携带身份证，在边境区域请遵守相关规定，不得拍摄军事设施。',
+    notes: '注意事项',
+    notesList: [
+      '边境地区禁止拍摄军事设施，请遵守边境管理条例',
+      '火车站观景台观景需注意安全，不要跨越边境线',
+      '日光山徒步路线路况较好，但需穿舒适鞋子',
+      '图们到延吉的末班火车需注意时间安排',
+    ],
+    consultEntry: '咨询入口',
+    faqTitle: '常见问题',
+    faqs: [
+      { q: '图们和珲春有什么区别？', a: '珲春是三国交界处（一眼望三国），图们是中朝边境（一目望朝鲜）。珲春更适合深度边境体验，图们更适合快速感受边境氛围。两者相距约60公里，可以串联游览。' },
+      { q: '从延吉到图们方便吗？', a: '非常方便。延吉到图们每天有多趟城际列车，车程约1小时，票价便宜。自驾约60公里，走高速也很便捷。' },
+      { q: '图们能看到朝鲜人吗？', a: '在图们火车站观景台和口岸附近，可以清晰地看到对面朝鲜城市和居民日常生活场景，但不允许跨越边境线或拍摄军事设施。' },
+      { q: '图们和331国道是什么关系？', a: '图们是331国道延边段的重要节点，从延吉出发沿331国道向南行驶约60公里即可到达图们。' },
+    ],
+  },
+  en: {
+    eyebrow: 'Tumen Node',
+    intro: 'Tumen is a China-North Korea border city at the southern end of Yanbian, an important node on Route 331. Its distinctive feature is that the railway station platform directly faces North Korea, offering a strong border atmosphere.',
+    whatIsThis: 'What is Tumen',
+    whatIsThisBody: 'Tumen is a border city at the southern end of Yanbian, adjacent to North Koreas Rason Special Economic Zone. Compared to Hunchun, Tumen offers a more direct border experience - the railway station platform and viewing platforms clearly show everyday life across the border.',
+    audience: 'Who is it suitable for',
+    audienceList: ['Users wanting quick border atmosphere experience', 'Photography and cultural content creators', 'Route 331 self-drive tourists connecting Yanbian section', 'Users interested in Korean ethnic culture and border trade'],
+    highlights: 'Key Highlights',
+    highlightsList: [
+      'Tumen Railway Station Platform: Can directly see the North Korean city across, strong visual impact',
+      'Tumen Port Bridge: Highway bridge connecting the China-North Korea border, iconic border landmark',
+      'Tumen Korean Ethnic Area: Close-up experience of border residents daily life atmosphere',
+      'Riguang Mountain: Overlooks Tumen city and North Korean city across, great spot for border panoramas',
+      'Tumen Border Trade Zone: Border small-volume trade and Korean ethnic specialty goods',
+    ],
+    howToPlan: 'How to Plan',
+    howToPlanBody: 'Tumen works well as a short-trip border experience node, typically combined with Yanji or Hunchun:',
+    howToPlanList: [
+      'Half-day trip: Yanji → Tumen railway station platform → Tumen port bridge → Riguang Mountain → Return Yanji (total about 4-5 hours)',
+      'Yanji + Tumen + Hunchun three-border circuit: Yanji → Tumen (1hr) → Hunchun (1hr) → Yanji, classic small ring route on Yanbian Route 331',
+      'Tumen border deep tour: Beyond viewpoints, explore the border trade zone and taste Tumen specialty food',
+    ],
+    officialEntry: 'Official Entry',
+    officialEntryBody: 'Tumen has intercity trains from Yanji, about 1 hour journey. Bring ID when visiting the port area, and follow regulations - no photography of military facilities.',
+    notes: 'Notes',
+    notesList: [
+      'No photography of military facilities in border areas, follow border management rules',
+      'Stay safe on railway platform viewpoint, do not cross the border line',
+      'Riguang Mountain hiking trail has good road conditions, wear comfortable shoes',
+      'Note the last train time from Tumen back to Yanji',
+    ],
+    consultEntry: 'Consultation',
+    faqTitle: 'FAQ',
+    faqs: [
+      { q: 'What is the difference between Tumen and Hunchun?', a: 'Hunchun is at the tri-border (three nations visible), Tumen is China-North Korea border (visible to North Korea). Hunchun is better for deep border experience, Tumen is better for quickly feeling the border atmosphere. They are about 60km apart and can be combined.' },
+      { q: 'Is it convenient from Yanji to Tumen?', a: 'Very convenient. Multiple intercity trains run between Yanji and Tumen daily, about 1 hour journey. Self-drive is about 60km via expressway.' },
+      { q: 'Can I see North Koreans at Tumen?', a: 'From Tumen railway station platform and port area, you can clearly see everyday life scenes in the North Korean city across, but crossing the border or photographing military facilities is not allowed.' },
+      { q: 'What is the relationship between Tumen and Route 331?', a: 'Tumen is an important node on Route 331 Yanbian section. It is about 60km south of Yanji via Route 331.' },
+    ],
+  },
+  ja: {
+    eyebrow: '图們ノード',
+    intro: '图們は延辺地域南端の中朝国境都市で、331国道の重要なノードです。图們の特色は火车站から直接北朝鮮を見られることであり、 Driving車나乘車으로 지나갈 때強い国境の雰囲気を之感じるることができます。',
+    whatIsThis: '图們是怎样的地方',
+    whatIsThisBody: '图們は延辺地域南端、朝鲜羅先特区に隣接する国境都市です。琿春と比較して，图們の国境感はより直接的で、火车站ホームと展望台から对面朝鲜의日常生活情景が明確に视ることができます。',
+    audience: 'こんなユーザーに最適',
+    audienceList: ['素早く国境の雰囲気を体験したい旅行者', '写真与人文題材クリエイター', '331国道延辺段自驾串联旅行者', '朝鲜族文化と国境貿易感兴趣のユーザー'],
+    highlights: '見どころ',
+    highlightsList: [
+      '图們火车站ホーム：直接对面朝鲜都市を見ることができ、視覚的衝撃が強い',
+      '图們口岸大橋：中朝国境を連絡する公路橋、 国境ライン上の标志性景观',
+      '图們朝鲜族聚居区：国境住民の日常生活の雰囲気を間近に感受',
+      '日光山：图們街区和对面朝鲜都市を俯瞰でき、国境パノラマ拍摄に良いポジション',
+      '图們国境貿易区：国境小额貿易と朝鲜族特産商品',
+    ],
+    howToPlan: '周り方',
+    howToPlanBody: '图們は延辺ショートトリップの国籍体験ノードとして适し、通常延吉または琿春と組合せて手配します:',
+    howToPlanList: [
+      '半日トリップ：延吉出発 → 图們火车站ホーム → 图們口岸大橋 → 日光山 → 延吉に戻る（総行程約4-5時間）',
+      '延吉+图們+琿春三国境串联：延吉 → 图們（1時間）→ 琿春（1時間）→ 延吉、331国道延辺段のクラシック small ring route',
+      '图們国境ディープツアー：展望点以外に、国境貿易区を逛り、图們特色グルメ品尝',
+    ],
+    officialEntry: '公式入口',
+    officialEntryBody: '图們火车站には延吉からの城際列車があり、車程約1時間です。图們口岸は身分証明書必要で、国境区域では相关规定を遵守し、軍事施設撮影は禁止です。',
+    notes: '注意事項',
+    notesList: [
+      '国境地域での軍事施設撮影は禁止、国境管理条例を遵守',
+      '火车站ホームの展望は安全第一、国境線を越えないように',
+      '日光山トレッキングは路况が良好、舒服な靴を履いてください',
+      '图們から延吉行最終列車の時間に注意',
+    ],
+    consultEntry: '相談入口',
+    faqTitle: 'よくある質問',
+    faqs: [
+      { q: '图們と琿春はどう違う？', a: '琿春は三国交界处（一目で三國 видно）、图們は中朝国境（一目で朝鲜 видно）。琿春は深度国境体験に，图們はクイックに国境雰囲気を感受するのに適しています。两者は約60km離れていて、串联観光 가능합니다。' },
+      { q: '延吉から图們へのアクセスは便利？', a: '非常に便利。延吉から图們への城際列車が複数運行、 約1時間、票价も安いです。自家用車は高速で60kmです。' },
+      { q: '图們で朝鲜人が見えますか？', a: '图們火车站ホームと口岸付近から、对面朝鲜都市の日常生活情景が明確に視えますが、国境線を越えたり軍事施設を撮影することは許可されていません。' },
+      { q: '图們と331国道の関係は？', a: '图們は331国道延辺段の重要ノードで、延吉から331国道沿いに南へ約60kmで图們に到着します。' },
+    ],
+  },
+  ko: {
+    eyebrow: '두만 노드',
+    intro: '두만은 연변 지역 남단의 중조 국경 도시로, 331국도의 중요한 노드입니다. 두만의 특색은 기차역에서 직접 북조선을 바라볼 수 있어, 차를 타고 지나갈 때 강렬한 국경 분위기를 느낄 수 있습니다.',
+    whatIsThis: '두만은 어떤 곳',
+    whatIsThisBody: '두만은 연변 지역 남단에 위치하며 북조선 라선 특별경제구역에 인접한 국경 도시입니다.훈춘과 비교할 때, 두만의 국경감은 더욱 직접적입니다 — 기차역 플랫폼과 전망대에서对面 북조선 주민의 일상생활 장면을 선명하게 볼 수 있습니다.',
+    audience: '이런 사용자에게 적합',
+    audienceList: ['빠르게 국경 분위기를 체험하고 싶은 여행자', '사진과 인문 소재 창작자', '331국도 연변 구간 자가운전 연결 여행객', '조선족 문화와 국경 무역에 관심이 있는 사용자'],
+    highlights: '주요 볼거리',
+    highlightsList: [
+      '두만 기차역 플랫폼: 직접 맞은편 북조선 도시를 볼 수 있어 시각적 임팩트大',
+      '두만 항구大桥: 중조 국경을 연결하는 도로 다리, 국경 라인상의标志性 풍경',
+      '두만 조선족聚居区: 국경 주민 일상생활 분위기를 가까이서感受',
+      '일광산: 두만 시가이와 맞은편 북조선 도시를 내려다볼 수 있어, 국경 파노라마 촬영에 좋은 자리',
+      '두만 국경 무역区: 국경小额 무역과 조선족 특산 상품',
+    ],
+    howToPlan: '일정 잡기',
+    howToPlanBody: '두만은 연변 단거리 여행의 국경 체험 노드로, 보통 연길 또는훈춘과 함께 배치합니다:',
+    howToPlanList: [
+      '반나절 여행: 연길 출발 → 두만 기차역 플랫폼 → 두만 항구大桥 → 일광산 → 연길 복귀 (총 약 4-5시간)',
+      '연길+두만+훈춘 3국경 직렬: 연길 → 두만(1시간) →훈춘(1시간) → 연길, 331국도 연변 구간 클래식 작은 순환 노선',
+      '두만 국경 딥 투어: 전망점 외에 국경 무역 区를逛り, 두만特色 미식品尝',
+    ],
+    officialEntry: '공식 입구',
+    officialEntryBody: '두만에는 연길에서 출발하는 성제 열차가 있어 차로 약 1시간입니다. 두만 항구 방문 시 신분증 지참 필요, 국경区域에서는相关规定 준수, 군사 시설 촬영은 금지입니다.',
+    notes: '주의사항',
+    notesList: [
+      '국경 지역 군사 시설 촬영 금지, 국경 관리 규정 준수',
+      '기차역 플랫폼 전망대에서는 안전 주의, 국경선을 넘지 마세요',
+      '일광산 트레킹 노선은 로드 condition 양호, удобную обувь 착용',
+      '두만에서 연길行最終 열차 시간에 주의',
+    ],
+    consultEntry: '상담 입구',
+    faqTitle: '자주 묻는 질문',
+    faqs: [
+      { q: '두만과훈춘은 어떻게 다르나요?', a: '훈춘은 삼국交界处(세 나라를 한눈에), 두만은 중조 국경(一눈에 북조선을).훈춘은 심층 국경 체험에, 두만은 빠르게 국경 분위기를感受하는 것에 적합합니다.两者는 약 60km離れていて, 직렬 관광 가능합니다.' },
+      { q: '연길에서 두만까지 편리한가요?', a: '매우 편리합니다. 연길에서 두만까지 성제 열차가複数運行, 약 1시간,票价도 쌉니다. 자가운전은 약 60km로 고속으로 편리합니다.' },
+      { q: '두만에서 북조선 사람을 볼 수 있나요?', a: '두만 기차역 플랫폼과 항구 부근에서 맞은편 북조선 도시의 일상생활 장면이 선명하게 보이지만, 국경선을 넘거나 군사 시설을 촬영하는 것은 허용되지 않습니다.' },
+      { q: '두만과 331국도의 관계는?', a: '두만은 331국도 연변 구간의 중요한 노드로, 연길에서 331국도를 따라 남쪽으로 약 60km 가면 두만에 도착합니다.' },
+    ],
+  },
+};
+
+const t = copy[locale];
+const schemas = [
+  buildWebPageSchema(pagePath, pageTitle, pageDescription, locale),
+  buildTouristDestinationSchema(pagePath, pageTitle, pageDescription, locale),
+  buildFAQPageSchema(pagePath, pageTitle, t.faqs.map((f: { q: string; a: string }) => ({ question: f.q, answer: f.a })), locale),
+];
+---
+
+<BaseLayout title={`${pageTitle} | dajilin.net`} description={pageDescription} schemas={schemas} locale={locale} ogImage="/images/home/tumen.jpg">
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-hero">
+          <div class="page-copy">
+            <div class="eyebrow">{t.eyebrow}</div>
+            <h1>{isZh ? pageTitle : t.eyebrow}</h1>
+            <p>{isZh ? pageDescription : t.intro}</p>
+          </div>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.whatIsThis}</h2>
+          <p>{t.whatIsThisBody}</p>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.audience}</h2>
+          <ul>
+            {t.audienceList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.highlights}</h2>
+          <ul>
+            {t.highlightsList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.howToPlan}</h2>
+          <p>{t.howToPlanBody}</p>
+          <ul>
+            {t.howToPlanList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.officialEntry}</h2>
+          <p>{t.officialEntryBody}</p>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.notes}</h2>
+          <ul>
+            {t.notesList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.faqTitle}</h2>
+          <div class="faq-list">
+            {t.faqs.map((faq) => (
+              <article class="faq-item">
+                <h3>{faq.q}</h3>
+                <p>{faq.a}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <aside class="page-card">
+        <h3>{isZh ? '建议继续浏览' : 'Continue Reading'}</h3>
+        <ul class="page-list">
+          <li><a href={localizePath('/self-drive/overview', locale)}>{isZh ? '331国道吉林段概览' : 'Route 331 Jilin Overview'}</a></li>
+          <li><a href={localizePath('/self-drive/nodes/yanji', locale)}>{isZh ? '延吉节点' : 'Yanji Node'}</a></li>
+          <li><a href={localizePath('/self-drive/nodes/hunchun', locale)}>{isZh ? '珲春节点' : 'Hunchun Node'}</a></li>
+          <li><a href={localizePath('/destinations/yanbian', locale)}>{isZh ? '延边目的地页' : 'Yanbian Destination'}</a></li>
+        </ul>
+
+        <div class="detail-side-card">
+          <h3>{t.consultEntry}</h3>
+          <div class="cta-row">
+            <button class="button" type="button" data-open-ai-widget data-ai-page-url={pagePath}>
+              {isZh ? '先问 AI 助手' : 'Ask AI Assistant'}
+            </button>
+            <a class="button-secondary" href={localizePath('/cooperation', locale)}>
+              {isZh ? '提交咨询' : 'Submit Consultation'}
+            </a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

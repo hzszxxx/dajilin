@@ -3,7 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/astro/Header.astro';
 import Footer from '@/components/astro/Footer.astro';
 import DetailPage from '@/components/astro/DetailPage.astro';
-import { buildCollectionPageSchema, buildWebPageSchema } from '@/lib/schema';
+import { buildCollectionPageSchema, buildWebPageSchema, buildHowToSchema, buildFAQPageSchema } from '@/lib/schema';
 import { findDetailPage, selfDrivePages } from '@/lib/content-pages';
 import { getLocaleFromPathname, localizePath } from '@/lib/i18n';
 
@@ -25,10 +25,106 @@ if (!page) {
   throw new Error(`Unknown self-drive page: ${Astro.params.slug}`);
 }
 
-const schemas = [
+// Add HowTo schema for pages with step-based content
+const howToSlugs = ['overview', 'how-to-travel', 'supplies'];
+const howToSteps = {
+  overview: {
+    zh: [
+      { name: '了解331国道', text: '331国道吉林段全长约1390公里，途经延边、珲春、图们等重要节点，是自驾吉林东部边境的经典路线。' },
+      { name: '规划行程节奏', text: '建议根据时间安排选择不同路段和节奏，延吉至珲春、图们段最为经典。' },
+      { name: '准备自驾装备', text: '检查车况、备好导航设备、了解沿途驿站位置和服务能力。' },
+      { name: '出发前确认', text: '关注季节性路况信息，提前预约核心驿站服务。' },
+    ],
+    en: [
+      { name: 'Understand Route 331', text: 'Route 331 Jilin section spans approximately 1390km, passing through Yanbian, Hunchun, Tumen and other key nodes.' },
+      { name: 'Plan Your Itinerary', text: 'Choose different route segments and pace based on your time. The Yanji to Hunchun/Tumen section is the most classic.' },
+      { name: 'Prepare Your Vehicle', text: 'Check vehicle condition, prepare navigation equipment, and understand station locations and services along the route.' },
+      { name: 'Final Check Before Departure', text: 'Check seasonal road conditions and make advance reservations for key stations.' },
+    ],
+    ja: [
+      { name: '331国道を確認', text: '331国道吉林段は約1390kmで、延辺、琿春、图們などの重要なノードを経由します。' },
+      { name: '旅程を計画', text: '時間に応じて異なる区間とペースを選択し、延吉から琿春·图們区間が最も代表的です。' },
+      { name: '出発準備', text: '車両狀態を確認し、ナビゲーション機器を準備し、沿線の驛站の位置とサービスを確認します。' },
+      { name: '出発前確認', text: '季節による路况情報を確認し、主要驛站のサービスを事前に予約します。' },
+    ],
+    ko: [
+      { name: '331국도 이해', text: '331국도 지린 구간은 약 1390km로, 연변,훈춘, 두만 등 주요 노드를 경유합니다.' },
+      { name: '일정 계획', text: '시간에 따라 다양한 구간과 속도를 선택하며, 연길에서훈춘·두만 구간이 가장 전형적입니다.' },
+      { name: '출발 준비', text: '차량 상태를 점검하고, 내비게이션 장비를 준비하며,沿途 거점 위치와 서비스를 확인합니다.' },
+      { name: '출발 전 확인', text: '계절별 도로状況を確認し, 주요 거점 서비스를 사전 예약합니다.' },
+    ],
+  },
+  'how-to-travel': {
+    zh: [
+      { name: '确定出行时间', text: '自驾331国道的行程安排应综合考虑路线长度、季节、停留节点和个人偏好，建议提前规划节奏。' },
+      { name: '选择适合路线', text: '2天1夜适合延吉+珲春单线；3-5天可覆盖延吉+图们+珲春完整边境线。' },
+      { name: '预订核心驿站', text: '延吉驿站和珲春鸿星驿站是最重要的两个节点，建议提前预订。' },
+      { name: '准备边境证件', text: '边境地区需携带身份证，口岸区域禁止拍摄军事设施。' },
+    ],
+    en: [
+      { name: 'Choose Travel Time', text: 'Plan your Route 331 trip considering route length, season, stop nodes and personal preferences.' },
+      { name: 'Select Your Route', text: '2 days 1 night covers Yanji + Hunchun; 3-5 days can cover the complete Yanji + Tumen + Hunchun border line.' },
+      { name: 'Book Key Stations', text: 'Yanji Station and Hunchun Hongxing Station are the two most important nodes — reserve in advance.' },
+      { name: 'Prepare Border Documents', text: 'Bring ID for border areas. Photography of military facilities is prohibited in port zones.' },
+    ],
+    ja: [
+      { name: '旅行時期的决定', text: 'ルートの長さ、季節、停留ノードと個人の偏好を考慮して旅程を立てます。' },
+      { name: '適切なルートの選択', text: '2泊3日は延吉+琿春のみ；3-5일은延吉+图們+琿春完整国境線をカバーできます。' },
+      { name: '核心驛站を予約', text: '延吉驛站と琿春鴻星驛站最も重要な2つのノードで、事前に予約することを推奨。' },
+      { name: '国境書類の準備', text: '国境地域への訪問は身分証明書が必要で、口岸区域での軍事施設撮影は禁止です。' },
+    ],
+    ko: [
+      { name: '여행 시기 결정', text: '노선 길이, 계절, 정차 노드와 개인 취향을 고려하여 일정을 계획합니다.' },
+      { name: '적합한 노선 선택', text: '2박 3일은 연길+훈춘만; 3-5일은 연길+두만+훈춘 완전国境선을 커버할 수 있습니다.' },
+      { name: '핵심 거점 예약', text: '연길 거점과훈춘 홍성 거점이 가장 중요한 두 노드로, 사전 예약을 권장합니다.' },
+      { name: '국경 서류 준비', text: '국경 지역 방문 시 신분증이 필요하며, 항구区域での軍事施設 촬영은 금지입니다.' },
+    ],
+  },
+  supplies: {
+    zh: [
+      { name: '在延吉完成补给', text: '延吉是331国道吉林段最重要的补给节点，超市、药店、加油站齐全，建议在此完成主要补给。' },
+      { name: '油料与车辆检查', text: '离开延吉前确保油箱满格，检查轮胎和刹车。沿途加油站间距约50-100公里。' },
+      { name: '餐饮与应急物资', text: '携带足够饮用水和简单路餐，沿途驿站提供热餐但营业时间有限。' },
+      { name: '住宿安排', text: '旺季（7-8月、节假日）建议提前预订延吉和珲春住宿，提前联系驿站确认。' },
+    ],
+    en: [
+      { name: 'Replenish in Yanji', text: 'Yanji is the most important supply node on Route 331 Jilin section. supermarkets, pharmacies, and gas stations are all available.' },
+      { name: 'Fuel and Vehicle Check', text: 'Ensure a full tank before leaving Yanji. Check tires and brakes. Gas stations are approximately 50-100km apart along the route.' },
+      { name: 'Food and Emergency Supplies', text: 'Carry sufficient drinking water and simple meals. Stations provide hot meals but have limited operating hours.' },
+      { name: 'Accommodation', text: 'During peak season (July-August, holidays), book Yanji and Hunchun accommodation in advance.' },
+    ],
+    ja: [
+      { name: '延吉で补给を完了', text: '延吉は331国道吉林段で最も重要な补给ノードで、スーパー、薬局、ガソリンを 모두 갖추ています。' },
+      { name: '燃料と車両チェック', text: '延吉出発前に燃料満タンにし、タイヤとブレーキを点検。沿線のガソリンスタンドは約50-100km間隔。' },
+      { name: '飲食と緊急物資', text: '十分な饮用水と軽食を持参。驛站で温かい食事ができますが、营业時間は限られています。' },
+      { name: '宿泊の手配', text: '旺季（7-8月、祝日には延吉と琿春宿泊施設を事前に予約し、驛站にも事前に連絡してください。' },
+    ],
+    ko: [
+      { name: '연길에서 보급 완료', text: '연길은 331국도 지린 구간에서 가장 중요한 보급 노드로, 대형 마트, 약국, 주유소가 모두 갖춰져 있습니다.' },
+      { name: '연료와 차량 점검', text: '연길 출발 전 연료 탱크를 가득 채우고 타이어와 브레이크를 점검합니다.沿途 주유소 간격은 약 50-100km입니다.' },
+      { name: '식음과 비상 물자', text: '충분한 음용수와 간단한 다 식음을 휴대합니다. 거점에서 따뜻한 식사를 제공하지만 영업 시간이 제한적입니다.' },
+      { name: '숙박 준비', text: '성수기(7-8월, 휴일)에는 연길과훈춘 숙박을 사전 예약하고, 거점에도事前に 연락하여 확인합니다.' },
+    ],
+  },
+};
+
+const hasHowTo = howToSlugs.includes(page?.slug ?? '');
+const hasFAQs = howToSlugs.includes(page?.slug ?? '') && (page as any)?.faqs?.length > 0;
+
+const schemas: ReturnType<typeof buildWebPageSchema>[] = [
   buildWebPageSchema(localizedPath, localizedTitle, localizedDescription, locale),
   buildCollectionPageSchema(localizedPath, localizedTitle, localizedDescription, locale),
 ];
+
+if (hasHowTo && howToSteps[page.slug as keyof typeof howToSteps]) {
+  const steps = howToSteps[page.slug as keyof typeof howToSteps][locale] ?? howToSteps[page.slug as keyof typeof howToSteps].zh;
+  schemas.push(buildHowToSchema(localizedPath, localizedTitle, localizedDescription, steps, locale));
+}
+
+if (hasFAQs && page) {
+  const faqs = (page as any).faqs as { question: string; answer: string }[];
+  schemas.push(buildFAQPageSchema(localizedPath, localizedTitle, faqs, locale));
+}
 ---
 
 <BaseLayout title={`${localizedTitle} | dajilin.net`} description={localizedDescription} schemas={schemas} locale={locale}>

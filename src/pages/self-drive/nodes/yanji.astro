@@ -1,0 +1,295 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { buildWebPageSchema, buildTouristDestinationSchema, buildFAQPageSchema } from '@/lib/schema';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+
+const locale = getLocaleFromPathname(Astro.url.pathname) as Locale;
+const isZh = locale === 'zh';
+
+const pageTitle = '延吉节点 | 331国道吉林段';
+const pageDescription = '延吉是331国道吉林段的核心节点，朝鲜族文化中心，也是延边地区最重要的旅游集散地。';
+const pagePath = '/self-drive/nodes/yanji';
+
+const copy: Record<Locale, {
+  eyebrow: string;
+  intro: string;
+  whatIsThis: string;
+  whatIsThisBody: string;
+  audience: string;
+  audienceList: string[];
+  highlights: string;
+  highlightsList: string[];
+  howToPlan: string;
+  howToPlanBody: string;
+  howToPlanList: string[];
+  officialEntry: string;
+  officialEntryBody: string;
+  notes: string;
+  notesList: string[];
+  consultEntry: string;
+  faqTitle: string;
+  faqs: { q: string; a: string }[];
+}> = {
+  zh: {
+    eyebrow: '延吉节点',
+    intro: '延吉是331国道吉林段的重要节点，也是延边朝鲜族自治州的首府。这里是体验朝鲜族文化、品尝特色美食的理想出发地，同时也是连接珲春、图们等边境节点的交通中枢。',
+    whatIsThis: '延吉是什么样的地方',
+    whatIsThisBody: '延吉是延边地区的政治、经济和文化中心，常住人口中朝鲜族占比较高，城市面貌兼具现代气息与民族特色。延吉不大但生活氛围浓厚，美食密度极高，是体验朝鲜族日常生活的理想窗口。',
+    audience: '适合哪些用户',
+    audienceList: ['希望体验朝鲜族日常生活的旅行者', '对边境美食和文化感兴趣的用户', '以延边为目的地的自驾游客', '摄影和人文题材创作者'],
+    highlights: '有哪些看点',
+    highlightsList: [
+      '延吉网红墙：大学城附近朝鲜语招牌墙，视觉冲击力强，是延吉必打卡地标',
+      '朝鲜族水上市场：清晨营业，本地化程度高，能看到朝鲜族日常生活场景',
+      '帽儿山观景台：俯瞰延吉城市全景，秋季色彩丰富',
+      '延吉美食街区：冷面、烤肉、参鸡汤、米肠等朝鲜族特色餐饮密度极高',
+      '延边博物馆：了解朝鲜族历史文化的高质量场馆',
+    ],
+    howToPlan: '如何安排',
+    howToPlanBody: '延吉适合作为延边区域旅行的据点型节点，以延吉为中心向周边辐射游览：',
+    howToPlanList: [
+      '2天1夜：以延吉为核心，品尝美食为主，半天逛帽儿山和延吉市区',
+      '3-4天：以延吉为据点，辐射图们（1小时车程）、珲春（1.5小时车程），体验边境文化',
+      '联动331国道：延吉是331国道延边段的重要节点，可从这里出发沿边境公路向东游览',
+    ],
+    officialEntry: '官方入口',
+    officialEntryBody: '延吉市区内有延吉机场（开通多条国内航线），也有高铁站，铁路交通便利。前往边境地区需携带身份证，边境口岸区域需遵守相关规定。',
+    notes: '注意事项',
+    notesList: [
+      '延吉美食口味偏辣偏咸，可提前了解饮食习惯',
+      '朝鲜族市场清晨营业，去水上市场建议早起',
+      '帽儿山徒步路线约2小时，请穿舒适鞋子',
+      '边境旅游请随身携带身份证',
+    ],
+    consultEntry: '咨询入口',
+    faqTitle: '常见问题',
+    faqs: [
+      { q: '延吉到珲春、图们远吗？', a: '延吉到图们约60公里（1小时车程），到珲春约120公里（1.5-2小时），非常适合作为据点向周边辐射。' },
+      { q: '延吉美食有什么必吃的？', a: '延吉冷面（尤其是冰雪融化的冷面汤）、炭火烤肉、参鸡汤、米肠、辣白菜炒饭是代表性美食，建议在延吉市传统餐厅体验。' },
+      { q: '延吉适合带小朋友去吗？', a: '适合。延吉生活氛围浓厚，美食多，帽儿山难度低，城市配套完善，适合家庭出行。' },
+      { q: '延吉和延边是什么关系？', a: '延吉是延边朝鲜族自治州的首府所在地，延边是地级行政区，下辖延吉、珲春、图们等多个县市。' },
+    ],
+  },
+  en: {
+    eyebrow: 'Yanji Node',
+    intro: 'Yanji is an important node on Jilin Route 331, capital of Yanbian Korean Autonomous Prefecture, and the ideal base for experiencing Korean ethnic culture and cuisine.',
+    whatIsThis: 'What is Yanji',
+    whatIsThisBody: 'Yanji is the political, economic and cultural center of Yanbian region. Though compact in size, it has a rich living atmosphere and exceptional food density, making it ideal for experiencing everyday Korean ethnic life.',
+    audience: 'Who is it suitable for',
+    audienceList: ['Travelers wanting to experience everyday Korean ethnic life', 'Users interested in border cuisine and culture', 'Self-drive tourists with Yanbian as their destination', 'Photography and cultural content creators'],
+    highlights: 'Key Highlights',
+    highlightsList: [
+      'Yanji Internet-famous Wall: Korean sign wall near university town, a must-visit landmark',
+      'Korean Ethnic Water Market: Operates early morning, highly local, shows everyday Korean life',
+      'Maoer Mountain Viewpoint: Panoramic view of Yanji city, especially colorful in autumn',
+      'Yanji Food District: Extremely high density of cold noodles, BBQ, ginseng chicken, blood sausage',
+      'Yanbian Museum: High-quality venue for learning Korean ethnic history and culture',
+    ],
+    howToPlan: 'How to Plan',
+    howToPlanBody: 'Yanji works well as a base camp for exploring the Yanbian region, radiating to surrounding areas:',
+    howToPlanList: [
+      '2 days 1 night: Yanji-focused, food-focused, half-day for Maoer Mountain and city',
+      '3-4 days: Yanji as base, radiate to Tumen (1hr) and Hunchun (1.5-2hrs) for border culture',
+      'Combined with Route 331: Yanji is an important node on Yanbian section of Route 331',
+    ],
+    officialEntry: 'Official Entry',
+    officialEntryBody: 'Yanji has an airport with domestic flights and a high-speed rail station. Bring ID when visiting border areas, and follow local regulations in border zones.',
+    notes: 'Notes',
+    notesList: [
+      'Yanji food tends to be spicy and salty; familiarize yourself with local tastes',
+      'Water market opens early morning; plan to wake up early',
+      'Maoer Mountain hiking is about 2 hours; wear comfortable shoes',
+      'Bring ID for border tourism',
+    ],
+    consultEntry: 'Consultation',
+    faqTitle: 'FAQ',
+    faqs: [
+      { q: 'How far is Yanji from Hunchun and Tumen?', a: 'Yanji to Tumen is about 60km (1hr drive), to Hunchun about 120km (1.5-2hrs), very suitable as a base for surrounding exploration.' },
+      { q: 'Must-eat foods in Yanji?', a: 'Yanji cold noodles (especially with icy broth), charcoal BBQ, ginseng chicken, blood sausage, and kimchi fried rice are representative. Try them in traditional Yanji restaurants.' },
+      { q: 'Is Yanji suitable for families with kids?', a: 'Yes. Yanji has a rich living atmosphere, great food, easy mountain hikes, and complete city amenities, suitable for family travel.' },
+      { q: 'What is the relationship between Yanji and Yanbian?', a: 'Yanji is the capital of Yanbian Korean Autonomous Prefecture. Yanbian is a prefecture-level administrative division covering Yanji, Hunchun, Tumen and other counties/cities.' },
+    ],
+  },
+  ja: {
+    eyebrow: '延吉ノード',
+    intro: '延吉は331国道吉林段の重要ノードで、延辺朝鮮族自治州の州都です。朝鲜族文化と特色あるグルメ体験の理想の出発地，同时也是连接琿春、图們等国境ノードの交通中枢です。',
+    whatIsThis: '延吉是怎样的地方',
+    whatIsThisBody: '延吉は延辺地域の政治・経済・文化の中心地です。規模は小さいが生活雰囲気が浓厚で、グルメ密度が非常に高く、朝鲜族の日常生活を体験するのに最適な場所です。',
+    audience: 'こんなユーザーに最適',
+    audienceList: ['朝鲜族の日常生活を体験したい旅行者', '国境グルメと文化に興味があるユーザー', '延辺を目的とした自驾旅行者', '写真与人文題材のクリエイター'],
+    highlights: '見どころ',
+    highlightsList: [
+      '延吉インターネット有名壁：大学城近くの朝鲜語看板壁、延吉の必打卡地標',
+      '朝鲜族水中市場：早朝営業、高度にローカル化、朝鲜族の日常生活が見れる',
+      '帽児山展望台：延吉市街のパノラマ全景、秋の色合いが豊か',
+      '延吉グルメ街区：冷面、烤肉、参鸡汤、emann 등朝鲜族特色料理密度が非常に高い',
+      '延辺博物館：朝鲜族歴史文化を学ぶ高品質な场馆',
+    ],
+    howToPlan: '周り方',
+    howToPlanBody: '延吉は延辺エリア旅行の拠点型ノードとして周边への観光辐射に適しています:',
+    howToPlanList: [
+      '2泊3日：延吉を中心にグルメメイン、帽児山と延吉市街を半日',
+      '3-4日：延吉を根据地として、图們（1時間）、琿春（1.5-2時間）を辐射、国境文化体験',
+      '331国道連動：延吉は331国道延辺段の重要ノードここから国境公路を东に游览可能',
+    ],
+    officialEntry: '公式入口',
+    officialEntryBody: '延吉市街には延吉空港（国内線多数）と高铁駅があり、鉄道アクセスが良好です。国境地域への訪問は身分証明書の携带が必要で、国境相关规定を遵守してください。',
+    notes: '注意事項',
+    notesList: [
+      '延吉グルメは辛い・塩っぱい傾向事前に口味的了解をお勧めします',
+      '水中市場は早朝営業、早起きが必要',
+      '帽児山徒步ルートは約2時間、舒服な靴を履いてください',
+      '国境観光は身分証明書を必ず携带',
+    ],
+    consultEntry: '相談入口',
+    faqTitle: 'よくある質問',
+    faqs: [
+      { q: '延吉から琿春、图們へのアクセスは？', a: '延吉から图們は約60キロ（1時間車程）、琿春は約120キロ（1.5-2時間）で、周边辐射の根据地として非常に適しています。' },
+      { q: '延吉で必ず食べるべきグルメは？', a: '延吉冷面（特に冰雪が溶けた冷面汁）、炭火烤肉、参鸡汤、emann、辣白菜炒飯などが代表的で、延吉市の伝統餐厅での体験をお勧めします。' },
+      { q: '延吉は子供連れに適していますか？', a: '適しています。延吉は生活雰囲気が浓厚で、グルメが多く、帽児山の難易度が高くなく、城市配套设施も完善しており、家族旅行に適しています。' },
+      { q: '延吉と延辺の関係は？', a: '延吉は延辺朝鮮族自治州の州都所在地で、延辺は地級行政区で、延吉、琿春、图們などの県市を管轄しています。' },
+    ],
+  },
+  ko: {
+    eyebrow: '연길 노드',
+    intro: '연길은 331국도 지린 구간의 중요한 노드로, 연변 조선족 자치주의 주도입니다. 조선족 문화와 특색 미식의 이상적인 출발지인 동시에 훈춘, 두만 등 국경 노드에 연결되는 교통 중추입니다.',
+    whatIsThis: '연길은 어떤 곳',
+    whatIsThisBody: '연길은 연변 지역의 정치, 경제, 문화 중심지입니다. 크기는 작지만 삶의 분위기가 독특하고 미식 밀도가 매우 높아 조선족 일상 생활을 체험하기에 최적화된 장소입니다.',
+    audience: '이런 사용자에게 적합',
+    audienceList: ['조선족 일상 생활을 체험하고 싶은旅行者', '국경 미식과 문화에 관심이 있는 사용자', '연변을 목적으로 한 자가운전 여행객', '사진과 인문 콘텐츠 창작자'],
+    highlights: '주요 볼거리',
+    highlightsList: [
+      '연길 인터넷 유명 벽면: 대학건너 인근 조선어 간판 벽, 연길 필수 베이커리',
+      '조선족 수중 시장: 새벽에 영세, 현지화 정도가 높아 조선족 일상 생활이 보임',
+      '모아르산 전망대: 연길 시가지 전경을 내려다볼 수 있어, 가을 색채가 풍부함',
+      '연길 미식街区: 냉면, 불고기, 삼계탕, 순대 등 조선족 특색 요리 밀도가 매우 높음',
+      '연변博物馆: 조선족 역사 문화를 이해할 수 있는 고품질场馆',
+    ],
+    howToPlan: '일정 잡기',
+    howToPlanBody: '연길은 연변 지역 여행의 거점형 노드로 주변 지역으로의 관광 방사에도 적합합니다:',
+    howToPlanList: [
+      '2박 3일: 연길을 중심으로 미식 중심, 반나절로 모아르산과 연길 시가지 방문',
+      '3-4일: 연길을 거점으로 두만(1시간),훈춘(1.5-2시간)을 방사, 국경 문화 체험',
+      '331 국도 연계: 연길은 331 국도 연변 구간의 중요 노드로从这里出发沿국경 도로 동쪽 관광 가능',
+    ],
+    officialEntry: '공식 입구',
+    officialEntryBody: '연길 시내에는 연길 공항(국내선 다수)과 고속철도 역이 있어 철도 접근성이 양호합니다. 국경 지역 방문 시 신분증 지참 필요, 국경 관련 규정을 준수하세요.',
+    notes: '주의사항',
+    notesList: [
+      '연길 미식은 매콤하고 짠 편, 미리 맛 취향을 알아두면 좋습니다',
+      '수중 시장은 새벽에 영세, 일어나서 가야 합니다',
+      '모아르산 트레킹 구간은 약 2시간, удобную обувь 착용 권장',
+      '국경 관광 시 반드시 신분증 지참',
+    ],
+    consultEntry: '상담 입구',
+    faqTitle: '자주 묻는 질문',
+    faqs: [
+      { q: '연길에서훈춘, 두만까지多远距离？', a: '연길에서 두만까지 약 60km(1시간 운행),훈춘까지 약 120km(1.5-2시간)으로, 주변 방사의 거점으로 매우 적합합니다.' },
+      { q: '연길에서 반드시 먹어야 할 미식은?', a: '연길 냉면(특히 얼음이 녹은 냉면국물), 숯불 불고기, 삼계탕, 순대, 김치볶음밥 등이 대표적으로, 연길시 전통 식당에서 체험하는 것을 권장합니다.' },
+      { q: '연길은 어린이 동행 적합한가요?', a: '적합합니다. 연길은 삶의 분위기가 독특하고 미식이 풍부하며, 모아르산 난이도가 낮고 도시 인프라가 완비되어 있어 가족 여행에 적합합니다.' },
+      { q: '연길과 연변의 관계는?', a: '연길은 연변 조선족 자치주의 주도 소재지이고, 연변은 지급 행정구역으로 연길,훈춘, 두만 등의 현시를 관할합니다.' },
+    ],
+  },
+};
+
+const t = copy[locale];
+const schemas = [
+  buildWebPageSchema(pagePath, pageTitle, pageDescription, locale),
+  buildTouristDestinationSchema(pagePath, pageTitle, pageDescription, locale),
+  buildFAQPageSchema(pagePath, pageTitle, t.faqs.map((f: { q: string; a: string }) => ({ question: f.q, answer: f.a })), locale),
+];
+---
+
+<BaseLayout title={`${pageTitle} | dajilin.net`} description={pageDescription} schemas={schemas} locale={locale} ogImage="/images/home/yanji.jpg">
+  <Header />
+  <main class="page-shell">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-hero">
+          <div class="page-copy">
+            <div class="eyebrow">{t.eyebrow}</div>
+            <h1>{isZh ? pageTitle : t.eyebrow}</h1>
+            <p>{isZh ? pageDescription : t.intro}</p>
+          </div>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.whatIsThis}</h2>
+          <p>{t.whatIsThisBody}</p>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.audience}</h2>
+          <ul>
+            {t.audienceList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.highlights}</h2>
+          <ul>
+            {t.highlightsList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.howToPlan}</h2>
+          <p>{t.howToPlanBody}</p>
+          <ul>
+            {t.howToPlanList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.officialEntry}</h2>
+          <p>{t.officialEntryBody}</p>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.notes}</h2>
+          <ul>
+            {t.notesList.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="detail-block">
+          <h2>{t.faqTitle}</h2>
+          <div class="faq-list">
+            {t.faqs.map((faq) => (
+              <article class="faq-item">
+                <h3>{faq.q}</h3>
+                <p>{faq.a}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <aside class="page-card">
+        <h3>{isZh ? '建议继续浏览' : 'Continue Reading'}</h3>
+        <ul class="page-list">
+          <li><a href={localizePath('/self-drive/overview', locale)}>{isZh ? '331国道吉林段概览' : 'Route 331 Jilin Overview'}</a></li>
+          <li><a href={localizePath('/self-drive/how-to-travel', locale)}>{isZh ? '自驾攻略' : 'Self-Drive Guide'}</a></li>
+          <li><a href={localizePath('/self-drive/station-services', locale)}>{isZh ? '驿站服务' : 'Station Services'}</a></li>
+          <li><a href={localizePath('/destinations/yanbian', locale)}>{isZh ? '延边目的地页' : 'Yanbian Destination'}</a></li>
+          <li><a href={localizePath('/themes/border-and-yanbian', locale)}>{isZh ? '边境与延边主题' : 'Border & Yanbian Theme'}</a></li>
+        </ul>
+
+        <div class="detail-side-card">
+          <h3>{t.consultEntry}</h3>
+          <div class="cta-row">
+            <button class="button" type="button" data-open-ai-widget data-ai-page-url={pagePath}>
+              {isZh ? '先问 AI 助手' : 'Ask AI Assistant'}
+            </button>
+            <a class="button-secondary" href={localizePath('/cooperation', locale)}>
+              {isZh ? '提交咨询' : 'Submit Consultation'}
+            </a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
