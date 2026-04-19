@@ -196,11 +196,55 @@ Verified the following SEO elements are present:
 8. ✅ Shop page **restructured** — now a "coming soon" landing page with notify form (pending deploy)
 9. ⚠️ AI Chat E2E — Widget 可打开，但 `https://api.renban.xyz` 生产环境 `Failed to fetch`，API 链路需部署后验证
 10. ❌ Mobile LCP **unmeasured**
+11. ✅ 视觉重新设计 — 冬日冰蓝+暖琥珀配色体系上线 (`commit 1d7668a`)
 
 **Definition of Done:**
 - [ ] Google/Bing SEO 检查无严重错误
 - [ ] Organization + LocalBusiness 结构化数据测试工具 100% 通过
 - [ ] 首页 LCP 移动端 ≤ 1.5s
+
+---
+
+## 🆕 Milestone — 视觉重新设计 (2026-04-19)
+
+**目标：** 将"青绿自然"配色体系升级为"白山黑水·冰雪吉林"文旅调性。
+
+### 新配色体系
+
+| Token | 旧值 | 新值 | 说明 |
+|---|---|---|---|
+| `--primary` | `#0f766e` 深青 | `#1e5f8a` 冬日蓝 | 主品牌色 |
+| `--primary-strong` | `#115e59` | `#154a6a` 深夜蓝 | 深色状态 |
+| `--accent` | `#f59e0b` 橙黄 | `#c47d1a` 暖琥珀 | CTA/温度感 |
+| `--bg` | `#f5f8f6` 绿调白 | `#f4f8fb` 冰霜白 | 页面背景 |
+| `--text` | `#1f2937` | `#1a2e3d` 冬夜蓝黑 | 正文色 |
+| `--muted` | `#54606d` | `#5a7385` 雾灰蓝 | 辅助文字 |
+| 阴影 | 青绿 rgba | 蓝调 rgba | 统一冷色基调 |
+
+**新增 Token：**
+- `--ice-blue: #cce8f4` — 冰霜白蓝（卡片背景）
+- `--ice-deep: #7bb8d4` — 深海冰（装饰线）
+- `--snow: #f0f8ff` — 雪白（表面色）
+- `--season-spring/summer/autumn/winter` — 四季变色 token
+
+### 改动明细
+
+| 文件 | 改动 |
+|---|---|
+| `src/styles/index.css` | `:root` 变量替换（+40/-28行）、`.vs-hero` 叠加层减重、`.button` hover 动效 |
+| `src/layouts/BaseLayout.astro` | `theme-color` `#0f766e` → `#1e5f8a` |
+
+### 构建状态
+
+- ✅ `npm run build` 通过
+- ⚠️ `content-pages.ts` 20处 `duplicate notes` 警告（历史遗留，待修复）
+
+### 设计方向
+
+**"雪山+雾凇+暖阳"二元对立美学**
+- 冷峻冰蓝 + 温暖琥珀 = 吉林"冰雪胜境 + 人情烟火"双重气质
+- Hero 图叠加层从 `0.58+0.44` 降至 `0.18+0.38`，图片更通透
+- 按钮 12px 圆角 + hover 上浮动效，更现代
 
 ---
 
