@@ -243,6 +243,21 @@ const schema = buildWebPageSchema(thisPath, t.pageTitle, t.description, locale);
             <div class="eyebrow">Station Partnership</div>
             <h1>{t.heroTitle}</h1>
             <p>{t.heroDesc}</p>
+            <div class="hero-cta-group">
+              <a href="#apply-form" class="btn-primary-large">
+                {t.applyCta}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+              <a href="/ai-assistant" class="btn-secondary-large">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 16v-4M12 8h.01"/>
+                </svg>
+                AI 智能咨询
+              </a>
+            </div>
           </div>
         </div>
 
@@ -489,5 +504,50 @@ const schema = buildWebPageSchema(thisPath, t.pageTitle, t.description, locale);
     .revenue-grid {
       grid-template-columns: 1fr;
     }
+  }
+
+  .hero-cta-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+  }
+
+  .btn-primary-large {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 32px;
+    background: linear-gradient(135deg, #c47d1a 0%, #b45309 100%);
+    color: #fff;
+    border-radius: 999px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary-large:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(196, 125, 26, 0.35);
+  }
+
+  .btn-secondary-large {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 32px;
+    background: transparent;
+    color: var(--primary, #0f766e);
+    border: 2px solid var(--primary, #0f766e);
+    border-radius: 999px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-secondary-large:hover {
+    background: rgba(15, 118, 110, 0.06);
   }
 </style>
