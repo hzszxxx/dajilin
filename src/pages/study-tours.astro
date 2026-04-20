@@ -79,6 +79,76 @@ const t = copy[locale];
 const ent = enterprises[locale];
 ---
 
+<style>
+.study-tour-cta-section {
+  margin-top: 48px;
+  padding: 40px;
+  background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+  border: 1px solid rgba(15, 118, 110, 0.12);
+  border-radius: 24px;
+}
+
+.cta-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.cta-text h3 {
+  font-size: 1.4rem;
+  color: var(--text-strong, #1e293b);
+  margin: 0 0 8px;
+}
+
+.cta-text p {
+  color: var(--muted, #64748b);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.cta-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.cta-btn-primary {
+  background: linear-gradient(135deg, #c47d1a 0%, #b45309 100%);
+  color: #fff;
+}
+
+.cta-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(196, 125, 26, 0.3);
+}
+
+.cta-btn-secondary {
+  background: transparent;
+  color: var(--primary, #0f766e);
+  border: 1.5px solid var(--primary, #0f766e);
+}
+
+.cta-btn-secondary:hover {
+  background: rgba(15, 118, 110, 0.06);
+}
+</style>
+
 <BaseLayout
   title={t.title}
   description={t.description}
@@ -114,6 +184,32 @@ const ent = enterprises[locale];
             </a>
           ))}
         </div>
+
+        <section class="study-tour-cta-section">
+          <div class="cta-container">
+            <div class="cta-text">
+              <h3>需要定制研学行程？</h3>
+              <p>告诉 AI 你的团队规模和兴趣方向，30秒生成专属方案</p>
+            </div>
+            <div class="cta-actions">
+              <button type="button" class="cta-btn cta-btn-primary" id="open-study-tour-ai">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                AI 帮我规划研学路线
+              </button>
+              <a href="/stations/cooperation" class="cta-btn cta-btn-secondary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                驿站合作咨询
+              </a>
+            </div>
+          </div>
+        </section>
       </section>
       <aside class="page-card">
         <h3>{t.sideTitle}</h3>
@@ -126,4 +222,12 @@ const ent = enterprises[locale];
     </div>
   </main>
   <Footer />
+
+  <script>
+    document.getElementById('open-study-tour-ai')?.addEventListener('click', () => {
+      window.dispatchEvent(new CustomEvent('open-ai-widget', {
+        detail: { context: 'study-tour', module: 'study-tours' }
+      }));
+    });
+  </script>
 </BaseLayout>
