@@ -9,8 +9,9 @@ export const getStaticPaths = () =>
     .flatMap((lang) =>
       themePages.map((page) => ({
         params: { lang, slug: page.slug },
+        props: { page },
       })),
     );
 ---
 
-<ThemeDetailPage page={{} as any} />
+<ThemeDetailPage page={Astro.props.page} />

@@ -9,8 +9,9 @@ export const getStaticPaths = () =>
     .flatMap((lang) =>
       guidePages.map((page) => ({
         params: { lang, slug: page.slug },
+        props: { page },
       })),
     );
 ---
 
-<GuideDetailPage page={{} as any} />
+<GuideDetailPage page={Astro.props.page} />

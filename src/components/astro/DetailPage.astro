@@ -366,18 +366,18 @@ const displayFaqs = isZh ? page.faqs : localizedOverview?.faq ?? [];
     <div class="detail-block">
       <h2>{t.audience}</h2>
       <ul>
-        {displayAudience.map((item) => <li>{item}</li>)}
+        {(displayAudience ?? []).map((item) => <li>{item}</li>)}
       </ul>
     </div>
 
     <div class="detail-block">
       <h2>{t.highlights}</h2>
       <ul>
-        {displayHighlights.map((item) => <li>{item}</li>)}
+        {(displayHighlights ?? []).map((item) => <li>{item}</li>)}
       </ul>
     </div>
 
-    {displaySections.map((section) => (
+    {(displaySections ?? []).map((section) => (
       <div class="detail-block">
         <h2>{section.title}</h2>
         <p>{section.body}</p>
@@ -394,14 +394,14 @@ const displayFaqs = isZh ? page.faqs : localizedOverview?.faq ?? [];
     <div class="detail-block">
       <h2>{t.notes}</h2>
       <ul>
-        {displayNotes.map((item) => <li>{item}</li>)}
+        {(displayNotes ?? []).map((item) => <li>{item}</li>)}
       </ul>
     </div>
 
     <div class="detail-block">
       <h2>{t.faq}</h2>
       <div class="faq-list">
-        {displayFaqs.map((faq) => (
+        {(displayFaqs ?? []).map((faq) => (
           <article class="faq-item">
             <h3>{faq.question}</h3>
             <p>{faq.answer}</p>
