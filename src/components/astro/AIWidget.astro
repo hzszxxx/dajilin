@@ -286,6 +286,7 @@ const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[loc
 </div>
 
 <script>
+  import DOMPurify from 'dompurify';
   import { getGNPublicEndpoints } from '@/lib/gn-public';
 
   const endpoints = getGNPublicEndpoints();
@@ -429,7 +430,7 @@ const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[loc
       const item = document.createElement('article');
       item.className = `ai-message ai-message-${role}`;
       item.dataset.id = id;
-      item.innerHTML = messageHtml;
+      item.innerHTML = DOMPurify.sanitize(messageHtml, { ALLOWED_TAGS: ['p','br','strong','em','ul','ol','li','a','span'], ALLOWED_ATTR: ['href','target','class'] });
       messagesEl.appendChild(item);
       scrollToBottom();
 
@@ -537,7 +538,7 @@ const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[loc
           const item = document.createElement('article');
           item.className = `ai-message ai-message-${msg.role}`;
           item.dataset.id = msg.id;
-          item.innerHTML = `${content}${renderTimestamp(msg.timestamp)}`;
+          item.innerHTML = DOMPurify.sanitize(`${content}${renderTimestamp(msg.timestamp)}`, { ALLOWED_TAGS: ['p','br','strong','em','ul','ol','li','a','span'], ALLOWED_ATTR: ['href','target','class'] });
           messagesEl.appendChild(item);
         });
 
