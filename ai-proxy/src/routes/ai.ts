@@ -8,6 +8,7 @@
  */
 
 import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { MiniMaxClient } from '../lib/minimax.js';
@@ -19,6 +20,26 @@ import {
 } from '../lib/session.js';
 
 const router = Router();
+
+// ------------------------------------------------------------------
+// Rate limiters
+// ------------------------------------------------------------------
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minute window
+  max: 100, // 100 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: '请求过于频繁，请稍后再试' },
+});
+
+const chatLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30, // stricter for chat: 30 per 15 minutes
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: '消息发送过于频繁，请稍后重试' },
+});
 
 // ---------------------------------------------------------------------------
 // Schemas
@@ -97,7 +118,7 @@ export function attachMiniMaxClient(
 // POST /public/ai/session
 // ---------------------------------------------------------------------------
 
-router.post('/session', (req, res) => {
+router.post('/session', chatLimiter, (req, res) => {
   const parsed = SessionCreateSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ success: false, error: 'Invalid request body' });
@@ -139,7 +160,7 @@ router.post('/session', (req, res) => {
 // POST /public/ai/chat
 // ---------------------------------------------------------------------------
 
-router.post('/chat', (req, res) => {
+router.post('/chat', chatLimiter, (req, res) => {
   const parsed = ChatSendSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ success: false, error: 'Invalid request body' });
@@ -226,7 +247,7 @@ router.post('/chat', (req, res) => {
 // GET /public/ai/recommended-questions
 // ---------------------------------------------------------------------------
 
-router.get('/recommended-questions', (req, res) => {
+router.get('/recommended-questions', apiLimiter, (req, res) => {
   const { module, locale = 'zh' } = req.query;
 
   // Placeholder: return static questions per module
@@ -283,7 +304,7 @@ router.get('/recommended-questions', (req, res) => {
 // POST /public/ai/handoff
 // ---------------------------------------------------------------------------
 
-router.post('/handoff', async (req, res) => {
+router.post('/handoff', apiLimiter, async (req, res) => {
   const parsed = HandoffSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ success: false, error: 'Invalid request body' });
@@ -291,7 +312,7 @@ router.post('/handoff', async (req, res) => {
 
   const { session_id, contact, message, context } = parsed.data;
 
-  const handoffUrl = process.env.N8N_HANDOFF_WEBHOOK_URL;
+  const handoffUrl = process.env.PUBLIC_GN_N8N_AI_HANDOFF_WEBHOOK_URL;
   if (!handoffUrl) {
     return res.status(503).json({
       success: false,
