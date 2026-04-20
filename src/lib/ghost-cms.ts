@@ -174,7 +174,7 @@ export async function getPosts(options: GetPostsOptions = {}): Promise<GhostPost
       order: options.order || 'published_at DESC',
       filter: options.filter,
       page: options.page,
-    });
+    } as any);
     return posts as GhostPost[];
   } catch (error) {
     reportGhostError('getPosts', error);
@@ -191,10 +191,7 @@ export async function getPost(slug: string): Promise<GhostPost | null> {
   }
 
   try {
-    const post = await api.posts.read(
-      { slug },
-      { include: 'tags,authors' }
-    );
+    const post = await api.posts.read({ slug, include: 'tags,authors' } as any);
     return post as GhostPost;
   } catch (error) {
     reportGhostError(`getPost(${slug})`, error);
@@ -240,7 +237,7 @@ export async function getPostsByTag(
       order: options.order || 'published_at DESC',
       filter: `tag:${tagSlug}`,
       page: options.page,
-    });
+    } as any);
     return posts as GhostPost[];
   } catch (error) {
     reportGhostError(`getPostsByTag(${tagSlug})`, error);
@@ -290,7 +287,7 @@ export async function getFeaturedPosts(limit: number = 3): Promise<GhostPost[]> 
       include: 'tags,authors',
       order: 'published_at DESC',
       filter: 'featured:true',
-    });
+    } as any);
     return posts as GhostPost[];
   } catch (error) {
     reportGhostError('getFeaturedPosts', error);
