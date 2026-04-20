@@ -205,11 +205,43 @@ router.post('/chat', chatLimiter, (req, res) => {
       // Store assistant response
       addAssistantMessage(session_id, answer);
 
-      // Determine if handoff should be suggested
-      const handoffKeywords = ['人工', '转人工', '投诉', '紧急', 'help', 'human', 'emergency'];
-      const shouldHandoff = handoffKeywords.some((kw) =>
-        message.toLowerCase().includes(kw.toLowerCase())
-      );
+      // Improved handoff detection - prevents simple prompt injection bypass
+      function detectHandoffIntent(message: string): boolean {
+        const lower = message.toLowerCase();
+        
+        // Direct keywords (immediate trigger)
+        const directKeywords = [
+          '人工', '转人工', '投诉', '紧急', 'help', 'human', 'emergency',
+          '找客服', '要投诉', '紧急情况', 'speak to human', 'real person',
+        ];
+        const hasDirect = directKeywords.some(kw => lower.includes(kw));
+        if (hasDirect) return true;
+        
+        // Combo keywords (requires 2+ signals)
+        const combos = [
+          ['我要', '人工'], ['找', '客服'], ['投诉', '建议'],
+          ['紧急', '帮助'], ['speak', 'human'], ['need', 'person'],
+          ['转', '接', '人工'], ['请', '人工', '服务'],
+        ];
+        const comboScore = combos.filter(([a, b, c]) => {
+          if (c) return lower.includes(a) && lower.includes(b) && lower.includes(c);
+          return lower.includes(a) && lower.includes(b);
+        }).length;
+        if (comboScore >= 1) return true;
+        
+        // Anomaly detection: excessive repetition or length = possible injection
+        if (message.length > 2000) {
+          // Repeated character patterns (injection signature)
+          const hasExcessiveRepetition = /(.)\1{10,}/.test(message);
+          // Word count anomaly
+          const wordCount = message.split(/\s+/).length;
+          if (hasExcessiveRepetition || wordCount > 500) return true;
+        }
+        
+        return false;
+      }
+
+      const shouldHandoff = detectHandoffIntent(message);
 
       res.json({
         success: true,
