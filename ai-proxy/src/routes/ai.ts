@@ -255,7 +255,7 @@ router.post('/chat', chatLimiter, (req, res) => {
             detail: answer,
           },
           suggested_actions: shouldHandoff
-            ? [{ type: 'handoff', label: '转人工服务' }]
+            ? [{ type: 'handoff', label: '转接顾问' }]
             : [],
           handoff_suggested: shouldHandoff,
           suggested_follow_ups: [
