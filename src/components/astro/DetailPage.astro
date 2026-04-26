@@ -110,6 +110,7 @@ const copy: Record<
   },
 };
 const t = copy[locale];
+const localizedPage = page.localizations?.[locale];
 
 type SelfDriveCard = {
   title: string;
@@ -500,12 +501,12 @@ const localizedOverviewByLocale = {
 
 const localizedOverview = !isZh ? localizedOverviewByLocale[locale as 'en' | 'ja' | 'ko'] : null;
 
-const displayIntro = isZh ? page.intro : localizedOverview?.intro ?? t.fallbackTitle;
-const displayAudience = isZh ? page.audience : localizedOverview?.audience ?? [];
-const displayHighlights = isZh ? page.highlights : localizedOverview?.highlights ?? [];
-const displaySections = isZh ? page.sections : localizedOverview?.sections ?? [];
-const displayNotes = isZh ? page.notes : localizedOverview?.notes ?? [];
-const displayFaqs = isZh ? page.faqs : localizedOverview?.faq ?? [];
+const displayIntro = isZh ? page.intro : localizedPage?.intro ?? localizedOverview?.intro ?? t.fallbackTitle;
+const displayAudience = isZh ? page.audience : localizedPage?.audience ?? localizedOverview?.audience ?? [];
+const displayHighlights = isZh ? page.highlights : localizedPage?.highlights ?? localizedOverview?.highlights ?? [];
+const displaySections = isZh ? page.sections : localizedPage?.sections ?? localizedOverview?.sections ?? [];
+const displayNotes = isZh ? page.notes : localizedPage?.notes ?? localizedOverview?.notes ?? [];
+const displayFaqs = isZh ? page.faqs : localizedPage?.faqs ?? localizedOverview?.faq ?? [];
 ---
 
 <div class="container page-grid">

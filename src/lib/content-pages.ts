@@ -21,6 +21,11 @@ export type PageLocalization = {
   title: string;
   description: string;
   intro: string;
+  sections?: DetailSection[];
+  faqs?: DetailFaq[];
+  audience?: string[];
+  highlights?: string[];
+  notes?: string[];
 };
 
 export type DetailPage = {
@@ -115,9 +120,35 @@ const detailPages: DetailPage[] = [
     ],
     localizations: {
       en: {
-        title: 'Changchun Travel & City Guide',
-        description: 'Understanding Changchun from urban culture, industrial heritage, family and group experiences, helping users find their ideal entry point to Jilin.',
-        intro: 'Changchun is an ideal first stop for Jilin travel. It offers urban cultural experiences and can extend to industrial study tours, corporate visits, and family routes.',
+        title: 'Changchun: City Guide & Industrial Heritage',
+        description: 'Explore Changchun\'s blend of modern urban life, film industry roots, and historic tram lines.',
+        intro: 'Changchun is the gateway to Jilin. It offers a unique mix of industrial history and trendy lifestyle hubs, making it an essential stop for families and history buffs.',
+        audience: ['First-time Jilin visitors', 'Industrial heritage enthusiasts', 'Families and culture seekers'],
+        highlights: ['Heritage Route 54 Heritage Tram', 'The Hill (Zhiyou Mountain) Hub', 'Historical Film Industry Museum'],
+        sections: [
+          {
+            title: 'Modern Lifestyle Meets History',
+            body: 'Changchun is not just a hub for industry; it\'s a city where history is lived in daily life.',
+            bullets: [
+              'The Hill (Zhiyou Mountain): An indoor mountain mall featuring boutique shops and local delicacies.',
+              'Route 54 Tram: Ride the vintage green tram through the city for a nostalgic "movie-like" experience.',
+              'Museum of the Imperial Palace of the Manchu State: A deep dive into modern history.'
+            ],
+          },
+          {
+            title: 'Winter & Cultural Highlights',
+            body: 'Depending on the season, Changchun offers distinct world-class experiences.',
+            bullets: [
+              'Ice & Snow New World: Home to the world\'s longest ice slide and stunning ice sculptures (Winter only).',
+              'Changchun Film Studio Museum: The cradle of New China\'s film industry.',
+              'South Lake Park: A perfect spot for city relaxation and local photography.'
+            ],
+          },
+        ],
+        faqs: [
+          { question: 'What\'s the best way to enjoy Route 54 Tram?', answer: 'Ride it during sunset. The stretch near Hongqi Street is particularly scenic. After snow, the contrast between the green tram and white snow is breathtaking.' },
+          { question: 'How much time should I spend at Ice & Snow World?', answer: 'Plan for an afternoon and evening. Arrive around 3 PM to see sculptures in daylight, and stay for the night lights. Don\'t miss the super ice slide!' },
+        ],
       },
       ja: {
         title: '長春旅游と都市遊びガイド',
@@ -183,9 +214,35 @@ const detailPages: DetailPage[] = [
     ],
     localizations: {
       en: {
-        title: 'Changbai Mountain Travel & Four Seasons Guide',
-        description: 'Building an information gateway for Jilins most representative destination, covering seasonal differences, suitable visitors, official booking instructions, and trip duration planning.',
-        intro: 'Changbai Mountain is one of Jilins most representative natural destinations. Visitors are most concerned about seasonal differences, booking rules, and how many days to plan.',
+        title: 'Changbai Mountain: Four Seasons Guide',
+        description: 'A comprehensive guide to Jilin\'s crown jewel, covering slope selection, crowd-avoidance, and seasonal planning.',
+        intro: 'Changbai Mountain is a masterpiece of nature. To see the legendary Heaven Lake, one needs strategy, timing, and a bit of luck.',
+        audience: ['Nature lovers', 'Skiing and winter sports fans', 'Self-drive explorers'],
+        highlights: ['Heaven Lake (Tianchi) Sighting', 'Multi-slope Selection Guide', 'Official Booking & Logistics'],
+        sections: [
+          {
+            title: 'Choosing Your Slope: North, West, or South?',
+            body: 'Changbai Mountain has three major accessible areas, each with a unique perspective:',
+            bullets: [
+              'North Slope: The most developed with rich spots like waterfalls and hot springs. Best for first-timers.',
+              'West Slope: Offers the widest view of Heaven Lake after climbing 1,442 steps. Famous for summer flowers.',
+              'South Slope: The most primitive and closest to the lake. Limited daily entry; located right on the border.'
+            ],
+          },
+          {
+            title: 'How to Avoid Crowds (Pro Tips)',
+            body: 'Queueing can take 3-5 hours during peak season. Here is how to plan smart:',
+            bullets: [
+              'Stay in Erdao Baihe: The town closest to the North Slope for an early start.',
+              'Book the First Slot: Aim for 5:30-6:30 AM entry to beat the tour buses.',
+              'Reverse Itinerary: If the weather is clear, head straight to the peak for Heaven Lake first, then explore waterfalls later.'
+            ],
+          },
+        ],
+        faqs: [
+          { question: 'Will I definitely see Heaven Lake?', answer: 'The lake is visible about 100 days a year. Tip: check real-time weather and official cameras. Staying for 2 days in the area significantly increases your chances.' },
+          { question: 'Do I need heavy clothes in summer?', answer: 'Yes! Even if it\'s 30°C at the base, the peak can be 10°C with strong winds. Bring a light down jacket or rent a coat at the site.' },
+        ],
       },
       ja: {
         title: '長白山旅游と四季過ごしガイド',
@@ -250,9 +307,35 @@ const detailPages: DetailPage[] = [
     ],
     localizations: {
       en: {
-        title: 'Yanbian Travel & Border Culture Experience Guide',
-        description: 'Building a regional gateway for content-driven tourism and themed experiences around Yanbians border culture, culinary delights, and route extensions.',
-        intro: 'Yanbian is ideal for themed destination experiences focused on border culture, cuisine, and route-based activities. Its not a single attraction but works best combined with themed activities and self-driving routes.',
+        title: 'Yanbian: Border Culture & Culinary Experience',
+        description: 'Discover the unique "Korean Drama" vibes, border scenery, and rich minority culture of Yanbian.',
+        intro: 'Yanbian is Jilin\'s most distinct border region. Known for its Korean culture, stunning river views, and legendary food scene.',
+        audience: ['Culture explorers', 'Foodies', 'Social media and photography lovers'],
+        highlights: ['"K-Drama" Vibes in Yanji', 'Three-Country Border View', 'Authentic Korean Cuisine'],
+        sections: [
+          {
+            title: 'Yanji: The Most Photogenic Border City',
+            body: 'Yanji is more than just food; it\'s a place where tradition meets trendy social media spots.',
+            bullets: [
+              'Yanbian University "Bullet Screen" Wall: Hundreds of neon signs making for a perfect night shot.',
+              'Korean Ethnic Village: Rent a traditional Hanbok for high-end photography in authentic architectural settings.',
+              'Water Market: A 5 AM morning market full of raw energy and local delicacies.'
+            ],
+          },
+          {
+            title: 'Border Scenery & Route Extensions',
+            body: 'Yanbian is the gateway to exploring Jilin\'s borderlines.',
+            bullets: [
+              'Three-Country Viewpoint: See China, Russia, and North Korea all at once in Hunchun.',
+              'Tumen Border Crossing: Get close to the national gate and look across the river at North Korea.',
+              'G331 Scenic Drive: A perfect starting point for the legendary border highway.'
+            ],
+          },
+        ],
+        faqs: [
+          { question: 'Where is the best photo spot for the "Neon Wall"?', answer: 'Opposite Yanbian University. Go after 7 PM when the lights are on. Tip: stand across the street and use a zoom lens for better compression.' },
+          { question: 'Do I need a reservation for the Ethnic Village?', answer: 'Booking tickets in advance is recommended. If you plan for a photo shoot, book your makeup and costume shop 1-2 hours early to avoid the 10 AM rush.' },
+        ],
       },
       ja: {
         title: '延辺旅游と国境文化体験ガイド',
@@ -311,6 +394,39 @@ const detailPages: DetailPage[] = [
       { label: '咨询定制线路', href: '/cooperation' },
     ],
     notes: [],
+    localizations: {
+      en: {
+        title: 'Changchun Industrial Study Tours',
+        description: 'A comprehensive guide to Changchun\'s industrial heritage, featuring FAW Hongqi and CRRC High-speed Rail visits.',
+        intro: 'Changchun is the powerhouse of China\'s automotive and rail industries. We offer structured study tours for schools, institutions, and corporate delegations.',
+        audience: ['Schools and educational institutions', 'Corporate and trade association delegations', 'Industrial heritage researchers'],
+        highlights: ['Cradle of China\'s Automotive Industry', 'High-speed Rail Manufacturing Base', 'Professional Factory Floor Access'],
+        sections: [
+          {
+            title: 'Core Themes & Resources',
+            body: 'Our study tours focus on three major pillars of Chinese industrial pride:',
+            bullets: [
+              'Automotive: Visit FAW (First Automobile Works) to see modern production lines and the Hongqi brand story.',
+              'Rail Transit: Explore CRRC Changchun, the manufacturing hub of China\'s "Fuxing" high-speed trains.',
+              'Film Industry: Visit Changchun Film Studio, the "Cradle of New China\'s Cinema".'
+            ],
+          },
+          {
+            title: 'Why Choose Changchun?',
+            body: 'Changchun offers unique access to "Great Power Heavy Equipment" that is rarely seen elsewhere.',
+            bullets: [
+              'Behind-the-Scenes Access: See how a high-speed train is assembled from scratch.',
+              'Brand Heritage: Understand the evolution of China\'s most prestigious domestic car brand.',
+              'Educational Value: Perfect for STEM and industrial history curriculum integration.'
+            ],
+          },
+        ],
+        faqs: [
+          { question: 'What is the suitable age group for these tours?', answer: 'The Film Studio is great for all ages. Factory tours like FAW or CRRC are best suited for middle school students and above, including university and vocational groups.' },
+          { question: 'Can individual families book a factory tour?', answer: 'Most factory floors are restricted to registered group tours for safety reasons. Individual families are recommended to visit public sites like the Film Studio or the Hongqi Culture Museum.' },
+        ],
+      },
+    },
   },
   {
     section: 'study-tours',
@@ -506,6 +622,39 @@ const detailPages: DetailPage[] = [
       { id: 'g331-accommodation', alt: '特色边境住宿', altEn: 'Border homestay' },
       { id: 'g331-vehicle', alt: '自驾车辆与公路', altEn: 'Road trip vehicle on highway' },
     ],
+    localizations: {
+      en: {
+        title: 'G331 Self-Drive Guide: Jilin Section',
+        description: 'Explore the 1,390km legendary border highway G331 in Jilin, featuring stunning river views and ethnic cultures.',
+        intro: 'The G331 National Highway is China\'s longest border road. The Jilin section offers an unparalleled mix of natural wonders, border history, and diverse cultures.',
+        audience: ['First-time G331 explorers', 'Self-drive and photography enthusiasts', 'Travelers looking for road-trip inspiration'],
+        highlights: ['China\'s Most Beautiful Border Road', 'Strategic Gateway for Road Trip Content', 'Direct Connect to Local Service Stations'],
+        sections: [
+          {
+            title: 'Core Highlights of G331 Jilin Section',
+            body: 'Stretching approximately 1,390km, the Jilin section of G331 is a visual feast:',
+            bullets: [
+              'Border Rivers: Drive along the Tumen and Yalu rivers, looking across at the scenic landscapes of North Korea.',
+              'Changbai Mountain Forests: Traverse the ancient forests of the Changbai range, especially stunning during the "Five-Color" autumn.',
+              'Ethnic Culture: Pass through the heart of China\'s Korean ethnic community for authentic food and traditions.'
+            ],
+          },
+          {
+            title: 'Recommended Routes',
+            body: 'For those with limited time, we highly recommend the "Yanji-Tumen-Hunchun" segment:',
+            bullets: [
+              'Best road conditions and logistics, perfect for families and beginners.',
+              'Covers Hunchun (three-country border view) and Tumen (international ports).',
+              'Dense distribution of scenic stops and modern service stations.'
+            ],
+          },
+        ],
+        faqs: [
+          { question: 'What are the road conditions? Is a regular car okay?', answer: 'The highway is mostly well-paved asphalt. Regular sedans, SUVs, and RVs can easily pass. However, mountain sections may have sharp turns, so drive cautiously.' },
+          { question: 'Do I need a special border permit?', answer: 'For the main G331 highway, a regular ID/Passport is enough. No special border permit is required, but keep your documents handy for check-posts.' },
+        ],
+      },
+    },
   },
   {
     section: 'self-drive',
