@@ -1,0 +1,66 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: npm install
+
+      - name: Build Frontend
+        run: npm run build
+
+      - name: Build AI Proxy
+        run: |
+          cd ai-proxy
+          npm install
+          npm run build
+
+      - name: Deploy to Server
+        uses: easingthemes/ssh-deploy@v5.1.0
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          ARGS: "-avz --delete"
+          SOURCE: "dist/client/"
+          REMOTE_HOST: "39.102.148.22"
+          REMOTE_USER: "root"
+          TARGET: "/var/www/dajilin/"
+          EXCLUDE: "/.git/, /node_modules/, /ai-proxy/"
+
+      - name: Deploy AI Proxy Dist
+        uses: easingthemes/ssh-deploy@v5.1.0
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          ARGS: "-avz"
+          SOURCE: "ai-proxy/"
+          REMOTE_HOST: "39.102.148.22"
+          REMOTE_USER: "root"
+          TARGET: "/var/www/dajilin/ai-proxy/"
+          EXCLUDE: "/node_modules/, /src/"
+
+      - name: Post-deployment Commands
+        uses: appleboy/ssh-action@master
+        with:
+          host: "39.102.148.22"
+          username: "root"
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/dajilin/ai-proxy
+            npm install --production
+            pm2 restart ai-proxy || pm2 start dist/index.js --name ai-proxy
+            pm2 save
