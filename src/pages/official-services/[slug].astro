@@ -3,7 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/astro/Header.astro';
 import Footer from '@/components/astro/Footer.astro';
 import DetailPage from '@/components/astro/DetailPage.astro';
-import { buildCollectionPageSchema, buildWebPageSchema } from '@/lib/schema';
+import { buildCollectionPageSchema, buildWebPageSchema, buildFAQPageSchema } from '@/lib/schema';
 import { findDetailPage, officialServicePages } from '@/lib/content-pages';
 import { getLocaleFromPathname, localizePath } from '@/lib/i18n';
 
@@ -25,10 +25,14 @@ if (!page) {
   throw new Error(`Unknown official services page: ${Astro.params.slug}`);
 }
 
-const schemas = [
+const schemas: any[] = [
   buildWebPageSchema(localizedPath, localizedTitle, localizedDescription, locale),
   buildCollectionPageSchema(localizedPath, localizedTitle, localizedDescription, locale),
 ];
+
+if (page.faqs && page.faqs.length > 0) {
+  schemas.push(buildFAQPageSchema(localizedPath, localizedTitle, page.faqs, locale));
+}
 ---
 
 <BaseLayout title={`${localizedTitle} | dajilin.net`} description={localizedDescription} schemas={schemas} locale={locale}>

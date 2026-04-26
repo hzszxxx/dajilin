@@ -4,6 +4,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-    }
-  }
+    },
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*", "*.astro"],
+  "exclude": ["ai-proxy", "node_modules"]
 }

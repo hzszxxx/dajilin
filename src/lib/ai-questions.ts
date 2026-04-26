@@ -52,8 +52,6 @@ export const knowledgeDomains: KnowledgeDomain[] = [
     labelKo: '지린 관광 가이드',
     description: '覆盖吉林目的地导览、季节建议、行程规划基础问题',
     descriptionEn: 'Covers Jilin destination guidance, seasonal advice, and itinerary planning basics',
-    descriptionJa: '吉林の目的地ガイド、季節のアドバイス旅程計画の基本に対応',
-    descriptionKo: '지린 목적지 안내, 계절 조언, 일정 계획 기본 대응',
     answerable: [
       '吉林旅游先从哪里看起',
       '长白山适合几天',
@@ -103,8 +101,6 @@ export const knowledgeDomains: KnowledgeDomain[] = [
     labelKo: '산업 연수 상담',
     description: '覆盖一汽红旗、中车长客、长春工业文明线路等工业研学资源说明',
     descriptionEn: 'Covers FAW Hongqi, CRRC Changchun, Changchun industrial route study resources',
-    descriptionJa: '一汽紅旗、中車長客、長春産業文明ラインなどの産業研修リソースに対応',
-    descriptionKo: 'FAW 홍치, CRRC 창춘, 창춘 산업 문명 라인 등 산업 연수 자원 대응',
     answerable: [
       '一汽红旗研学适合什么人群',
       '中车长客参访适合什么对象',
@@ -148,8 +144,6 @@ export const knowledgeDomains: KnowledgeDomain[] = [
     labelKo: '자가운전 가이드 상담',
     description: '覆盖自驾攻略吉林段路线理解、驿站服务、自驾补给、季节建议',
     descriptionEn: 'Covers Jilin self-drive routes, station services, supplies, seasonal advice',
-    descriptionJa: '吉林自驾ルート理解、驛站サービス、セルフドライブ補給、季節のアドバイスに対応',
-    descriptionKo: '지린 자가운전 노선 이해, 거점 서비스, 보급, 계절 조언 대응',
     answerable: [
       '吉林段自驾攻略适合几天',
       '自驾攻略什么季节去最好',
@@ -190,9 +184,7 @@ export const knowledgeDomains: KnowledgeDomain[] = [
     labelJa: '公式サービス入口の説明',
     labelKo: '공식 서비스 입구 설명',
     description: '覆盖吉林官方文旅票务预约入口、一机游吉林等官方服务说明',
-    descriptionEn: 'Covers official Jilin cultural tourism ticket booking, YiJiYou Jilin and official service guidance',
-    descriptionJa: '吉林公式的文化観光チケット予約入口、吉林一機游などの公式サービス説明に対応',
-    descriptionKo: '지린 공식 문화 관광 티켓 예약 입구, 원기유 지린 등 공식 서비스 설명 대응',
+    descriptionEn: 'Covers Jilin official cultural tourism ticket booking entrance, official service descriptions like Jilin One Machine Tour',
     answerable: [
       '吉林官方票务和预约入口怎么看',
       '长白山门票怎么预约',
@@ -230,9 +222,7 @@ export const knowledgeDomains: KnowledgeDomain[] = [
     labelJa: '協業相談の案内',
     labelKo: '협업 문의 안내',
     description: '覆盖工业研学合作、驿站合作、团体定制、资源合作等合作咨询引导',
-    descriptionEn: 'Covers study tour cooperation, station cooperation, group customization, resource cooperation',
-    descriptionJa: '産業研修協力、驛站協力、団体定制、资源協力などの協業相談に対応',
-    descriptionKo: '산업 연수 협력, 거점 협력, 단체定制, 자원 협력 등 협업 상담 대응',
+    descriptionEn: 'Covers Jilin industrial study tour cooperation, rest stop cooperation, group customization, resource cooperation',
     answerable: [
       '如何联系合作咨询',
       '我们学校想做研学应该怎么咨询',
@@ -279,6 +269,33 @@ export const recommendedQuestions: RecommendedQuestion[] = [
     questionEn: 'Where should I start planning a Jilin trip?',
     questionJa: '吉林旅行はどこから見始めればよいですか？',
     questionKo: '지린 여행은 어디서부터 보면 좋나요?',
+  },
+  // CONVERSION: 定制行程
+  {
+    id: 'dest-customize',
+    category: 'destinations',
+    question: '我想定制一个吉林行程，应该找谁？',
+    questionEn: 'I want to customize a Jilin itinerary — who should I contact?',
+    questionJa: '吉林のカスタム旅程を作成したいですが、誰に連絡すればよいですか？',
+    questionKo: '지린 커스텀 여정을 원하는데 누구에게 문의해야 하나요?',
+  },
+  // CONVERSION: 多人出行
+  {
+    id: 'dest-group',
+    category: 'destinations',
+    question: '多人出行定制怎么联系？',
+    questionEn: 'How do I arrange a group customized trip?',
+    questionJa: '団体旅行のカスタマイズはどのように連絡すればいいですか？',
+    questionKo: '단체 맞춤 여행은 어떻게 문의하나요?',
+  },
+  // CONVERSION: 商务合作
+  {
+    id: 'dest-biz',
+    category: 'destinations',
+    question: '我们公司想合作吉林文旅项目，怎么谈？',
+    questionEn: 'Our company wants to cooperate on Jilin tourism projects — how do we start?',
+    questionJa: 'わが社は吉林文旅プロジェクトで協力したいですが、どう始めればよいですか？',
+    questionKo: '우리 회사는 지린 관광 프로젝트를 협력하고 싶은데 어떻게 시작하나요?',
   },
   {
     id: 'changbai-days',
@@ -449,6 +466,33 @@ export const recommendedQuestions: RecommendedQuestion[] = [
     questionJa: '研修中には専門の解説がありますか？',
     questionKo: '연수 중에 전문 해설이 있나요?',
   },
+  // CONVERSION: 定制研学
+  {
+    id: 'study-tour-custom',
+    category: 'study-tours',
+    question: '我想定制一个研学行程，应该找谁？',
+    questionEn: 'I want to customize a study tour — who should I contact?',
+    questionJa: 'カスタム研修旅程を作成したいですが、誰に連絡すればよいですか？',
+    questionKo: '맞춤 연수 일정을 원하는데 누구에게 문의해야 하나요?',
+  },
+  // CONVERSION: 学校团体报名
+  {
+    id: 'study-tour-school-group',
+    category: 'study-tours',
+    question: '我们学校想做研学，应该怎么咨询？',
+    questionEn: 'Our school wants to arrange a study tour — how should we consult?',
+    questionJa: '私たちの学校は研修やりたいですが、どう相談すればよいですか？',
+    questionKo: '우리 학교에서 연수를想做인데 어떻게 상담하나요?',
+  },
+  // CONVERSION: 企业参访
+  {
+    id: 'study-tour-enterprise-next',
+    category: 'study-tours',
+    question: '我们想做企业参访，下一步怎么办？',
+    questionEn: 'We want to arrange a corporate visit — what are the next steps?',
+    questionJa: '私たちは企業の訪問をやりたいですが、次はどうすればいいですか？',
+    questionKo: '우리 기업 방문想做인데 다음은 어떻게 하나요?',
+  },
   // 自驾攻略咨询 (self-drive)
   {
     id: 'g331-days',
@@ -529,6 +573,24 @@ export const recommendedQuestions: RecommendedQuestion[] = [
     questionEn: 'Is there a recommended self-driving route?',
     questionJa: '推奨される自動車のルートはありますか？',
     questionKo: '추천 자가운전 루트가 있나요?',
+  },
+  // CONVERSION: 预约驿站
+  {
+    id: 'g331-book-station',
+    category: 'self-drive',
+    question: '我想预约驿站服务，应该怎么联系？',
+    questionEn: 'I want to book station services — how should I contact?',
+    questionJa: '驛站サービスを予約したいですが、どう連絡すればいいですか？',
+    questionKo: '거점 서비스를 예약하고 싶은데 어떻게 연락하나요?',
+  },
+  // CONVERSION: 定制路线
+  {
+    id: 'g331-custom-route',
+    category: 'self-drive',
+    question: '我想定制一条331自驾路线，怎么咨询？',
+    questionEn: 'I want to customize a Route 331 self-drive itinerary — how do I consult?',
+    questionJa: '331レンタカールートをカスタマイズしたいですが、どう相談すればよいですか？',
+    questionKo: '331 자가운전 일정을 맞춤으로 원하는데 어떻게 상담하나요?',
   },
   // 官方服务入口说明 (official-services)
   {
@@ -675,6 +737,15 @@ export const recommendedQuestions: RecommendedQuestion[] = [
     questionEn: 'How to consult about group customization services?',
     questionJa: '団体カスタマイズサービスの相談方法は？',
     questionKo: '단체定制 서비스는 어떻게 상담하나요?',
+  },
+  // CONVERSION: 提交具体需求
+  {
+    id: 'cooperation-submit',
+    category: 'cooperation',
+    question: '我已经有具体需求了，怎么提交咨询？',
+    questionEn: 'I already have specific requirements — how do I submit an inquiry?',
+    questionJa: 'すでに具体的なニーズがありますが、どのように相談を提出すればいいですか？',
+    questionKo: '이미 구체적인 니즈가 있는데 어떻게 상담을 제출하나요?',
   },
   // Additional destinations questions - Seasonal & Specific
   {

@@ -8,7 +8,7 @@ const currentYear = new Date().getFullYear();
 const footerLinks = {
   destinations: [
     { label: footerText.destinationChangchun, href: localizePath('/destinations/changchun', locale) },
-    { label: footerText.destinationChangbaishan, href: localizePath('/destinations/changbaishan', locale) },
+    { label: footerText.destinationChangbaishan, href: localizePath('/destinations/changbai-mountain', locale) },
     { label: footerText.destinationYanbian, href: localizePath('/destinations/yanbian', locale) },
   ],
   services: [
@@ -97,15 +97,22 @@ const socialLinks: Array<{ name: string; icon: string; href: string; label: stri
     <!-- Contact Section -->
     <div class="footer-contact">
       <h4>{footerText.contactTitle}</h4>
-      <p>{footerText.contactPhone}</p>
-      <p>{footerText.contactEmail}</p>
+      <p>电话: <a href={`tel:${footerText.contactPhone}`}>{footerText.contactPhone}</a></p>
+      <p>邮箱: <a href={`mailto:${footerText.contactEmail}`}>{footerText.contactEmail}</a></p>
+    </div>
+  </div>
+
+  <!-- Disclaimer Bar -->
+  <div class="footer-disclaimer">
+    <div class="container">
+      <p>{footerText.disclaimer}</p>
     </div>
   </div>
 
   <!-- Bottom Bar -->
   <div class="footer-bottom">
     <div class="container">
-      <p>{footerText.copyright.replace('{year}', String(currentYear))}</p>
+      <p>© {currentYear} dajilin.net · <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">{footerText.icp}</a></p>
       <div class="footer-legal">
         <a href={localizePath('/privacy', locale)}>{footerText.privacy}</a>
         <a href={localizePath('/terms', locale)}>{footerText.terms}</a>

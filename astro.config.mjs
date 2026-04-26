@@ -16,9 +16,24 @@ export default defineConfig({
     }),
   ],
   vite: {
+    define: {
+      'process.env': '{}',
+    },
     resolve: {
       alias: {
         '@': '/src',
+      },
+    },
+    server: {
+      proxy: {
+        '/api/gn': {
+          target: 'https://api.dajilin.net',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/gn/, ''),
+          headers: {
+            'Origin': 'https://dajilin.net',
+          },
+        },
       },
     },
   },

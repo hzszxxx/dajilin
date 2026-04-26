@@ -5,11 +5,11 @@ interface Props {
 
 const { locale = 'zh' } = Astro.props;
 
-const labels: Record<string, { title: string; empty: string; items: string; total: string; checkout: string; continueShopping: string; remove: string; name: string; phone: string; email: string; address: string; notes: string; }> = {
-  zh: { title: '购物车', empty: '购物车是空的', items: '件商品', total: '合计', checkout: '去结算', continueShopping: '继续购物', remove: '删除', name: '姓名', phone: '电话', email: '邮箱', address: '地址', notes: '备注' },
-  en: { title: 'Cart', empty: 'Your cart is empty', items: 'item(s)', total: 'Total', checkout: 'Checkout', continueShopping: 'Continue Shopping', remove: 'Remove', name: 'Name', phone: 'Phone', email: 'Email', address: 'Address', notes: 'Notes' },
-  ja: { title: 'カート', empty: 'カートは空です', items: '点', total: '合計', checkout: '購入手続き', continueShopping: '買い物を続ける', remove: '削除', name: '氏名', phone: '電話', email: 'メール', address: '住所', notes: 'メモ' },
-  ko: { title: '장바구니', empty: '장바구니가 비어 있습니다', items: '개', total: '합계', checkout: '결제하기', continueShopping: '쇼핑 계속', remove: '삭제', name: '이름', phone: '전화', email: '이메일', address: '주소', notes: '메모' },
+const labels: Record<string, { title: string; empty: string; items: string; total: string; checkout: string; continueShopping: string; remove: string; name: string; phone: string; email: string; address: string; notes: string; footerNote: string; }> = {
+  zh: { title: '咨询清单', empty: '咨询清单是空的', items: '条咨询意向', total: '共', checkout: '提交咨询', continueShopping: '继续浏览', remove: '移除', name: '姓名', phone: '电话', email: '邮箱', address: '地址', notes: '备注', footerNote: '提交后将由顾问联系您' },
+  en: { title: 'Inquiry List', empty: 'Your inquiry list is empty', items: 'item(s)', total: 'Total', checkout: 'Submit Inquiry', continueShopping: 'Continue Browsing', remove: 'Remove', name: 'Name', phone: 'Phone', email: 'Email', address: 'Address', notes: 'Notes', footerNote: 'A consultant will contact you after submission.' },
+  ja: { title: 'カート', empty: 'カートは空です', items: '点', total: '合計', checkout: '購入手続き', continueShopping: '買い物を続ける', remove: '削除', name: '氏名', phone: '電話', email: 'メール', address: '住所', notes: 'メモ', footerNote: '後日担当者よりご連絡いたします。' },
+  ko: { title: '장바구니', empty: '장바구니가 비어 있습니다', items: '개', total: '합계', checkout: '결제하기', continueShopping: '쇼핑 계속', remove: '삭제', name: '이름', phone: '전화', email: '이메일', address: '주소', notes: '메모', footerNote: '제출 후 담당자가 연락드립니다.' },
 };
 
 const t = labels[locale] || labels.zh;
@@ -40,10 +40,10 @@ const t = labels[locale] || labels.zh;
     </div>
     <div class="cart-footer" id="cart-footer" style="display: none;">
       <div class="cart-total">
-        <span>{t.total}</span>
-        <strong id="cart-total-value">¥0.00</strong>
+        <span id="cart-count-display">{t.total} <span id="cart-item-count">0</span> {t.items}</span>
       </div>
-      <a href={locale === 'zh' ? '/checkout' : `/${locale}/checkout`} class="cart-checkout-btn">
+      <p class="cart-footer-note">{t.footerNote}</p>
+      <a href={locale === 'zh' ? '/cooperation' : `/${locale}/cooperation`} class="cart-checkout-btn">
         {t.checkout}
       </a>
       <button type="button" class="cart-continue-btn" id="cart-continue-btn">
@@ -384,7 +384,8 @@ const t = labels[locale] || labels.zh;
     if (!cartBody) return;
 
     const itemCount = getCartItemCount(cart);
-    const total = getCartTotal(cart);
+    const cartItemCountEl = document.getElementById('cart-item-count');
+    if (cartItemCountEl) cartItemCountEl.textContent = String(itemCount);
 
     // Update badge
     if (cartBadge) {
@@ -394,11 +395,6 @@ const t = labels[locale] || labels.zh;
       } else {
         cartBadge.style.display = 'none';
       }
-    }
-
-    // Update total
-    if (cartTotalValue) {
-      cartTotalValue.textContent = total === 0 ? '价格待定' : `¥${total.toFixed(2)}`;
     }
 
     // Show/hide footer

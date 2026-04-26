@@ -203,7 +203,7 @@ const schemas = [
   buildWebPageSchema(pagePath, pageTitle, pageDescription, locale),
   buildItemListSchema(pagePath, pageTitle, itemListNodes, locale),
   buildBreadcrumbListSchema(pagePath, breadcrumbs, locale),
-  buildFAQPageSchema(pagePath, pageTitle, t.faqs, locale),
+  buildFAQPageSchema(pagePath, pageTitle, t.faqs as any, locale),
 ];
 ---
 
@@ -271,7 +271,7 @@ const schemas = [
         </div>
 
         <div class="detail-block">
-          <h2>{t.faqTitle ?? 'FAQ'}</h2>
+          <h2>FAQ</h2>
           <div class="faq-list">
             {t.faqs.map((faq) => (
               <article class="faq-item">

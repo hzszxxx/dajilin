@@ -1,0 +1,179 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { foodBrandSources, foodFaqs, jilinFoodBrands } from '@/lib/food-brands';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+import {
+  buildBreadcrumbListSchema,
+  buildCollectionPageSchema,
+  buildFAQPageSchema,
+  buildItemListSchema,
+  buildWebPageSchema,
+} from '@/lib/schema';
+
+const locale = getLocaleFromPathname(Astro.url.pathname);
+const pagePath = localizePath('/food', locale);
+
+const localized: Record<Locale, { title: string; description: string; heading: string; intro: string }> = {
+  zh: {
+    title: '吉林老字号餐饮推荐 | dajilin.net',
+    description: '整理吉林省内老字号餐饮和伴手礼品牌，帮助游客把长春、吉林市、四平等地的老味道放进行程。',
+    heading: '吉林老字号餐饮推荐',
+    intro: '这是一份面向游客和团队行程的吉林老字号餐饮索引。先推荐可核验的代表品牌，再逐步补充门店、路线和团餐合作信息。',
+  },
+  en: {
+    title: 'Jilin Time-Honored Food Brands | dajilin.net',
+    description: 'A practical index of Jilin time-honored restaurants, snacks, and gift brands for travel planning.',
+    heading: 'Jilin Time-Honored Food Brands',
+    intro: 'A travel-oriented index of Jilin food heritage brands, built for itinerary planning and future local partnerships.',
+  },
+  ja: {
+    title: '吉林老舗グルメ推薦 | dajilin.net',
+    description: '吉林省の老舗飲食・土産ブランドを旅行計画向けに整理します。',
+    heading: '吉林老舗グルメ推薦',
+    intro: '旅行者と団体行程向けに、吉林の老舗飲食ブランドを整理した索引です。',
+  },
+  ko: {
+    title: '지린 전통 음식 브랜드 추천 | dajilin.net',
+    description: '지린성의 오래된 음식점, 간식, 선물 브랜드를 여행 계획용으로 정리합니다.',
+    heading: '지린 전통 음식 브랜드 추천',
+    intro: '여행자와 단체 일정을 위한 지린 전통 음식 브랜드 색인입니다.',
+  },
+};
+
+const t = localized[locale];
+const breadcrumbs = [
+  { name: locale === 'zh' ? '首页' : 'Home', url: localizePath('/', locale) },
+  { name: t.heading, url: pagePath },
+];
+
+const itemList = jilinFoodBrands.map((brand) => ({
+  name: `${brand.name} - ${brand.city}`,
+  url: localizePath(`/food/${brand.slug}`, locale),
+}));
+
+const schemas = [
+  buildCollectionPageSchema(pagePath, t.heading, t.description, locale),
+  buildWebPageSchema(pagePath, t.heading, t.description, locale),
+  buildItemListSchema(pagePath, '吉林老字号餐饮品牌推荐清单', itemList, locale),
+  buildFAQPageSchema(pagePath, t.heading, foodFaqs, locale),
+  buildBreadcrumbListSchema(pagePath, breadcrumbs, locale),
+];
+---
+
+<BaseLayout title={t.title} description={t.description} schemas={schemas} locale={locale}>
+  <Header />
+  <main class="page-shell food-page">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-copy">
+          <div class="eyebrow">Jilin Food Heritage</div>
+          <h1>{t.heading}</h1>
+          <p>{t.intro}</p>
+        </div>
+
+        <div class="food-answer-block">
+          <h2>一句话答案</h2>
+          <p>
+            第一次来吉林，老字号餐饮可以按“长春老饭店与糕点、吉林市传统饭店、四平熏肉大饼”三条线安排，
+            既能补充行程体验，也适合作为团队餐饮和伴手礼合作入口。
+          </p>
+        </div>
+
+        <div class="food-brand-grid">
+          {jilinFoodBrands.map((brand) => (
+            <article class="food-brand-card" id={brand.slug}>
+              <div class="food-brand-meta">
+                <span>{brand.city}</span>
+                <span>{brand.category}</span>
+              </div>
+              <h2><a href={localizePath(`/food/${brand.slug}`, locale)}>{brand.name}</a></h2>
+              <p class="food-heritage">{brand.heritage}</p>
+              <p>{brand.summary}</p>
+              <dl>
+                <div>
+                  <dt>推荐体验</dt>
+                  <dd>{brand.signature}</dd>
+                </div>
+                <div>
+                  <dt>适合场景</dt>
+                  <dd>{brand.bestFor.join(' / ')}</dd>
+                </div>
+                <div>
+                  <dt>适配路线</dt>
+                  <dd>{brand.routePairing.join(' / ')}</dd>
+                </div>
+                <div>
+                  <dt>推荐品类</dt>
+                  <dd>{brand.recommendedItems.join(' / ')}</dd>
+                </div>
+                <div>
+                  <dt>出行提醒</dt>
+                  <dd>{brand.planningNote}</dd>
+                </div>
+                <div>
+                  <dt>核验说明</dt>
+                  <dd>
+                    {brand.sourceNote}
+                    <a href={brand.verificationUrl} target="_blank" rel="noopener noreferrer">查看来源</a>
+                  </dd>
+                </div>
+              </dl>
+            </article>
+          ))}
+        </div>
+
+        <section class="detail-block">
+          <h2>如何放进行程</h2>
+          <ul>
+            <li>长春城市漫游：新民大街、伪满皇宫、54 路有轨电车，可以搭配春发合、鼎丰真或杨麻子。</li>
+            <li>吉林市雾凇季：松花江、雾凇岛、老街区，可以搭配新兴园、西春发等传统饭店。</li>
+            <li>中部自驾补给：途经四平时，可把李连贵熏肉大饼作为地方小吃节点。</li>
+          </ul>
+          <p class="food-source-note">
+            餐饮营业时间、具体地址、预约电话和菜单会变化。大吉林页面负责做可信索引和路线建议，最终到店前仍应通过品牌官方渠道或地图平台二次确认。
+          </p>
+        </section>
+
+        <section class="detail-block">
+          <h2>常见问题</h2>
+          <div class="faq-list">
+            {foodFaqs.map((faq) => (
+              <article class="faq-item">
+                <h3>{faq.question}</h3>
+                <p>{faq.answer}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      </section>
+
+      <aside class="page-card">
+        <h3>餐饮板块定位</h3>
+        <p>先做可信内容索引，再接门店、团餐、伴手礼和本地合作。页面内容可被搜索引擎和 AI 问答引用。</p>
+        <div class="detail-side-card">
+          <h3>推荐用途</h3>
+          <ul class="page-list">
+            {jilinFoodBrands.slice(0, 5).map((brand) => (
+              <li><a href={localizePath(`/food/${brand.slug}`, locale)}>{brand.name}</a></li>
+            ))}
+          </ul>
+        </div>
+        <div class="detail-side-card">
+          <h3>信息来源</h3>
+          <ul class="page-list">
+            {foodBrandSources.map((source) => (
+              <li><a href={source.href} target="_blank" rel="noopener noreferrer">{source.label}</a></li>
+            ))}
+          </ul>
+        </div>
+        <div class="detail-side-card">
+          <h3>下一步</h3>
+          <p>补充门店地址、营业时间、官方电话、地图坐标，并筛选能与大吉林合作的团餐和伴手礼资源。</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

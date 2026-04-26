@@ -27,148 +27,109 @@ const localizedSeo: Record<Locale, { title: string; description: string }> = {
   },
 };
 
-const pageText: Record<
-  Locale,
-  {
-    heroKicker: string;
-    heroTitle: string;
-    heroLead: string;
-    heroPrimary: string;
-    heroSecondary: string;
-    sectionAHeading: string;
-    sectionADesc: string;
-    sectionBHeading: string;
-    sectionBDesc: string;
-    sectionCHeading: string;
-    sectionCDesc: string;
-    sectionDHeading: string;
-    sectionDDesc: string;
-    mapHeading: string;
-    mapDesc: string;
-    mapPrimary: string;
-    mapSecondary: string;
-    seasonHeading: string;
-    seasonDesc: string;
-    editorialHeading: string;
-    editorialDesc: string;
-    aiHeading: string;
-    aiDesc: string;
-    aiPrimary: string;
-    aiSecondary: string;
-    exploreHeading: string;
-  }
-> = {
+// ── 中英文内容数据 ──────────────────────────────────────────
+const pageText: Record<Locale, {
+  heroKicker: string; heroTitle: string; heroLead: string;
+  heroPrimary: string; heroSecondary: string;
+  sectionAHeading: string; sectionADesc: string;
+  sectionBHeading: string; sectionBDesc: string;
+  sectionCHeading: string; sectionCDesc: string;
+  sectionDHeading: string; sectionDDesc: string;
+  mapHeading: string; mapDesc: string; mapPrimary: string; mapSecondary: string;
+  seasonHeading: string; seasonDesc: string;
+  aiHeading: string; aiDesc: string; aiPrimary: string; aiSecondary: string;
+  exploreHeading: string;
+  hotServicesHeading: string; hotServicesDesc: string;
+  trustHeading: string; trustDesc: string;
+  trustFacts: { value: string; label: string }[];
+}> = {
   zh: {
-    heroKicker: '吉林文旅平台',
-    heroTitle: '开启你的吉林旅程',
-    heroLead: '从城市文化到山地自然，从边境公路到主题玩法，建立你的吉林旅行主线。',
-    heroPrimary: '探索目的地',
-    heroSecondary: 'AI 帮我规划',
-    sectionAHeading: '旅行灵感入口',
-    sectionADesc: '先从四个核心入口切入，快速找到与你行程匹配的内容。',
-    sectionBHeading: '发现吉林的特色体验',
-    sectionBDesc: '按主题浏览内容，或直接进入 AI 导览生成一版个性化行程。',
-    sectionCHeading: '本周推荐路线',
-    sectionCDesc: '编辑精选的 3 条路线入口，适合快速决策。',
-    sectionDHeading: '吉林旅行从这里开始',
-    sectionDDesc: '通过目的地、季节和路线组合，构建适合你的吉林旅行路径。',
-    mapHeading: '吉林旅行从这里开始',
-    mapDesc: '通过目的地、季节和路线组合，构建适合你的吉林旅行路径。',
-    mapPrimary: '查看目的地地图入口',
-    mapSecondary: '查看 自驾攻略路线',
-    seasonHeading: '按季节规划',
-    seasonDesc: '四季对应不同目的地策略，减少试错成本。',
-    editorialHeading: '专题与资讯',
-    editorialDesc: '活动、研学、服务与攻略内容持续更新。',
-    aiHeading: '不知道怎么玩？让 AI 帮你规划',
-    aiDesc: '输入时间、预算和偏好，先得到一版建议路线，再决定是否转人工顾问。',
-    aiPrimary: '进入 AI 导览',
-    aiSecondary: '转人工顾问',
-    exploreHeading: '继续探索',
+    heroKicker: '吉林文旅平台', heroTitle: '开启你的吉林旅程',
+    heroLead: '工业研学、自驾定制、行程咨询与合作资源，从这四个入口找到你的吉林服务方案。',
+    heroPrimary: '提交旅行/研学需求', heroSecondary: '让 AI 先帮我规划',
+    sectionAHeading: '四大服务入口', sectionADesc: '工业研学、自驾路线、行程定制或资源合作 — 选一个开始。',
+    sectionBHeading: '发现吉林的特色体验', sectionBDesc: '按主题浏览内容，或直接进入 AI 导览生成一版个性化行程。',
+    sectionCHeading: '本周推荐路线', sectionCDesc: '编辑精选的 3 条路线入口，适合快速决策。',
+    sectionDHeading: '吉林旅行从这里开始', sectionDDesc: '通过目的地、季节和路线组合，构建适合你的吉林旅行路径。',
+    mapHeading: '吉林旅行从这里开始', mapDesc: '通过目的地、季节和路线组合，构建适合你的吉林旅行路径。',
+    mapPrimary: '查看目的地地图入口', mapSecondary: '查看自驾攻略路线',
+    seasonHeading: '按季节规划', seasonDesc: '四季对应不同目的地策略，减少试错成本。',
+    aiHeading: '不知道怎么玩？让 AI 帮你规划', aiDesc: '输入时间、预算和偏好，先得到一版建议路线，再决定是否转人工顾问。',
+    aiPrimary: '进入 AI 导览', aiSecondary: '转人工顾问', exploreHeading: '继续探索',
+    hotServicesHeading: '热门服务', hotServicesDesc: '咨询量最高的服务类型',
+    trustHeading: '为什么通过大吉林咨询', trustDesc: '平台提供 AI 预筛 + 顾问跟进双轨服务，帮助你找到最适合的吉林文旅方案。',
+    trustFacts: [
+      { value: 'AI 初筛', label: '先通过 AI 了解适合的方向' },
+      { value: '顾问跟进', label: '人工确认细节与资源档期' },
+      { value: '档期核实', label: '所有资源均经合作方确认' },
+      { value: '全流程', label: '从咨询到出行全程有人管' },
+    ],
   },
   en: {
-    heroKicker: 'Jilin Cultural & Tourism',
-    heroTitle: 'Start Your Story in Jilin',
-    heroLead: 'From city culture to mountain nature and border highways, build your Jilin travel route.',
-    heroPrimary: 'Explore Destinations',
-    heroSecondary: 'Plan with AI',
-    sectionAHeading: 'Inspiration for your trip',
-    sectionADesc: 'Start from four core entry points and quickly find what fits your itinerary.',
-    sectionBHeading: 'Discover unique experiences in Jilin',
-    sectionBDesc: 'Browse by topics or ask AI to generate a personalized route.',
-    sectionCHeading: 'Weekly Recommended Routes',
-    sectionCDesc: 'Three editor-picked routes to help you decide fast.',
-    sectionDHeading: 'Your Jilin adventure starts here',
-    sectionDDesc: 'Combine destination, season, and route to build your journey.',
-    mapHeading: 'Your Jilin adventure starts here',
-    mapDesc: 'Combine destination, season, and route to build your journey.',
-    mapPrimary: 'View destination map entry',
-    mapSecondary: 'View Self-Drive Guide',
-    seasonHeading: 'Plan by Season',
-    seasonDesc: 'Each season has a different destination strategy.',
-    editorialHeading: 'Topics & Updates',
-    editorialDesc: 'Events, study tours, services, and travel guides are updated continuously.',
-    aiHeading: 'Not sure where to start? Let AI guide you',
-    aiDesc: 'Tell us your time, budget, and preferences to get a practical route first.',
-    aiPrimary: 'Open AI Guide',
-    aiSecondary: 'Talk to Consultant',
-    exploreHeading: 'Explore More',
+    heroKicker: 'Jilin Cultural & Tourism', heroTitle: 'Your Jilin Journey Starts Here',
+    heroLead: 'Industrial study tours, self-drive customization, trip consultation, and resource partnerships — find your Jilin service plan here.',
+    heroPrimary: 'Submit Travel / Study Request', heroSecondary: 'Let AI Plan for Me',
+    sectionAHeading: 'Four Service Entry Points', sectionADesc: 'Industrial study tours, self-drive routes, trip planning, or resource partnership — choose one to start.',
+    sectionBHeading: 'Discover unique experiences in Jilin', sectionBDesc: 'Browse by topics or ask AI to generate a personalized route.',
+    sectionCHeading: 'Weekly Recommended Routes', sectionCDesc: 'Three editor-picked routes to help you decide fast.',
+    sectionDHeading: 'Your Jilin adventure starts here', sectionDDesc: 'Combine destination, season, and route to build your journey.',
+    mapHeading: 'Your Jilin adventure starts here', mapDesc: 'Combine destination, season, and route to build your journey.',
+    mapPrimary: 'View destination map entry', mapSecondary: 'View Self-Drive Guide',
+    seasonHeading: 'Plan by Season', seasonDesc: 'Each season has a different destination strategy.',
+    aiHeading: 'Not sure where to start? Let AI guide you', aiDesc: 'Tell us your time, budget, and preferences to get a practical route first.',
+    aiPrimary: 'Open AI Guide', aiSecondary: 'Talk to Consultant', exploreHeading: 'Explore More',
+    hotServicesHeading: 'Popular Services', hotServicesDesc: 'Most-requested service types',
+    trustHeading: 'Why Consult Through Da Jilin', trustDesc: 'We provide AI pre-screening + consultant follow-up dual-track service to help you find the best Jilin travel plan.',
+    trustFacts: [
+      { value: 'AI Pre-screening', label: 'Understand your best options with AI first' },
+      { value: 'Consultant Follow-up', label: 'Human confirmation of details and availability' },
+      { value: 'Availability Verified', label: 'All resources confirmed with partners' },
+      { value: 'Full Process', label: 'Someone guides you from inquiry to travel' },
+    ],
   },
   ja: {
-    heroKicker: '吉林観光プラットフォーム',
-    heroTitle: '吉林の旅を始めよう',
-    heroLead: '都市文化から山岳自然、国境ルートまで、吉林旅行の主線を作れます。',
-    heroPrimary: '目的地を見る',
-    heroSecondary: 'AIで計画',
-    sectionAHeading: '旅のインスピレーション',
-    sectionADesc: '4つの主要入口から、あなたの行程に合う内容を素早く見つけます。',
-    sectionBHeading: '吉林ならではの体験を見つける',
-    sectionBDesc: 'テーマ別で閲覧するか、AIで個別ルートを生成できます。',
-    sectionCHeading: '今週のおすすめルート',
-    sectionCDesc: '編集部が選んだ3ルートで素早く意思決定。',
-    sectionDHeading: '吉林の旅はここから始まる',
-    sectionDDesc: '目的地・季節・ルートを組み合わせて行程を作ります。',
-    mapHeading: '吉林の旅はここから始まる',
-    mapDesc: '目的地・季節・ルートを組み合わせて行程を作ります。',
-    mapPrimary: '目的地マップを見る',
-    mapSecondary: '自驾攻略を見る',
-    seasonHeading: '季節で計画',
-    seasonDesc: '四季ごとに最適な目的地戦略があります。',
-    editorialHeading: '特集と最新情報',
-    editorialDesc: 'イベント、産業研修、サービス、攻略情報を継続更新。',
-    aiHeading: 'どこへ行くか迷ったらAIに相談',
-    aiDesc: '日程・予算・好みを入力し、まず実行可能なルートを取得。',
-    aiPrimary: 'AIガイドへ',
-    aiSecondary: '相談員へ',
-    exploreHeading: 'さらに探す',
+    heroKicker: '吉林観光プラットフォーム', heroTitle: '吉林の旅はここから始まる',
+    heroLead: '産業研修、自驾定制、旅程相談与合作資源 — この4つの入口から吉林サービスを見つけられます。',
+    heroPrimary: '旅行/研学ニーズを送信', heroSecondary: 'AIにまず計画してもらう',
+    sectionAHeading: '4つのサービス入口', sectionADesc: '産業研修、自驾ルート、旅程定制または資源合作 — 1つ選んで始めましょう。',
+    sectionBHeading: '吉林ならではの体験を見つける', sectionBDesc: 'テーマ別で閲覧するか、AIで個別ルートを生成できます。',
+    sectionCHeading: '今週のおすすめルート', sectionCDesc: '編集部が選んだ3ルートで素早く意思決定。',
+    sectionDHeading: '吉林の旅はここから始まる', sectionDDesc: '目的地・季節・ルートを組み合わせて行程を作ります。',
+    mapHeading: '吉林の旅はここから始まる', mapDesc: '目的地・季節・ルートを組み合わせて行程を作ります。',
+    mapPrimary: '目的地マップを見る', mapSecondary: '自驾攻略を見る',
+    seasonHeading: '季節で計画', seasonDesc: '四季ごとに最適な目的地戦略があります。',
+    aiHeading: 'どこへ行くか迷ったらAIに相談', aiDesc: '日程・予算・好みを入力し、まず実行可能なルートを取得。',
+    aiPrimary: 'AIガイドへ', aiSecondary: '相談員へ', exploreHeading: 'さらに探す',
+    hotServicesHeading: '人気サービス', hotServicesDesc: 'ご依頼最多的サービス類型',
+    trustHeading: 'なぜ大吉林を通じて相談するか', trustDesc: 'AIプレスクリーニング＋コンサルタント追跡の二軸サービスを提供し、最適な吉林文旅プランを見つけるのを支援します。',
+    trustFacts: [
+      { value: 'AI 初検', label: 'まずAIで最適な方向性を把握' },
+      { value: 'コンサルタント対応', label: '人間が詳細とリソースの調整を確認' },
+      { value: 'スケジュール確認', label: '全てのパートナー先に確認済み' },
+      { value: '全程対応', label: '相談から旅行まで全程サポート' },
+    ],
   },
   ko: {
-    heroKicker: '지린 관광 플랫폼',
-    heroTitle: '지린 여행을 시작하세요',
-    heroLead: '도시 문화부터 산악 자연, 국경 도로까지 지린 여행의 메인 루트를 만드세요.',
-    heroPrimary: '목적지 탐색',
-    heroSecondary: 'AI로 계획',
-    sectionAHeading: '여행 영감 찾기',
-    sectionADesc: '4개의 핵심 진입점에서 일정에 맞는 콘텐츠를 빠르게 찾습니다.',
-    sectionBHeading: '지린의 특별한 경험 찾기',
-    sectionBDesc: '테마별로 보거나 AI로 맞춤 루트를 생성할 수 있습니다.',
-    sectionCHeading: '이번 주 추천 루트',
-    sectionCDesc: '편집 추천 3개 루트로 빠르게 결정하세요.',
-    sectionDHeading: '지린 여행은 여기서 시작됩니다',
-    sectionDDesc: '목적지, 계절, 루트를 조합해 여행 경로를 만드세요.',
-    mapHeading: '지린 여행은 여기서 시작됩니다',
-    mapDesc: '목적지, 계절, 루트를 조합해 여행 경로를 만드세요.',
-    mapPrimary: '목적지 맵 보기',
-    mapSecondary: '自驾攻略 보기',
-    seasonHeading: '계절별 계획',
-    seasonDesc: '계절마다 다른 목적지 전략이 필요합니다.',
-    editorialHeading: '테마와 소식',
-    editorialDesc: '행사, 산업 연수, 서비스, 가이드 콘텐츠를 지속 업데이트합니다.',
-    aiHeading: '어디부터 갈지 모르겠다면 AI에게 물어보세요',
-    aiDesc: '시간, 예산, 취향을 입력하면 실행 가능한 루트를 먼저 제안합니다.',
-    aiPrimary: 'AI 가이드 열기',
-    aiSecondary: '상담사 연결',
-    exploreHeading: '더 보기',
+    heroKicker: '지린 관광 플랫폼', heroTitle: '지린 여행은 여기서 시작됩니다',
+    heroLead: '산업 연수, 自驾定制, 일정 상담, 협력 자원 — 이 4개의 진입점에서 지린 서비스 플랜을 찾을 수 있습니다.',
+    heroPrimary: '여행/연수 요청 제출', heroSecondary: 'AI가 먼저 계획하게 하기',
+    sectionAHeading: '4가지 서비스 진입점', sectionADesc: '산업 연수, 自驾 루트, 일정定制 또는 자원 협력 — 하나를 선택하여 시작하세요.',
+    sectionBHeading: '지린의 특별한 경험 찾기', sectionBDesc: '테마별로 보거나 AI로 맞춤 루트를 생성할 수 있습니다.',
+    sectionCHeading: '이번 주 추천 루트', sectionCDesc: '편집 추천 3개 루트로 빠르게 결정하세요.',
+    sectionDHeading: '지린 여행은 여기서 시작됩니다', sectionDDesc: '목적지, 계절, 루트를 조합해 여행 경로를 만드세요.',
+    mapHeading: '지린 여행은 여기서 시작됩니다', mapDesc: '목적지, 계절, 루트를 조합해 여행 경로를 만드세요.',
+    mapPrimary: '목적지 맵 보기', mapSecondary: '自驾攻略 보기',
+    seasonHeading: '계절별 계획', seasonDesc: '계절마다 다른 목적지 전략이 필요합니다.',
+    aiHeading: '어디부터 갈지 모르겠다면 AI에게 물어보세요', aiDesc: '시간, 예산, 취향을 입력하면 실행 가능한 루트를 먼저 제안합니다.',
+    aiPrimary: 'AI 가이드 열기', aiSecondary: '상담사 연결', exploreHeading: '더 보기',
+    hotServicesHeading: '인기 서비스', hotServicesDesc: '가장 많이 요청받는 서비스 유형',
+    trustHeading: '왜 대지린을 통해 상담하는가', trustDesc: 'AI 사전 스크리닝 + 컨설턴트 후속 이중 서비스로 최적의 지린 관광 플랜을 찾는 것을 돕습니다.',
+    trustFacts: [
+      { value: 'AI 사전 검수', label: '먼저 AI로 최적의 방향 파악' },
+      { value: '컨설턴트 대응', label: '인력이 세부 사항과 자원 일정 확인' },
+      { value: '스케줄 확인', label: '모든 협력처에 확인된 일정' },
+      { value: '전 과정', label: '상담에서 여행까지全程 관리' },
+    ],
   },
 };
 
@@ -177,469 +138,1326 @@ const copy = pageText[locale];
 const title = seo.title;
 const description = seo.description;
 const languageTagMap: Record<Locale, string> = { zh: 'zh-CN', en: 'en', ja: 'ja', ko: 'ko' };
-const guidesNameMap: Record<Locale, string> = {
-  zh: '攻略与资讯',
-  en: 'Guides & News',
-  ja: 'ガイド情報',
-  ko: '가이드 & 소식',
-};
+const guidesNameMap: Record<Locale, string> = { zh: '攻略与资讯', en: 'Guides & News', ja: 'ガイド情報', ko: '가이드 & 소식' };
 const orgDescriptionMap: Record<Locale, string> = {
   zh: '吉林文旅资源整合与内容引流平台，聚焦目的地、工业研学、自驾攻略与官方服务说明。',
   en: 'A Jilin travel portal focused on destinations, study tours, Self-Drive Guide, official services, and AI guidance.',
   ja: '目的地・産業研修・自驾攻略・公式サービス・AIガイドを中心とした吉林観光ポータル。',
   ko: '목적지, 산업 연수, 自驾攻略, 공식 서비스, AI 가이드를 중심으로 하는 지린 관광 포털입니다.',
 };
+
 const schemas = [
-  {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    '@id': 'https://dajilin.net/#organization',
-    name: 'dajilin.net',
-    url: 'https://dajilin.net',
-    description: orgDescriptionMap[locale],
-    areaServed: 'CN',
-  },
-  {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    '@id': 'https://dajilin.net/#website',
-    url: 'https://dajilin.net',
-    name: 'dajilin.net',
-    publisher: { '@id': 'https://dajilin.net/#organization' },
-    inLanguage: languageTagMap[locale],
-  },
-  {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    '@id': `https://dajilin.net${Astro.url.pathname}#webpage`,
-    url: `https://dajilin.net${Astro.url.pathname}`,
-    name: siteName,
-    description,
-    inLanguage: languageTagMap[locale],
-    isPartOf: { '@id': 'https://dajilin.net/#website' },
-    about: { '@id': 'https://dajilin.net/#organization' },
-  },
+  { '@context': 'https://schema.org', '@type': 'Organization', '@id': 'https://dajilin.net/#organization', name: 'dajilin.net', url: 'https://dajilin.net', description: orgDescriptionMap[locale], areaServed: 'CN' },
+  { '@context': 'https://schema.org', '@type': 'WebSite', '@id': 'https://dajilin.net/#website', url: 'https://dajilin.net', name: 'dajilin.net', publisher: { '@id': 'https://dajilin.net/#organization' }, inLanguage: languageTagMap[locale] },
+  { '@context': 'https://schema.org', '@type': 'WebPage', '@id': `https://dajilin.net${Astro.url.pathname}#webpage`, url: `https://dajilin.net${Astro.url.pathname}`, name: siteName, description, inLanguage: languageTagMap[locale], isPartOf: { '@id': 'https://dajilin.net/#website' }, about: { '@id': 'https://dajilin.net/#organization' } },
   buildCollectionPageSchema('/guides', guidesNameMap[locale], description, locale),
 ];
 
-const localizedBlock: Record<
-  Locale,
-  {
-    heroPlans: { title: string; summary: string; tag: string; href: string }[];
-    heroHighlights: string[];
-    trustFacts: { value: string; label: string }[];
-    quickChannels: { title: string; body: string; href: string; image: string }[];
-    discoveryTags: string[];
-    editorialCards: { title: string; body: string; href: string }[];
-    eventCards: { title: string; body: string; href: string }[];
-    seasonCards: { season: string; summary: string; links: { label: string; href: string }[] }[];
-    aiQuestions: string[];
-    topicCards: { title: string; body: string; href: string }[];
-  }
-> = {
+// ── 首页内容数据 ──────────────────────────────────────────
+type HeroPlan = { title: string; summary: string; tag: string; href: string; color: string };
+type QuickChannel = { title: string; body: string; href: string; image: string; color: string };
+type SeasonCard = { season: string; summary: string; color: string; links: { label: string; href: string }[] };
+type TopicCard = { title: string; body: string; href: string; color: string };
+type ServiceCard = { title: string; body: string; cta: string; href: string; color: string };
+
+const localizedBlock: Record<Locale, {
+  heroPlans: HeroPlan[];
+  heroHighlights: string[];
+  quickChannels: QuickChannel[];
+  hotServices: ServiceCard[];
+  discoveryTags: string[];
+  seasonCards: SeasonCard[];
+  aiQuestions: string[];
+  topicCards: TopicCard[];
+}> = {
   zh: {
-    heroPlans: [
-      { title: '长春城市人文 3 日线', summary: '适合第一次来吉林，节奏轻、信息密度高。', tag: '城市文化', href: '/destinations/changchun' },
-      { title: '长白山四季景观 5 日线', summary: '景观体验与山地线路结合，适合深度旅行。', tag: '自然探索', href: '/destinations/changbai-mountain' },
-      { title: '延边风情 + 自驾攻略', summary: '边境文化、在地美食与自驾体验联动。', tag: '边境路线', href: '/self-drive' },
-    ],
     heroHighlights: ['吉林省文旅内容索引', '季节优先路线推荐', 'AI 导览 + 顾问协同服务', '持续更新目的地信息'],
-    trustFacts: [
-      { value: '4 季', label: '全年可规划出行' },
-      { value: '3 大', label: '核心目的地入口' },
-      { value: '5 类', label: '重点内容频道' },
-      { value: 'AI + 人工', label: '双轨导览服务' },
-    ],
     quickChannels: [
-      { title: '目的地', body: '吉林重点城市与区域入口。', href: '/destinations', image: '/images/home/changchun.jpg' },
-      { title: '玩法体验', body: '主题玩法与路线建议。', href: '/themes', image: '/images/home/yanbian.jpg' },
-      { title: '行前规划', body: '交通、行程与服务说明。', href: '/guides', image: '/images/home/changbai.jpg' },
-      { title: '官方服务', body: '官方渠道与办理提示。', href: '/official-services', image: '/images/home/hero-jilin.jpg' },
+      { title: '工业研学定制', body: '学校研学、企业参访、政企考察。专注一汽红旗、中车长客等工业资源对接。', href: '/study-tours', image: '/images/home/changbai.jpg', color: 'lake-blue' },
+      { title: '331 自驾路线服务', body: '路线规划、驿站对接、车队与摄影团服务。全程后援支持。', href: '/self-drive', image: '/images/home/yanbian.jpg', color: 'maple-red' },
+      { title: '吉林行程咨询', body: '3-5日行程、亲子游、长白山/延边深度路线定制。', href: '/cooperation', image: '/images/home/changchun.jpg', color: 'pine-green' },
+      { title: '资源合作入驻', body: '驿站、酒店、餐饮、景区、研学资源方合作入口。', href: '/cooperation', image: '/images/home/hero-jilin.jpg', color: 'golden' },
+    ],
+    hotServices: [
+      { title: '工业研学', body: '学校、机构与企业团队可用的说明与咨询入口。', cta: '提交研学需求', href: '/cooperation', color: 'lake-blue' },
+      { title: '331 自驾', body: '路线规划、驿站服务与补给建议。', cta: '提交自驾需求', href: '/cooperation', color: 'maple-red' },
+      { title: '行程定制', body: '3-5 日行程、亲子游、长白山/延边深度路线。', cta: '提交行程需求', href: '/cooperation', color: 'pine-green' },
+      { title: '资源合作', body: '驿站、酒店、餐饮、景区、研学资源方合作。', cta: '了解合作方式', href: '/cooperation', color: 'golden' },
     ],
     discoveryTags: ['亲子出行', '长白山', '城市漫游', '边境自驾', '工业研学', '自驾攻略', '冰雪季', '美食线路'],
-    editorialCards: [
-      { title: '春季吉林出行建议', body: '用 3-5 天覆盖城市与自然，适合第一次来吉林。', href: '/themes' },
-      { title: '自驾攻略驿站服务梳理', body: '沿线补给、休整和服务点位的一站式入口。', href: '/self-drive/station-services' },
-      { title: '官方服务入口汇总', body: '证件、规则和官方咨询入口统一整理。', href: '/official-services' },
-    ],
-    eventCards: [
-      { title: '冰雪季重点活动', body: '关注雪季热门活动与区域节庆安排。', href: '/themes/ice-snow' },
-      { title: '工业研学专题', body: '围绕一汽/中车等产业线的研学主题内容。', href: '/study-tours' },
-      { title: '吉林攻略资讯更新', body: '持续更新路线建议、目的地内容与实用信息。', href: '/guides' },
+    heroPlans: [
+      { title: '长春城市人文 3 日线', summary: '适合第一次来吉林，节奏轻、信息密度高。', tag: '城市文化', href: '/destinations/changchun', color: 'pine-green' },
+      { title: '长白山四季景观 5 日线', summary: '景观体验与山地线路结合，适合深度旅行。', tag: '自然探索', href: '/destinations/changbai-mountain', color: 'lake-blue' },
+      { title: '延边风情 + 边境自驾', summary: '边境文化、在地美食与自驾体验联动。', tag: '边境路线', href: '/self-drive', color: 'maple-red' },
     ],
     seasonCards: [
-      {
-        season: '春',
-        summary: '林海复苏与城市文化同步上线，适合轻步调深呼吸。',
-        links: [
-          { label: '长春城市线', href: '/destinations/changchun' },
-          { label: '延边风情线', href: '/destinations/yanbian' },
-        ],
-      },
-      {
-        season: '夏',
-        summary: '避暑与山地体验优先，长白山与边境线路进入最佳窗口。',
-        links: [
-          { label: '长白山路线', href: '/destinations/changbai-mountain' },
-          { label: '自驾攻略概览', href: '/self-drive/overview' },
-        ],
-      },
-      {
-        season: '秋',
-        summary: '层林与公路最有层次，适合摄影、自驾与内容型旅行。',
-        links: [
-          { label: '自驾攻略', href: '/self-drive/how-to-travel' },
-          { label: '延边体验', href: '/destinations/yanbian' },
-        ],
-      },
-      {
-        season: '冬',
-        summary: '冰雪吉林进入高光季，雪景、温泉与城市活动更集中。',
-        links: [
-          { label: '冰雪主题', href: '/themes/ice-snow' },
-          { label: '长白山玩法', href: '/destinations/changbai-mountain' },
-        ],
-      },
+      { season: '春', summary: '林海复苏与城市文化同步上线，适合轻步调深呼吸。', color: 'pine-green', links: [{ label: '长春城市线', href: '/destinations/changchun' }, { label: '延边风情线', href: '/destinations/yanbian' }] },
+      { season: '夏', summary: '避暑与山地体验优先，长白山与边境线路进入最佳窗口。', color: 'lake-blue', links: [{ label: '长白山路线', href: '/destinations/changbai-mountain' }, { label: '自驾攻略概览', href: '/self-drive/overview' }] },
+      { season: '秋', summary: '层林与公路最有层次，适合摄影、自驾与内容型旅行。', color: 'maple-red', links: [{ label: '自驾攻略', href: '/self-drive/how-to-travel' }, { label: '延边体验', href: '/destinations/yanbian' }] },
+      { season: '冬', summary: '冰雪吉林进入高光季，雪景、温泉与城市活动更集中。', color: 'golden', links: [{ label: '冰雪主题', href: '/themes/ice-snow' }, { label: '长白山玩法', href: '/destinations/changbai-mountain' }] },
     ],
     aiQuestions: ['我有 3 天，第一次去吉林怎么安排？', '亲子出行，长白山和长春怎么选？', '想自驾，几天更合适？'],
     topicCards: [
-      { title: '工业研学', body: '学校、机构与企业团队可用的说明与咨询入口。', href: '/study-tours' },
-      { title: '自驾攻略', body: '路线概览、驿站服务与补给建议。', href: '/self-drive' },
-      { title: '官方服务入口', body: '查看官方渠道说明和规则提示。', href: '/official-services' },
-      { title: '攻略资讯', body: '持续更新目的地、路线与专题内容。', href: '/guides' },
-      { title: '主题玩法', body: '冰雪、亲子、文化、摄影等主题化浏览入口。', href: '/themes' },
+      { title: '工业研学', body: '学校、机构与企业团队可用的说明与咨询入口。', href: '/study-tours', color: 'lake-blue' },
+      { title: '自驾攻略', body: '路线概览、驿站服务与补给建议。', href: '/self-drive', color: 'maple-red' },
+      { title: '官方服务入口', body: '查看官方渠道说明和规则提示。', href: '/official-services', color: 'golden' },
+      { title: '攻略资讯', body: '持续更新目的地、路线与专题内容。', href: '/guides', color: 'pine-green' },
+      { title: '主题玩法', body: '冰雪、亲子、文化、摄影等主题化浏览入口。', href: '/themes', color: 'sunset-orange' },
     ],
   },
   en: {
-    heroPlans: [
-      { title: 'Changchun City Route · 3 Days', summary: 'Best for first-time visitors with a light rhythm.', tag: 'City Culture', href: '/destinations/changchun' },
-      { title: 'Changbai Mountain Route · 5 Days', summary: 'Mountain landscapes and deep seasonal travel.', tag: 'Nature', href: '/destinations/changbai-mountain' },
-      { title: 'Yanbian + Self-Drive Guide', summary: 'Border culture, local food, and self-drive travel.', tag: 'Border Route', href: '/self-drive' },
-    ],
     heroHighlights: ['Jilin tourism knowledge base', 'Season-first route planning', 'AI guide + consultant service', 'Continuously updated destination content'],
-    trustFacts: [
-      { value: '4 Seasons', label: 'Year-round planning available' },
-      { value: '3 Core', label: 'Primary destination entries' },
-      { value: '5 Channels', label: 'Key content channels' },
-      { value: 'AI + Human', label: 'Dual-track guidance' },
-    ],
     quickChannels: [
-      { title: 'Destinations', body: 'Entry points for key cities and regions in Jilin.', href: '/destinations', image: '/images/home/changchun.jpg' },
-      { title: 'Experiences', body: 'Theme-based experiences and route ideas.', href: '/themes', image: '/images/home/yanbian.jpg' },
-      { title: 'Pre-trip Planning', body: 'Transport, itinerary, and service information.', href: '/guides', image: '/images/home/changbai.jpg' },
-      { title: 'Official Services', body: 'Official channels and processing guidance.', href: '/official-services', image: '/images/home/hero-jilin.jpg' },
+      { title: 'Industrial Study Tours', body: 'School trips, corporate visits, government inspections. Connecting you with FAW Hongqi, CRRC and more.', href: '/study-tours', image: '/images/home/changbai.jpg', color: 'lake-blue' },
+      { title: 'G331 Self-Drive Service', body: 'Route planning, station connections, fleet & photography group support. Full journey backup.', href: '/self-drive', image: '/images/home/yanbian.jpg', color: 'maple-red' },
+      { title: 'Jilin Trip Consultation', body: '3-5 day itineraries, family trips, Changbai/Yanbian deep-route customization.', href: '/cooperation', image: '/images/home/changchun.jpg', color: 'pine-green' },
+      { title: 'Resource Cooperation', body: 'Partnership for stations, hotels, restaurants, scenic spots, and study-tour providers.', href: '/cooperation', image: '/images/home/hero-jilin.jpg', color: 'golden' },
+    ],
+    hotServices: [
+      { title: 'Study Tours', body: 'Guides and consultation for schools, institutions, and teams.', cta: 'Submit Study Tour Request', href: '/cooperation', color: 'lake-blue' },
+      { title: 'G331 Self-Drive', body: 'Route planning, station services and supply advice.', cta: 'Submit Self-Drive Request', href: '/cooperation', color: 'maple-red' },
+      { title: 'Trip Planning', body: '3-5 day itineraries, family trips, Changbai/Yanbian routes.', cta: 'Submit Trip Request', href: '/cooperation', color: 'pine-green' },
+      { title: 'Resource Cooperation', body: 'Partnership for stations, hotels, restaurants, and scenic spots.', cta: 'Learn Cooperation Options', href: '/cooperation', color: 'golden' },
     ],
     discoveryTags: ['Family Travel', 'Changbai Mountain', 'City Walks', 'Border Drive', 'Study Tours', 'Self-Drive Guide', 'Snow Season', 'Food Routes'],
-    editorialCards: [
-      { title: 'Spring Travel Suggestions in Jilin', body: 'Cover city and nature in 3-5 days for first-time visits.', href: '/themes' },
-      { title: 'Self-Drive Guide Station Services', body: 'A single entry for supply, rest, and station services.', href: '/self-drive/station-services' },
-      { title: 'Official Service Entries', body: 'Unified access to rules, channels, and official consultation.', href: '/official-services' },
-    ],
-    eventCards: [
-      { title: 'Top Snow Season Events', body: 'Track key winter activities and regional festivals.', href: '/themes/ice-snow' },
-      { title: 'Industrial Study Tour Feature', body: 'Themes around FAW/CRRC and industrial learning routes.', href: '/study-tours' },
-      { title: 'Jilin Guide Updates', body: 'Continuous route and destination content updates.', href: '/guides' },
+    heroPlans: [
+      { title: 'Changchun City Route · 3 Days', summary: 'Best for first-time visitors with a light rhythm.', tag: 'City Culture', href: '/destinations/changchun', color: 'pine-green' },
+      { title: 'Changbai Mountain Route · 5 Days', summary: 'Mountain landscapes and deep seasonal travel.', tag: 'Nature', href: '/destinations/changbai-mountain', color: 'lake-blue' },
+      { title: 'Yanbian + Border Self-Drive', summary: 'Border culture, local food, and self-drive travel.', tag: 'Border Route', href: '/self-drive', color: 'maple-red' },
     ],
     seasonCards: [
-      { season: 'Spring', summary: 'Forest recovery and urban culture come together for easy-paced travel.', links: [{ label: 'Changchun City Line', href: '/destinations/changchun' }, { label: 'Yanbian Culture Line', href: '/destinations/yanbian' }] },
-      { season: 'Summer', summary: 'Cool-weather mountain travel enters peak season.', links: [{ label: 'Changbai Mountain', href: '/destinations/changbai-mountain' }, { label: 'Self-Drive Guide Overview', href: '/self-drive/overview' }] },
-      { season: 'Autumn', summary: 'Great for photography, self-drive, and scenic road trips.', links: [{ label: 'Self-Drive Guide Self-drive', href: '/self-drive/how-to-travel' }, { label: 'Yanbian Experience', href: '/destinations/yanbian' }] },
-      { season: 'Winter', summary: 'Snow landscapes, hot springs, and winter events are at their peak.', links: [{ label: 'Ice & Snow Theme', href: '/themes/ice-snow' }, { label: 'Changbai Mountain Guide', href: '/destinations/changbai-mountain' }] },
+      { season: 'Spring', summary: 'Forest recovery and urban culture come together for easy-paced travel.', color: 'pine-green', links: [{ label: 'Changchun City Line', href: '/destinations/changchun' }, { label: 'Yanbian Culture Line', href: '/destinations/yanbian' }] },
+      { season: 'Summer', summary: 'Cool-weather mountain travel enters peak season.', color: 'lake-blue', links: [{ label: 'Changbai Mountain', href: '/destinations/changbai-mountain' }, { label: 'Self-Drive Overview', href: '/self-drive/overview' }] },
+      { season: 'Autumn', summary: 'Great for photography, self-drive, and scenic road trips.', color: 'maple-red', links: [{ label: 'Self-Drive Guide', href: '/self-drive/how-to-travel' }, { label: 'Yanbian Experience', href: '/destinations/yanbian' }] },
+      { season: 'Winter', summary: 'Snow landscapes, hot springs, and winter events are at their peak.', color: 'golden', links: [{ label: 'Ice & Snow Theme', href: '/themes/ice-snow' }, { label: 'Changbai Mountain', href: '/destinations/changbai-mountain' }] },
     ],
-    aiQuestions: ['I have 3 days. How should I plan a first trip to Jilin?', 'For a family trip, should I choose Changbai Mountain or Changchun?', 'For self-driving Self-Drive Guide, how many days should I plan?'],
+    aiQuestions: ['I have 3 days. How should I plan a first trip to Jilin?', 'For a family trip, should I choose Changbai Mountain or Changchun?', 'For self-driving, how many days should I plan?'],
     topicCards: [
-      { title: 'Study Tours', body: 'Guides and consultation entries for schools, institutions, and teams.', href: '/study-tours' },
-      { title: 'Self-Drive Guide', body: 'Overview, station services, and supply suggestions.', href: '/self-drive' },
-      { title: 'Official Services', body: 'Official channels and process guidance.', href: '/official-services' },
-      { title: 'Guides & News', body: 'Continuously updated destination and route content.', href: '/guides' },
-      { title: 'Theme Experiences', body: 'Ice-snow, family, culture, and photography themes.', href: '/themes' },
+      { title: 'Study Tours', body: 'Guides and consultation entries for schools, institutions, and teams.', href: '/study-tours', color: 'lake-blue' },
+      { title: 'Self-Drive Guide', body: 'Overview, station services, and supply suggestions.', href: '/self-drive', color: 'maple-red' },
+      { title: 'Official Services', body: 'Official channels and process guidance.', href: '/official-services', color: 'golden' },
+      { title: 'Guides & News', body: 'Continuously updated destination and route content.', href: '/guides', color: 'pine-green' },
+      { title: 'Theme Experiences', body: 'Ice-snow, family, culture, and photography themes.', href: '/themes', color: 'sunset-orange' },
     ],
   },
   ja: {
-    heroPlans: [
-      { title: '長春 都市文化 3日ルート', summary: '初めての吉林に適した軽めの行程。', tag: '都市文化', href: '/destinations/changchun' },
-      { title: '長白山 四季景観 5日ルート', summary: '自然景観を中心にした深度旅行。', tag: '自然探索', href: '/destinations/changbai-mountain' },
-      { title: '延辺 + 自驾攻略', summary: '国境文化・美食・ドライブ体験を連動。', tag: '国境ルート', href: '/self-drive' },
-    ],
     heroHighlights: ['吉林観光コンテンツ索引', '季節優先のルート提案', 'AIガイド + 相談員連携', '目的地情報を継続更新'],
-    trustFacts: [
-      { value: '4季', label: '通年で計画可能' },
-      { value: '3大', label: '主要目的地入口' },
-      { value: '5カテゴリ', label: '重点コンテンツ' },
-      { value: 'AI + 人', label: '二軸ガイド体制' },
-    ],
     quickChannels: [
-      { title: '目的地', body: '吉林の主要都市・地域への入口。', href: '/destinations', image: '/images/home/changchun.jpg' },
-      { title: '体験テーマ', body: 'テーマ体験とルート提案。', href: '/themes', image: '/images/home/yanbian.jpg' },
-      { title: '出発前計画', body: '交通・行程・サービス説明。', href: '/guides', image: '/images/home/changbai.jpg' },
-      { title: '公式サービス', body: '公式チャネルと手続き案内。', href: '/official-services', image: '/images/home/hero-jilin.jpg' },
+      { title: '産業研修カスタム', body: '学校研修、企業訪問、政界考察。一汽红旗・中車長客などの工業リソースと連携。', href: '/study-tours', image: '/images/home/changbai.jpg', color: 'lake-blue' },
+      { title: '331 自驾ルートサービス', body: 'ルート計画、驛站との連携、車隊・撮影团サポート。全程サポート。', href: '/self-drive', image: '/images/home/yanbian.jpg', color: 'maple-red' },
+      { title: '吉林旅程相談', body: '3〜5日旅程、家族旅行、長白山/延辺深度ルート定制。', href: '/cooperation', image: '/images/home/changchun.jpg', color: 'pine-green' },
+      { title: '資源協力入居', body: '驛站、酒店、餐饮、景区、産業研修リソース方の協力入口。', href: '/cooperation', image: '/images/home/hero-jilin.jpg', color: 'golden' },
+    ],
+    hotServices: [
+      { title: '産業研修', body: '学校・機関・企業团队向けの案内と相談入口。', cta: '研修ニーズを送信', href: '/cooperation', color: 'lake-blue' },
+      { title: '331 自驾', body: 'ルート計画、驛站サービスと補給提案。', cta: '自驾ニーズを送信', href: '/cooperation', color: 'maple-red' },
+      { title: '旅程定制', body: '3〜5日旅程、家族旅行、長白山/延辺深度ルート。', cta: '旅程ニーズを送信', href: '/cooperation', color: 'pine-green' },
+      { title: '資源協力', body: '驛站、酒店、餐饮、景区、産業研修リソース方の協力。', cta: '協力方式を見る', href: '/cooperation', color: 'golden' },
     ],
     discoveryTags: ['親子旅行', '長白山', '都市散策', '国境ドライブ', '産業研修', '自驾攻略', '雪季', '美食ルート'],
-    editorialCards: [
-      { title: '春の吉林旅行提案', body: '3-5日で都市と自然を効率的に体験。', href: '/themes' },
-      { title: '自驾攻略 驛站サービス整理', body: '補給・休憩・サービス情報の集約入口。', href: '/self-drive/station-services' },
-      { title: '公式サービス入口まとめ', body: '規則・チャネル・相談窓口を統合。', href: '/official-services' },
-    ],
-    eventCards: [
-      { title: '雪季の重点イベント', body: '冬季イベントと地域催事を追跡。', href: '/themes/ice-snow' },
-      { title: '産業研修特集', body: '一汽/中車など産業線の研修コンテンツ。', href: '/study-tours' },
-      { title: '吉林ガイド更新', body: '目的地・ルート情報を継続更新。', href: '/guides' },
+    heroPlans: [
+      { title: '長春 都市文化 3日ルート', summary: '初めての吉林に適した軽めの行程。', tag: '都市文化', href: '/destinations/changchun', color: 'pine-green' },
+      { title: '長白山 四季景観 5日ルート', summary: '自然景観を中心にした深度旅行。', tag: '自然探索', href: '/destinations/changbai-mountain', color: 'lake-blue' },
+      { title: '延辺 + 国境ドライブ', summary: '国境文化・美食・ドライブ体験を連動。', tag: '国境ルート', href: '/self-drive', color: 'maple-red' },
     ],
     seasonCards: [
-      { season: '春', summary: '森林の回復と都市文化が同時に楽しめる季節。', links: [{ label: '長春都市線', href: '/destinations/changchun' }, { label: '延辺文化線', href: '/destinations/yanbian' }] },
-      { season: '夏', summary: '避暑と山地体験の最適シーズン。', links: [{ label: '長白山ルート', href: '/destinations/changbai-mountain' }, { label: '自驾攻略概览', href: '/self-drive/overview' }] },
-      { season: '秋', summary: '紅葉・道路景観・撮影ドライブに最適。', links: [{ label: '自驾攻略旅行', href: '/self-drive/how-to-travel' }, { label: '延辺体験', href: '/destinations/yanbian' }] },
-      { season: '冬', summary: '雪景・温泉・都市イベントが集中。', links: [{ label: '氷雪テーマ', href: '/themes/ice-snow' }, { label: '長白山ガイド', href: '/destinations/changbai-mountain' }] },
+      { season: '春', summary: '森林の回復と都市文化が同時に楽しめる季節。', color: 'pine-green', links: [{ label: '長春都市線', href: '/destinations/changchun' }, { label: '延辺文化線', href: '/destinations/yanbian' }] },
+      { season: '夏', summary: '避暑と山地体験の最適シーズン。', color: 'lake-blue', links: [{ label: '長白山ルート', href: '/destinations/changbai-mountain' }, { label: '自驾攻略概览', href: '/self-drive/overview' }] },
+      { season: '秋', summary: '紅葉・道路景観・撮影ドライブに最適。', color: 'maple-red', links: [{ label: '自驾攻略旅行', href: '/self-drive/how-to-travel' }, { label: '延辺体験', href: '/destinations/yanbian' }] },
+      { season: '冬', summary: '雪景・温泉・都市イベントが集中。', color: 'golden', links: [{ label: '氷雪テーマ', href: '/themes/ice-snow' }, { label: '長白山ガイド', href: '/destinations/changbai-mountain' }] },
     ],
     aiQuestions: ['3日間で初めて吉林へ行く場合のおすすめは？', '家族旅行なら長白山と長春のどちらが良い？', '自驾攻略を車で回る場合、何日必要？'],
     topicCards: [
-      { title: '産業研修', body: '学校・機関・企業向けの案内と相談入口。', href: '/study-tours' },
-      { title: '自驾攻略', body: 'ルート概要、驛站サービス、補給情報。', href: '/self-drive' },
-      { title: '公式サービス', body: '公式チャネルと手続き案内。', href: '/official-services' },
-      { title: 'ガイド情報', body: '目的地とルート内容を継続更新。', href: '/guides' },
-      { title: 'テーマ体験', body: '氷雪・親子・文化・撮影テーマを閲覧。', href: '/themes' },
+      { title: '産業研修', body: '学校・機関・企業团队向けの案内と相談入口。', href: '/study-tours', color: 'lake-blue' },
+      { title: '自驾攻略', body: 'ルート概要、驛站サービス、補給情報。', href: '/self-drive', color: 'maple-red' },
+      { title: '公式サービス入口', body: '公式チャネルと手続き案内。', href: '/official-services', color: 'golden' },
+      { title: 'ガイド情報', body: '目的地とルート内容を継続更新。', href: '/guides', color: 'pine-green' },
+      { title: 'テーマ体験', body: '氷雪・親子・文化・撮影テーマを閲覧。', href: '/themes', color: 'sunset-orange' },
     ],
   },
   ko: {
-    heroPlans: [
-      { title: '창춘 도시문화 3일 루트', summary: '처음 지린을 방문하는 일정에 적합합니다.', tag: '도시 문화', href: '/destinations/changchun' },
-      { title: '창바이산 사계절 5일 루트', summary: '자연 경관 중심의 심화 여행.', tag: '자연 탐험', href: '/destinations/changbai-mountain' },
-      { title: '옌볜 + 自驾攻略', summary: '국경 문화, 미식, 자가운전 체험 연계.', tag: '국경 루트', href: '/self-drive' },
-    ],
     heroHighlights: ['지린 관광 콘텐츠 인덱스', '계절 우선 루트 추천', 'AI 가이드 + 상담사 협업', '목적지 정보 지속 업데이트'],
-    trustFacts: [
-      { value: '4계절', label: '연중 여행 계획 가능' },
-      { value: '3대', label: '핵심 목적지 진입점' },
-      { value: '5개', label: '중점 콘텐츠 채널' },
-      { value: 'AI + 사람', label: '이중 가이드 체계' },
-    ],
     quickChannels: [
-      { title: '목적지', body: '지린 핵심 도시와 지역 진입점.', href: '/destinations', image: '/images/home/changchun.jpg' },
-      { title: '체험', body: '테마 체험과 루트 제안.', href: '/themes', image: '/images/home/yanbian.jpg' },
-      { title: '사전 계획', body: '교통, 일정, 서비스 안내.', href: '/guides', image: '/images/home/changbai.jpg' },
-      { title: '공식 서비스', body: '공식 채널과 처리 안내.', href: '/official-services', image: '/images/home/hero-jilin.jpg' },
+      { title: '산업 연수 커스텀', body: '학교 연수, 기업 방문, 정계 시범考查. FAW 홍치, CRRC 창커 등 산업 자원 연계.', href: '/study-tours', image: '/images/home/changbai.jpg', color: 'lake-blue' },
+      { title: '331 自驾 루트 서비스', body: '루트 계획, 웨이잔 연계, 차량·촬영팀 서비스.全程 백업 지원.', href: '/self-drive', image: '/images/home/yanbian.jpg', color: 'maple-red' },
+      { title: '지린 일정 상담', body: '3~5일 일정, 가족 여행, 창바이/옌볜 깊이 루트 커스텀.', href: '/cooperation', image: '/images/home/changchun.jpg', color: 'pine-green' },
+      { title: '자원 협력 입주', body: '웨이잔, 호텔, 음식점, 경관, 산업 연수 자원자의 협력 입구.', href: '/cooperation', image: '/images/home/hero-jilin.jpg', color: 'golden' },
+    ],
+    hotServices: [
+      { title: '산업 연수', body: '학교, 기관, 기업팀을 위한 안내와 상담 입구.', cta: '연수 요청 제출', href: '/cooperation', color: 'lake-blue' },
+      { title: '331 自驾', body: '루트 계획, 웨이잔 서비스와 보급 제안.', cta: '自驾 요청 제출', href: '/cooperation', color: 'maple-red' },
+      { title: '일정 커스텀', body: '3~5일 일정, 가족 여행, 창바이/옌볜 깊이 루트.', cta: '일정 요청 제출', href: '/cooperation', color: 'pine-green' },
+      { title: '자원 협력', body: '웨이잔, 호텔, 음식점, 경관, 산업 연수 자원자의 협력.', cta: '협력 방식 보기', href: '/cooperation', color: 'golden' },
     ],
     discoveryTags: ['가족 여행', '창바이산', '도시 산책', '국경 드라이브', '산업 연수', '自驾攻略', '설빙 시즌', '미식 루트'],
-    editorialCards: [
-      { title: '봄철 지린 여행 제안', body: '3-5일 일정으로 도시와 자연을 함께 경험.', href: '/themes' },
-      { title: '自驾攻略 거점 서비스', body: '보급, 휴식, 서비스 정보를 한 번에 확인.', href: '/self-drive/station-services' },
-      { title: '공식 서비스 입구 모음', body: '규정, 채널, 공식 상담 입구 정리.', href: '/official-services' },
-    ],
-    eventCards: [
-      { title: '설빙 시즌 주요 행사', body: '겨울 시즌 주요 행사와 지역 이벤트 확인.', href: '/themes/ice-snow' },
-      { title: '산업 연수 특집', body: 'FAW/CRRC 중심 산업 연수 콘텐츠.', href: '/study-tours' },
-      { title: '지린 가이드 업데이트', body: '목적지와 루트 콘텐츠 지속 업데이트.', href: '/guides' },
+    heroPlans: [
+      { title: '창춘 도시문화 3일 루트', summary: '처음 지린을 방문하는 일정에 적합합니다.', tag: '도시 문화', href: '/destinations/changchun', color: 'pine-green' },
+      { title: '창바이산 사계절 5일 루트', summary: '자연 경관 중심의 심화 여행.', tag: '자연 탐험', href: '/destinations/changbai-mountain', color: 'lake-blue' },
+      { title: '옌볜 + 국경 自驾', summary: '국경 문화, 미식, 자가운전 체험 연계.', tag: '국경 루트', href: '/self-drive', color: 'maple-red' },
     ],
     seasonCards: [
-      { season: '봄', summary: '숲의 회복과 도시 문화가 함께 열리는 시즌.', links: [{ label: '창춘 도시선', href: '/destinations/changchun' }, { label: '옌볜 문화선', href: '/destinations/yanbian' }] },
-      { season: '여름', summary: '피서와 산악 체험의 최적 시즌.', links: [{ label: '창바이산 루트', href: '/destinations/changbai-mountain' }, { label: '自驾攻略概览', href: '/self-drive/overview' }] },
-      { season: '가을', summary: '단풍, 도로 경관, 촬영 드라이브에 적합.', links: [{ label: '自驾攻略', href: '/self-drive/how-to-travel' }, { label: '옌볜 체험', href: '/destinations/yanbian' }] },
-      { season: '겨울', summary: '설경, 온천, 도시 이벤트가 집중되는 시기.', links: [{ label: '설빙 테마', href: '/themes/ice-snow' }, { label: '창바이산 가이드', href: '/destinations/changbai-mountain' }] },
+      { season: '봄', summary: '숲의 회복과 도시 문화가 함께 열리는 시즌.', color: 'pine-green', links: [{ label: '창춘 도시선', href: '/destinations/changchun' }, { label: '옌볜 문화선', href: '/destinations/yanbian' }] },
+      { season: '여름', summary: '피서와 산악 체험의 최적 시즌.', color: 'lake-blue', links: [{ label: '창바이산 루트', href: '/destinations/changbai-mountain' }, { label: '自驾攻略概览', href: '/self-drive/overview' }] },
+      { season: '가을', summary: '단풍, 도로 경관, 촬영 드라이브에 적합.', color: 'maple-red', links: [{ label: '自驾攻略', href: '/self-drive/how-to-travel' }, { label: '옌볜 체험', href: '/destinations/yanbian' }] },
+      { season: '겨울', summary: '설경, 온천, 도시 이벤트가 집중되는 시기.', color: 'golden', links: [{ label: '설빙 테마', href: '/themes/ice-snow' }, { label: '창바이산 가이드', href: '/destinations/changbai-mountain' }] },
     ],
     aiQuestions: ['3일 일정으로 처음 지린을 가면 어떻게 계획할까요?', '가족 여행은 창바이산과 창춘 중 어디가 더 좋나요?', '自驾攻略 자가운전은 며칠이 적당한가요?'],
     topicCards: [
-      { title: '산업 연수', body: '학교, 기관, 기업팀을 위한 안내와 상담 입구.', href: '/study-tours' },
-      { title: '自驾攻略', body: '루트 개요, 거점 서비스, 보급 제안.', href: '/self-drive' },
-      { title: '공식 서비스', body: '공식 채널과 처리 규정 안내.', href: '/official-services' },
-      { title: '가이드 & 소식', body: '목적지와 루트 콘텐츠를 지속 업데이트.', href: '/guides' },
-      { title: '테마 체험', body: '설빙, 가족, 문화, 촬영 테마를 탐색.', href: '/themes' },
+      { title: '산업 연수', body: '학교, 기관, 기업팀을 위한 안내와 상담 입구.', href: '/study-tours', color: 'lake-blue' },
+      { title: '自驾攻略', body: '루트 개요, 거점 서비스, 보급 제안.', href: '/self-drive', color: 'maple-red' },
+      { title: '공식 서비스 입구', body: '공식 채널과 처리 규정 안내.', href: '/official-services', color: 'golden' },
+      { title: '가이드 & 소식', body: '목적지와 루트 콘텐츠를 지속 업데이트.', href: '/guides', color: 'pine-green' },
+      { title: '테마 체험', body: '설빙, 가족, 문화, 촬영 테마를 탐색.', href: '/themes', color: 'sunset-orange' },
     ],
   },
 };
 
-const heroPlans = localizedBlock[locale].heroPlans;
-const heroHighlights = localizedBlock[locale].heroHighlights;
-const trustFacts = localizedBlock[locale].trustFacts;
 const quickChannels = localizedBlock[locale].quickChannels;
+const hotServices = localizedBlock[locale].hotServices;
 const discoveryTags = localizedBlock[locale].discoveryTags;
-const editorialCards = localizedBlock[locale].editorialCards;
-const eventCards = localizedBlock[locale].eventCards;
+const heroPlans = localizedBlock[locale].heroPlans;
 const seasonCards = localizedBlock[locale].seasonCards;
 const aiQuestions = localizedBlock[locale].aiQuestions;
 const topicCards = localizedBlock[locale].topicCards;
-const localizeIfAvailable = (href: string) => localizePath(href, locale);
+const trustFacts = copy.trustFacts;
 
+const localizeIfAvailable = (href: string) => localizePath(href, locale);
 ---
 
 <BaseLayout title={title} description={description} schemas={schemas} locale={locale} ogImage="/images/home/hero-jilin.jpg">
   <Header />
 
-  <main class="vs-home">
-    <section class="vs-hero section-animate">
-      <div class="container vs-hero-inner">
-        <p class="vs-kicker">{copy.heroKicker}</p>
-        <h1>{copy.heroTitle}</h1>
-        <p class="vs-lead">{copy.heroLead}</p>
-        <div class="vs-actions">
-          <a class="button" href={localizePath('/destinations', locale)}>{copy.heroPrimary}</a>
-          <button class="button-secondary" type="button" data-open-ai-widget data-ai-question={aiQuestions[0]}>
+  <main class="home-shell">
+
+    <!-- ═══════════════════════════════════════
+         HERO: 5图轮播
+    ═══════════════════════════════════════ -->
+    <section class="home-hero" aria-label="首页主视觉">
+      <div class="hero-carousel" id="heroCarousel" aria-label="吉林风光轮播">
+        <div class="hero-track">
+          <div class="hero-slide" aria-hidden="true">
+            <img src="/images/home/carousel/1-mountain.jpg" alt="" loading="eager" />
+            <div class="slide-overlay"></div>
+          </div>
+          <div class="hero-slide" aria-hidden="true">
+            <img src="/images/home/carousel/2-lake.jpg" alt="" loading="lazy" />
+            <div class="slide-overlay"></div>
+          </div>
+          <div class="hero-slide" aria-hidden="true">
+            <img src="/images/home/carousel/3-forest.jpg" alt="" loading="lazy" />
+            <div class="slide-overlay"></div>
+          </div>
+          <div class="hero-slide" aria-hidden="true">
+            <img src="/images/home/carousel/4-sunrise.jpg" alt="" loading="lazy" />
+            <div class="slide-overlay"></div>
+          </div>
+          <div class="hero-slide" aria-hidden="true">
+            <img src="/images/home/carousel/5-portrait.jpg" alt="" loading="lazy" />
+            <div class="slide-overlay"></div>
+          </div>
+        </div>
+        <!-- 指示器 -->
+        <div class="hero-dots" role="tablist" aria-label="轮播页码">
+          <button class="dot active" role="tab" aria-selected="true" aria-label="第1页" data-slide="0"></button>
+          <button class="dot" role="tab" aria-selected="false" aria-label="第2页" data-slide="1"></button>
+          <button class="dot" role="tab" aria-selected="false" aria-label="第3页" data-slide="2"></button>
+          <button class="dot" role="tab" aria-selected="false" aria-label="第4页" data-slide="3"></button>
+          <button class="dot" role="tab" aria-selected="false" aria-label="第5页" data-slide="4"></button>
+        </div>
+      </div>
+
+      <!-- 文字叠加层 -->
+      <div class="home-hero-copy">
+        <p class="home-hero-eyebrow">{copy.heroKicker}</p>
+        <h1 class="home-hero-title">{copy.heroTitle}</h1>
+        <p class="home-hero-lead">{copy.heroLead}</p>
+        <div class="home-hero-actions">
+          <a class="btn-primary" href={localizePath('/cooperation', locale)}>
+            <span class="btn-dot pine-green"></span>{copy.heroPrimary}
+          </a>
+          <button class="btn-secondary" type="button" data-open-ai-widget data-ai-question={aiQuestions[0]}>
             {copy.heroSecondary}
           </button>
         </div>
-        <div class="vs-highlights">
-          {heroHighlights.map((item) => (
-            <span>{item}</span>
-          ))}
-        </div>
       </div>
     </section>
 
-    <section class="vs-section vs-channels">
-      <div class="container">
-        <header class="vs-head">
-          <h2>{copy.sectionAHeading}</h2>
-          <p>{copy.sectionADesc}</p>
-        </header>
-        <div class="vs-channel-grid stagger-children">
-          {quickChannels.map((item) => (
-            <a class="vs-channel-card" href={localizeIfAvailable(item.href)}>
-              <div class="vs-channel-image"><img src={item.image} alt={item.title} loading="lazy" /></div>
-              <div class="vs-channel-body">
-                <h3>{item.title}</h3>
-                <p>{item.body}</p>
-              </div>
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="vs-section vs-discovery">
-      <div class="container vs-discovery-inner">
+    <!-- ═══════════════════════════════════════
+         SECTION A: 四大核心入口
+    ═══════════════════════════════════════ -->
+    <section class="home-section" aria-labelledby="section-a-heading">
+      <div class="home-section-header">
+        <div class="section-accent accent-pine"></div>
         <div>
-          <h2>{copy.sectionBHeading}</h2>
+          <h2 id="section-a-heading">{copy.sectionAHeading}</h2>
+          <p>{copy.sectionADesc}</p>
+        </div>
+      </div>
+      <div class="home-channel-grid stagger-children">
+        {quickChannels.map((ch) => (
+          <a class="home-channel-card" href={localizeIfAvailable(ch.href)} data-color={ch.color}>
+            <div class="home-channel-image">
+              <img src={ch.image} alt={ch.title} loading="lazy" />
+            </div>
+            <div class="home-channel-body">
+              <h3>{ch.title}</h3>
+              <p>{ch.body}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         热门服务: 四大服务卡片
+    ═══════════════════════════════════════ -->
+    <section class="home-section home-hot-services" aria-labelledby="hot-services-heading">
+      <div class="home-section-header">
+        <div class="section-accent accent-lake"></div>
+        <div>
+          <h2 id="hot-services-heading">{copy.hotServicesHeading}</h2>
+          <p>{copy.hotServicesDesc}</p>
+        </div>
+      </div>
+      <div class="home-hot-grid stagger-children">
+        {hotServices.map((svc) => (
+          <a class="home-hot-card" href={localizeIfAvailable(svc.href)} data-color={svc.color}>
+            <div class="home-hot-card-inner">
+              <h3>{svc.title}</h3>
+              <p>{svc.body}</p>
+              <span class="home-hot-cta">{svc.cta}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         DISCOVERY: 主题标签云
+    ═══════════════════════════════════════ -->
+    <section class="home-discovery" aria-labelledby="section-b-heading">
+      <div class="home-discovery-inner">
+        <div class="home-discovery-copy">
+          <h2 id="section-b-heading">{copy.sectionBHeading}</h2>
           <p>{copy.sectionBDesc}</p>
         </div>
-        <div class="vs-tag-row">
+        <div class="home-tag-row">
           {discoveryTags.map((tag) => (
-            <a href="/themes">{tag}</a>
+            <a class="home-tag" href="/themes">{tag}</a>
           ))}
         </div>
       </div>
     </section>
 
-    <section class="vs-section">
-      <div class="container">
-        <header class="vs-head">
-          <h2>{copy.sectionCHeading}</h2>
+    <!-- ═══════════════════════════════════════
+         SECTION B: 推荐路线
+    ═══════════════════════════════════════ -->
+    <section class="home-section" aria-labelledby="section-c-heading">
+      <div class="home-section-header">
+        <div class="section-accent accent-lake"></div>
+        <div>
+          <h2 id="section-c-heading">{copy.sectionCHeading}</h2>
           <p>{copy.sectionCDesc}</p>
-        </header>
-        <div class="vs-plan-grid stagger-children">
-          {heroPlans.map((plan) => (
-            <a class="vs-plan-card" href={localizeIfAvailable(plan.href)}>
-              <span>{plan.tag}</span>
-              <h3>{plan.title}</h3>
-              <p>{plan.summary}</p>
-            </a>
-          ))}
         </div>
+      </div>
+      <div class="home-plan-grid stagger-children">
+        {heroPlans.map((plan) => (
+          <a class="home-plan-card" href={localizeIfAvailable(plan.href)} data-color={plan.color}>
+            <span class="home-plan-tag">{plan.tag}</span>
+            <h3>{plan.title}</h3>
+            <p>{plan.summary}</p>
+          </a>
+        ))}
       </div>
     </section>
 
-    <section class="vs-section vs-map">
-      <div class="container vs-map-inner">
-        <div class="vs-map-copy">
-          <h2>{copy.mapHeading}</h2>
-          <p>{copy.mapDesc}</p>
-          <div class="vs-actions">
-            <a class="button" href={localizePath('/destinations', locale)}>{copy.mapPrimary}</a>
-            <a class="button-secondary" href="/self-drive">{copy.mapSecondary}</a>
-          </div>
+    <!-- ═══════════════════════════════════════
+         为什么通过大吉林咨询
+    ═══════════════════════════════════════ -->
+    <section class="home-trust-section" aria-labelledby="trust-heading">
+      <div class="home-trust-inner">
+        <div class="home-trust-header">
+          <h2 id="trust-heading">{copy.trustHeading}</h2>
+          <p>{copy.trustDesc}</p>
         </div>
-        <div class="vs-map-facts">
+        <div class="home-trust-grid">
           {trustFacts.map((fact) => (
-            <article>
+            <div class="home-trust-item">
               <strong>{fact.value}</strong>
               <p>{fact.label}</p>
-            </article>
+            </div>
           ))}
         </div>
       </div>
     </section>
 
-    <section class="vs-section">
-      <div class="container">
-        <header class="vs-head">
-          <h2>{copy.seasonHeading}</h2>
-          <p>{copy.seasonDesc}</p>
-        </header>
-        <div class="vs-season-grid stagger-children">
-          {seasonCards.map((card) => (
-            <article class="vs-season-card">
-              <h3>{locale === 'zh' ? `${card.season}季` : card.season}</h3>
-              <p>{card.summary}</p>
-              <div class="vs-season-links">
-                {card.links.map((link) => (
-                  <a href={localizeIfAvailable(link.href)}>{link.label}</a>
-                ))}
-              </div>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="vs-section">
-      <div class="container">
-        <header class="vs-head">
-          <h2>{copy.editorialHeading}</h2>
-          <p>{copy.editorialDesc}</p>
-        </header>
-        <div class="vs-editorial-grid">
-          {editorialCards.map((card) => (
-            <a class="vs-editorial-card" href={localizeIfAvailable(card.href)}>
-              <h3>{card.title}</h3>
-              <p>{card.body}</p>
-            </a>
-          ))}
-        </div>
-        <div class="vs-editorial-grid vs-editorial-grid-secondary">
-          {eventCards.map((card) => (
-            <a class="vs-editorial-card" href={localizeIfAvailable(card.href)}>
-              <h3>{card.title}</h3>
-              <p>{card.body}</p>
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="vs-section vs-ai">
-      <div class="container vs-ai-inner">
+    <!-- ═══════════════════════════════════════
+         SEASON: 四季规划
+    ═══════════════════════════════════════ -->
+    <section class="home-section" aria-labelledby="season-heading">
+      <div class="home-section-header">
+        <div class="section-accent accent-maple"></div>
         <div>
-          <h2>{copy.aiHeading}</h2>
+          <h2 id="season-heading">{copy.seasonHeading}</h2>
+          <p>{copy.seasonDesc}</p>
+        </div>
+      </div>
+      <div class="home-season-grid stagger-children">
+        {seasonCards.map((card) => (
+          <article class="home-season-card" data-color={card.color}>
+            <h3>{locale === 'zh' ? `${card.season}季` : card.season}</h3>
+            <p>{card.summary}</p>
+            <div class="home-season-links">
+              {card.links.map((link) => (
+                <a href={localizeIfAvailable(link.href)}>{link.label}</a>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         AI 导览
+    ═══════════════════════════════════════ -->
+    <section class="home-ai" aria-labelledby="ai-heading">
+      <div class="home-ai-inner">
+        <div class="home-ai-copy">
+          <h2 id="ai-heading">{copy.aiHeading}</h2>
           <p>{copy.aiDesc}</p>
-          <div class="vs-actions">
-            <button class="button" type="button" data-open-ai-widget>{copy.aiPrimary}</button>
-            <a class="button-secondary" href="/cooperation">{copy.aiSecondary}</a>
+          <div class="home-ai-actions">
+            <button class="btn-primary" type="button" data-open-ai-widget>{copy.aiPrimary}</button>
+            <a class="btn-secondary" href="/cooperation">{copy.aiSecondary}</a>
           </div>
         </div>
-        <div class="vs-ai-questions">
+        <div class="home-ai-questions">
           {aiQuestions.map((q) => (
-            <button type="button" class="button-secondary" data-open-ai-widget data-ai-question={q}>
-              {q}
-            </button>
+            <button type="button" class="btn-question" data-open-ai-widget data-ai-question={q}>{q}</button>
           ))}
         </div>
       </div>
     </section>
 
-    <section class="vs-section">
-      <div class="container">
-        <header class="vs-head">
-          <h2>{copy.exploreHeading}</h2>
-        </header>
-        <div class="vs-topic-grid">
-          {topicCards.map((card) => (
-            <a class="vs-topic-card" href={localizeIfAvailable(card.href)}>
-              <h3>{card.title}</h3>
-              <p>{card.body}</p>
-            </a>
-          ))}
+    <!-- ═══════════════════════════════════════
+         继续探索: 五大主题入口
+    ═══════════════════════════════════════ -->
+    <section class="home-explore" aria-labelledby="explore-heading">
+      <div class="home-section-header">
+        <div class="section-accent accent-golden"></div>
+        <div>
+          <h2 id="explore-heading">{copy.exploreHeading}</h2>
         </div>
       </div>
+      <div class="home-topic-grid stagger-children">
+        {topicCards.map((card) => (
+          <a class="home-topic-card" href={localizeIfAvailable(card.href)} data-color={card.color}>
+            <h3>{card.title}</h3>
+            <p>{card.body}</p>
+          </a>
+        ))}
+      </div>
     </section>
+
   </main>
 
   <Footer />
 </BaseLayout>
+
+<style>
+/* ══════════════════════════════════════════════════════
+   B+A 地域色系统 — 与 shop.astro 保持一致
+══════════════════════════════════════════════════════ */
+.home-shell {
+  --pine-green: #0b5f42;
+  --pine-green-hover: #094f36;
+  --lake-blue: #1e5f8a;
+  --lake-blue-hover: #174f75;
+  --maple-red: #b5451b;
+  --maple-red-hover: #9a3a16;
+  --golden: #c47d1a;
+  --golden-hover: #a86815;
+  --sunset-orange: #c2410c;
+  --sunset-orange-hover: #a13609;
+
+  --primary: #0b5f42;
+  --primary-strong: #083d54;
+  --primary-bg: #0b5f4210;
+  --text-strong: #0f172a;
+  --text: #334155;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --line-light: #f1f5f9;
+  --paper: #fafaf8;
+  --paper-strong: #f4f4f0;
+  --surface: #ffffff;
+  --shadow: 0 1px 3px #00000014, 0 4px 12px #0000000a;
+
+  padding-bottom: 80px;
+  background: var(--paper);
+}
+
+/* ── HERO: 地图背景 + 标注钉叠加 ─────────────── */
+.home-hero {
+  position: relative;
+  min-height: 520px;
+  overflow: hidden;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── 5图轮播 ── */
+.hero-carousel {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.hero-track {
+  display: flex;
+  height: 100%;
+  transition: transform 600ms cubic-bezier(.4,0,.2,1);
+}
+
+.hero-slide {
+  position: relative;
+  min-width: 100%;
+  height: 100%;
+}
+
+.hero-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.slide-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(5,10,20,.38) 0%,
+    rgba(5,10,20,.78) 100%
+  );
+}
+
+/* 指示器 */
+.hero-dots {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.hero-dots .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,.45);
+  cursor: pointer;
+  transition: background .25s, transform .25s;
+  padding: 0;
+}
+
+.hero-dots .dot.active {
+  background: #fff;
+  transform: scale(1.3);
+}
+
+/* 文字叠加层：底部渐变遮罩保证可读性 */
+.home-hero-copy {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 36px 20px;
+  background: linear-gradient(to bottom,
+    rgba(5,10,20,.55) 0%,
+    rgba(5,10,20,.65) 35%,
+    rgba(5,10,20,.8) 65%,
+    rgba(5,10,20,.92) 100%);
+  width: 100%;
+}
+
+.home-hero-eyebrow {
+  color: rgba(255,255,255,.9);
+  text-shadow: 0 1px 6px rgba(0,0,0,.55);
+}
+
+.home-hero-title {
+  color: #fff;
+}
+
+.home-hero-lead {
+  color: rgba(255,255,255,.85);
+}
+
+.home-hero-actions .btn-primary {
+  background: rgba(255,255,255,.95);
+  color: var(--text-strong);
+}
+.home-hero-actions .btn-primary:hover {
+  background: #fff;
+}
+.home-hero-actions .btn-secondary {
+  color: #fff;
+  border-color: rgba(255,255,255,.6);
+  background: rgba(5,12,28,.88);
+  backdrop-filter: blur(8px);
+  text-shadow: 0 0 12px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.7);
+  box-shadow: 0 4px 20px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.home-hero-actions .btn-secondary:hover {
+  border-color: rgba(255,255,255,.9);
+  background: rgba(15,23,42,.88);
+  text-shadow: 0 2px 12px rgba(0,0,0,.95);
+}
+
+
+
+.home-hero-eyebrow {
+  color: rgba(255,255,255,.75);
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  margin: 0 0 12px;
+}
+
+.home-hero-title {
+  color: #fff;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 900;
+  margin: 0 0 12px;
+  line-height: 1.1;
+  letter-spacing: -.03em;
+}
+
+.home-hero-lead {
+  color: rgba(255,255,255,.85);
+  font-size: 1rem;
+  margin: 0 0 24px;
+  line-height: 1.7;
+  max-width: 46ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.home-hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ── SHARED SECTION ─────────────────────────── */
+.home-section {
+  margin: 0 auto 64px;
+  max-width: 1200px;
+  padding: 0 20px;
+}
+
+.home-section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line-light);
+}
+
+.section-accent {
+  width: 4px;
+  min-height: 44px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.accent-pine   { background: var(--pine-green); }
+.accent-lake   { background: var(--lake-blue); }
+.accent-maple  { background: var(--maple-red); }
+.accent-golden { background: var(--golden); }
+
+.home-section-header h2 {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-strong);
+  margin: 0 0 6px;
+  letter-spacing: -.01em;
+}
+.home-section-header p {
+  font-size: .9rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── CHANNEL GRID ──────────────────────────── */
+.home-channel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.home-channel-card {
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+
+.home-channel-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px #00000014;
+}
+
+.home-channel-card[data-color="pine-green"]  { border-left: 4px solid var(--pine-green); }
+.home-channel-card[data-color="lake-blue"]    { border-left: 4px solid var(--lake-blue); }
+.home-channel-card[data-color="maple-red"]    { border-left: 4px solid var(--maple-red); }
+.home-channel-card[data-color="golden"]       { border-left: 4px solid var(--golden); }
+
+.home-channel-card[data-color="pine-green"]:hover { border-color: var(--pine-green); border-left-color: var(--pine-green); }
+.home-channel-card[data-color="lake-blue"]:hover  { border-color: var(--lake-blue); border-left-color: var(--lake-blue); }
+.home-channel-card[data-color="maple-red"]:hover  { border-color: var(--maple-red); border-left-color: var(--maple-red); }
+.home-channel-card[data-color="golden"]:hover     { border-color: var(--golden); border-left-color: var(--golden); }
+
+.home-channel-image {
+  height: 160px;
+  overflow: hidden;
+  background: linear-gradient(160deg, #f8fafc, #f1f5f9);
+}
+.home-channel-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.home-channel-body {
+  padding: 18px 20px 20px;
+  flex: 1;
+}
+.home-channel-body h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-strong);
+  margin: 0 0 8px;
+}
+.home-channel-body p {
+  font-size: .85rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── DISCOVERY ────────────────────────────── */
+.home-discovery {
+  margin: 0 auto 64px;
+  max-width: 1200px;
+  padding: 0 20px;
+}
+
+.home-discovery-inner {
+  border-radius: 24px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 28px 32px;
+  box-shadow: var(--shadow);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: center;
+}
+
+.home-discovery-copy h2 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-strong);
+  margin: 0 0 6px;
+}
+.home-discovery-copy p {
+  font-size: .9rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.home-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 480px;
+}
+.home-tag {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--paper);
+  color: var(--text);
+  font-size: .85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all .18s ease;
+}
+.home-tag:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-bg);
+}
+
+/* ── PLAN GRID ─────────────────────────────── */
+.home-plan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.home-plan-card {
+  border-radius: 18px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  padding: 22px 24px 20px;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+
+.home-plan-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px #00000014;
+}
+
+.home-plan-card[data-color="pine-green"]  { border-left: 4px solid var(--pine-green); }
+.home-plan-card[data-color="lake-blue"]    { border-left: 4px solid var(--lake-blue); }
+.home-plan-card[data-color="maple-red"]    { border-left: 4px solid var(--maple-red); }
+
+.home-plan-card[data-color="pine-green"]:hover { border-color: var(--pine-green); border-left-color: var(--pine-green); }
+.home-plan-card[data-color="lake-blue"]:hover  { border-color: var(--lake-blue); border-left-color: var(--lake-blue); }
+.home-plan-card[data-color="maple-red"]:hover  { border-color: var(--maple-red); border-left-color: var(--maple-red); }
+
+.home-plan-tag {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+  display: inline-block;
+}
+.home-plan-card h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-strong);
+  margin: 0;
+  line-height: 1.4;
+}
+.home-plan-card p {
+  font-size: .85rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── MAP SECTION ───────────────────────────── */
+.home-map-section {
+  margin: 0 auto 64px;
+  max-width: 1200px;
+  padding: 0 20px;
+}
+
+.home-map-inner {
+  border-radius: 28px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: 0 18px 34px #00000014;
+  padding: 32px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: center;
+}
+
+.home-map-copy h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-strong);
+  margin: 0 0 10px;
+}
+.home-map-copy p {
+  font-size: .9rem;
+  color: var(--muted);
+  margin: 0 0 20px;
+  line-height: 1.7;
+}
+.home-map-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ── HOT SERVICES GRID ─────────────────────── */
+.home-hot-services {
+  margin: 0 auto 64px;
+  max-width: 1200px;
+  padding: 0 20px;
+}
+
+.home-hot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.home-hot-card {
+  border-radius: 20px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  text-decoration: none;
+  display: block;
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+
+.home-hot-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px #00000014;
+}
+
+.home-hot-card[data-color="pine-green"]  { border-left: 4px solid var(--pine-green); }
+.home-hot-card[data-color="lake-blue"]    { border-left: 4px solid var(--lake-blue); }
+.home-hot-card[data-color="maple-red"]    { border-left: 4px solid var(--maple-red); }
+.home-hot-card[data-color="golden"]       { border-left: 4px solid var(--golden); }
+
+.home-hot-card[data-color="pine-green"]:hover { border-color: var(--pine-green); border-left-color: var(--pine-green); }
+.home-hot-card[data-color="lake-blue"]:hover  { border-color: var(--lake-blue); border-left-color: var(--lake-blue); }
+.home-hot-card[data-color="maple-red"]:hover  { border-color: var(--maple-red); border-left-color: var(--maple-red); }
+.home-hot-card[data-color="golden"]:hover     { border-color: var(--golden); border-left-color: var(--golden); }
+
+.home-hot-card-inner {
+  padding: 22px 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.home-hot-card-inner h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-strong);
+  margin: 0;
+}
+
+.home-hot-card-inner p {
+  font-size: .83rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.home-hot-cta {
+  display: inline-block;
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--primary);
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--primary-bg);
+  transition: background .2s, color .2s;
+  width: fit-content;
+}
+
+.home-hot-card[data-color="lake-blue"] .home-hot-cta  { color: var(--lake-blue); background: rgba(30,95,138,.1); }
+.home-hot-card[data-color="maple-red"] .home-hot-cta  { color: var(--maple-red); background: rgba(181,69,27,.1); }
+.home-hot-card[data-color="golden"] .home-hot-cta     { color: var(--golden); background: rgba(196,125,26,.1); }
+.home-hot-card[data-color="pine-green"] .home-hot-cta { color: var(--pine-green); background: rgba(11,95,66,.1); }
+
+.home-hot-cta:hover {
+  background: var(--primary);
+  color: #fff;
+}
+.home-hot-card[data-color="lake-blue"] .home-hot-cta:hover  { background: var(--lake-blue); }
+.home-hot-card[data-color="maple-red"] .home-hot-cta:hover  { background: var(--maple-red); }
+.home-hot-card[data-color="golden"] .home-hot-cta:hover     { background: var(--golden); }
+.home-hot-card[data-color="pine-green"] .home-hot-cta:hover { background: var(--pine-green); }
+
+/* ── TRUST SECTION ──────────────────────────── */
+.home-trust-section {
+  margin: 0 auto 64px;
+  max-width: 1200px;
+  padding: 0 20px;
+}
+
+.home-trust-inner {
+  border-radius: 28px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #f0f9f0 40%, #f8fafc 100%);
+  border: 2px solid rgba(11,95,66,.15);
+  box-shadow: 0 18px 34px rgba(11,95,66,.08);
+  padding: 36px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.home-trust-header {
+  text-align: center;
+}
+
+.home-trust-header h2 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-strong);
+  margin: 0 0 10px;
+  letter-spacing: -.01em;
+}
+
+.home-trust-header p {
+  font-size: .92rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.7;
+  max-width: 56ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.home-trust-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  background: var(--paper);
+}
+.home-trust-item {
+  padding: 18px 16px;
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+}
+.home-trust-item:nth-child(2n) { border-right: none; }
+.home-trust-item:nth-child(3),
+.home-trust-item:nth-child(4) { border-bottom: none; }
+.home-trust-item strong {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-strong);
+  margin-bottom: 4px;
+}
+.home-trust-item p {
+  font-size: .8rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ── SEASON GRID ───────────────────────────── */
+.home-season-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.home-season-card {
+  border-radius: 18px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  padding: 20px 22px 18px;
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+.home-season-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px #00000010;
+}
+.home-season-card[data-color="pine-green"]  { border-left: 4px solid var(--pine-green); }
+.home-season-card[data-color="lake-blue"]    { border-left: 4px solid var(--lake-blue); }
+.home-season-card[data-color="maple-red"]    { border-left: 4px solid var(--maple-red); }
+.home-season-card[data-color="golden"]       { border-left: 4px solid var(--golden); }
+
+.home-season-card h3 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-strong);
+  margin: 0 0 8px;
+}
+.home-season-card p {
+  font-size: .82rem;
+  color: var(--muted);
+  margin: 0 0 14px;
+  line-height: 1.65;
+}
+.home-season-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.home-season-links a {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--line);
+  transition: color .15s;
+}
+.home-season-links a:last-child { border-bottom: none; }
+.home-season-links a:hover { color: var(--primary-strong); }
+
+/* ── AI ────────────────────────────────────── */
+.home-ai {
+  margin: 0 auto 64px;
+  max-width: 1200px;
+  padding: 0 20px;
+}
+
+.home-ai-inner {
+  border-radius: 28px;
+  border: 1px solid var(--line);
+  background: radial-gradient(circle at 100% 0%, rgba(11,95,66,.12), transparent 40%),
+              radial-gradient(circle at 0% 100%, rgba(30,95,138,.1), transparent 40%),
+              var(--surface);
+  box-shadow: 0 20px 40px #00000012;
+  padding: 32px 36px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 28px;
+  align-items: center;
+}
+
+.home-ai-copy h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-strong);
+  margin: 0 0 8px;
+}
+.home-ai-copy p {
+  font-size: .9rem;
+  color: var(--muted);
+  margin: 0 0 18px;
+  line-height: 1.7;
+}
+.home-ai-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.home-ai-questions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 300px;
+}
+.btn-question {
+  text-align: left;
+  padding: 9px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: .82rem;
+  cursor: pointer;
+  transition: all .18s ease;
+}
+.btn-question:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-bg);
+}
+
+/* ── EXPLORE / TOPIC GRID ─────────────────── */
+.home-explore {
+  margin: 0 auto 64px;
+  max-width: 1200px;
+  padding: 0 20px;
+}
+
+.home-topic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.home-topic-card {
+  border-radius: 16px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  padding: 18px 20px 16px;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+.home-topic-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px #00000010;
+}
+.home-topic-card[data-color="pine-green"]    { border-left: 4px solid var(--pine-green); }
+.home-topic-card[data-color="lake-blue"]      { border-left: 4px solid var(--lake-blue); }
+.home-topic-card[data-color="maple-red"]      { border-left: 4px solid var(--maple-red); }
+.home-topic-card[data-color="golden"]         { border-left: 4px solid var(--golden); }
+.home-topic-card[data-color="sunset-orange"]  { border-left: 4px solid var(--sunset-orange); }
+
+.home-topic-card h3 {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--text-strong);
+  margin: 0;
+}
+.home-topic-card p {
+  font-size: .8rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── BUTTONS ───────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%);
+  color: #fff;
+  font-size: .88rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px #0b5f424d;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  color: var(--text-strong);
+  font-size: .88rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.btn-secondary:hover {
+  border-color: var(--text-strong);
+  background: var(--text-strong);
+  color: #fff;
+}
+
+.btn-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.btn-dot.pine-green  { background: var(--pine-green); }
+.btn-dot.lake-blue   { background: var(--lake-blue); }
+.btn-dot.maple-red   { background: var(--maple-red); }
+.btn-dot.golden      { background: var(--golden); }
+
+/* ── STAGGER ANIMATION ─────────────────────── */
+.stagger-children > * { opacity: 0; transform: translateY(16px); transition: opacity .4s ease-out, transform .4s ease-out; }
+.stagger-children.visible > * { opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(1) { transition-delay: 0ms; }
+.stagger-children.visible > *:nth-child(2) { transition-delay: 80ms; }
+.stagger-children.visible > *:nth-child(3) { transition-delay: 160ms; }
+.stagger-children.visible > *:nth-child(4) { transition-delay: 240ms; }
+.stagger-children.visible > *:nth-child(5) { transition-delay: 320ms; }
+
+/* ── RESPONSIVE ────────────────────────────── */
+@media (max-width: 900px) {
+  .home-map-inner { grid-template-columns: 1fr; }
+  .home-ai-inner { grid-template-columns: 1fr; }
+  .home-ai-questions { min-width: auto; }
+  .home-discovery-inner { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .home-hero { padding: 60px 16px 48px; }
+  .home-channel-grid { grid-template-columns: 1fr; }
+  .home-plan-grid { grid-template-columns: 1fr; }
+  .home-season-grid { grid-template-columns: 1fr 1fr; }
+  .home-topic-grid { grid-template-columns: 1fr 1fr; }
+  .home-trust-grid { grid-template-columns: 1fr 1fr; }
+  .home-section { padding: 0 16px; }
+  .home-discovery { padding: 0 16px; }
+  .home-map-section { padding: 0 16px; }
+  .home-ai { padding: 0 16px; }
+  .home-explore { padding: 0 16px; }
+  .home-hero-highlights { display: none; }
+}
+</style>
+
+<script>
+// ── 5图轮播 ────────────────────────────────
+function initHeroCarousel() {
+  const carousel = document.getElementById('heroCarousel');
+  if (!carousel) return;
+  const track = carousel.querySelector('.hero-track') as HTMLElement;
+  const dots = carousel.querySelectorAll('.dot');
+  let current = 0;
+  let timer: ReturnType<typeof setInterval>;
+
+  function go(idx: number) {
+    current = (idx + dots.length) % dots.length;
+    track.style.transform = `translateX(-${current * 100}%)`;
+    dots.forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+      d.setAttribute('aria-selected', i === current ? 'true' : 'false');
+    });
+  }
+
+  dots.forEach((d) => d.addEventListener('click', () => {
+    go(Number((d as HTMLElement).dataset.slide));
+    resetTimer();
+  }));
+
+  function advance() { go(current + 1); }
+  function resetTimer() {
+    clearInterval(timer);
+    timer = setInterval(advance, 4500);
+  }
+
+  timer = setInterval(advance, 4500);
+}
+document.addEventListener('DOMContentLoaded', initHeroCarousel);
+
+// ── Stagger + intersection observer ────────
+function initHomeAnimations() {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    },
+    { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+  );
+  document.querySelectorAll('.stagger-children').forEach((el) => observer.observe(el));
+}
+document.addEventListener('DOMContentLoaded', initHomeAnimations);
+initHomeAnimations();
+</script>

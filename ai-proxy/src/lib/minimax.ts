@@ -1,6 +1,6 @@
 /**
- * MiniMax API Client
- * China region endpoint: https://api.minimax.chat
+ * MiniMax API Client — OpenAI-compatible endpoint (Token Plan)
+ * Endpoint: https://api.minimax.chat/v1/chat/completions
  */
 
 import { z } from 'zod';
@@ -46,23 +46,21 @@ export interface ChatResponse {
 // Client
 // ---------------------------------------------------------------------------
 
-const MINIMAX_API_BASE = 'https://api.minimax.chat/v1';
+const MINIMAX_API_BASE = 'https://api.minimaxi.com/v1';
 
 export class MiniMaxClient {
   private apiKey: string;
-  private groupId: string;
 
-  constructor(apiKey: string, groupId: string) {
+  constructor(apiKey: string) {
     this.apiKey = apiKey;
-    this.groupId = groupId;
   }
 
   /**
-   * Send a chat completion request to MiniMax.
-   * Model defaults to MiniMax-Text-01 if not specified.
+   * Send a chat completion request via OpenAI-compatible endpoint.
+   * No GroupId required for Token Plan keys.
    */
   async chat(request: ChatRequest): Promise<ChatResponse> {
-    const url = `${MINIMAX_API_BASE}/text/chatcompletion_v2?GroupId=${this.groupId}`;
+    const url = `${MINIMAX_API_BASE}/chat/completions`;
 
     const response = await fetch(url, {
       method: 'POST',
@@ -71,8 +69,8 @@ export class MiniMaxClient {
         Authorization: `Bearer ${this.apiKey}`,
       },
       body: JSON.stringify({
-        model: request.model || 'MiniMax-Text-01',
-        tokens_to_generate: request.max_tokens || 1024,
+        model: request.model || 'M2.7',
+        max_tokens: request.max_tokens || 512,
         temperature: request.temperature ?? 0.7,
         messages: request.messages,
       }),
@@ -88,8 +86,9 @@ export class MiniMaxClient {
 
   /**
    * Build a system prompt for the Jilin tourism AI assistant.
+   * Optionally prepends retrieved knowledge base context.
    */
-  static buildSystemPrompt(locale: string = 'zh'): string {
+  static buildSystemPrompt(locale: string = 'zh', knowledgeContext?: string): string {
     const prompts: Record<string, string> = {
       zh: `你是吉林文旅 AI 导览助手，专注于为游客提供关于吉林省（长春、吉林、长白山、延边等）的旅游、工业研学、331 国道自驾路线和官方服务的咨询。
 
@@ -104,13 +103,17 @@ export class MiniMaxClient {
       en: `You are the Jilin Culture & Tourism AI Guide Assistant, helping visitors with information about Jilin Province, China — including Changchun, Jilin City, Changbaishan, Yanbian, industrial study tours, Route 331 self-driving, and official services.
 
 Keep answers concise within 200 words. If a question is beyond your scope, suggest human assistance.`,
-      ja: `あなたは吉林文旅AIガイドアシスタントです。吉林省（長春、吉林、長白山、延辺など）の観光、工业研学、331国道ドライブルート、公式サービスについてサポートします。
+      ja: `あなたは吉林文旅AIガイドアシスタントです。吉林省（長春、吉林、長白山、延辺など）の観光、工业研学、331国道ドライブルート、公式サービスについてをサポートします。
 
 回答は200文字以内に簡潔に。対応範囲外の質問は人工サービスへの 전환を提案してください。`,
       ko: `당신은 지린 문화·관광 AI 가이드 어시스턴트입니다. 지린성(창춘, 지린, 장백산, 연변 등)의 관광, 산업 체험, 331국도自驾 노선, 공식 서비스에 대해 도와드립니다.
 
 답변은 200자 이내로 간결하게。응답 범위를 벗어나는 질문은人工 서비스로 전환을 제안하세요.`,
     };
-    return prompts[locale] || prompts.zh;
+    const base = prompts[locale] || prompts.zh;
+    if (knowledgeContext) {
+      return base + '\n\n' + knowledgeContext;
+    }
+    return base;
   }
 }

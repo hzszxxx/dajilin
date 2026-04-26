@@ -92,6 +92,8 @@ const footerTextMap: Record<
     copyright: string;
     privacy: string;
     terms: string;
+    disclaimer: string;
+    icp: string;
   }
 > = {
   zh: {
@@ -110,14 +112,16 @@ const footerTextMap: Record<
     aboutAI: 'AI助手',
     aboutUs: '关于我们',
     contactTitle: '联系我们',
-    contactPhone: '电话: 待提供',
-    contactEmail: '邮箱: info@dajilin.net',
+    contactPhone: '0431-81157356',
+    contactEmail: 'info@dajilin.net',
     socialWechat: '微信',
     socialWeibo: '微博',
     socialXiaohongshu: '小红书',
     copyright: '© {year} dajilin.net. All rights reserved.',
     privacy: '隐私政策',
     terms: '使用条款',
+    disclaimer: '温馨提示：本网站为吉林文旅资讯导航平台，所有购票入口均跳转至景区官方正规票务平台。本站不销售门票、不代收票款、不提供票务代理服务。本站与 dajilin.com（吉林日报官方大吉网）无任何隶属及合作关系。',
+    icp: '吉ICP备10004131号-31',
   },
   en: {
     brandSubtitle: 'Jilin Travel Resource Portal',
@@ -135,14 +139,16 @@ const footerTextMap: Record<
     aboutAI: 'AI Assistant',
     aboutUs: 'About Us',
     contactTitle: 'Contact Us',
-    contactPhone: 'Tel: To be provided',
-    contactEmail: 'Email: info@dajilin.net',
+    contactPhone: '0431-81157356',
+    contactEmail: 'info@dajilin.net',
     socialWechat: 'WeChat',
     socialWeibo: 'Weibo',
     socialXiaohongshu: 'Xiaohongshu',
     copyright: '© {year} dajilin.net. All rights reserved.',
     privacy: 'Privacy Policy',
     terms: 'Terms of Use',
+    disclaimer: 'Disclaimer: This site is a Jilin travel information portal. All ticket purchase links redirect to official scenic area platforms. This site does not sell tickets or provide ticketing agency services.',
+    icp: '吉ICP备10004131号-31',
   },
   ja: {
     brandSubtitle: '吉林文旅リソースポータル',
@@ -160,14 +166,16 @@ const footerTextMap: Record<
     aboutAI: 'AIアシスタント',
     aboutUs: '私たちについて',
     contactTitle: 'お問い合わせ',
-    contactPhone: '電話: 未定',
-    contactEmail: 'メール: info@dajilin.net',
+    contactPhone: '0431-81157356',
+    contactEmail: 'info@dajilin.net',
     socialWechat: '微信',
     socialWeibo: '微博',
     socialXiaohongshu: '小红書',
     copyright: '© {year} dajilin.net. All rights reserved.',
     privacy: 'プライバシーポリシー',
     terms: '利用規約',
+    disclaimer: 'ご注意：本 사이트는 지린 관광 정보 안내 포털입니다. 모든 티켓 구매 링크는 공식 관광지 플랫폼으로 연결됩니다.',
+    icp: '吉ICP备10004131号-31',
   },
   ko: {
     brandSubtitle: '지린 관광 자원 포털',
@@ -185,14 +193,16 @@ const footerTextMap: Record<
     aboutAI: 'AI 도우미',
     aboutUs: '회사 소개',
     contactTitle: '연락처',
-    contactPhone: '전화: 미정',
-    contactEmail: '이메일: info@dajilin.net',
+    contactPhone: '0431-81157356',
+    contactEmail: 'info@dajilin.net',
     socialWechat: '위챗',
     socialWeibo: '웨이보',
     socialXiaohongshu: '샤오홍슈',
     copyright: '© {year} dajilin.net. All rights reserved.',
     privacy: '개인정보처리방침',
     terms: '이용약관',
+    disclaimer: '주의: 본 사이트는 지린 관광 정보 안내 포털입니다. 모든 티켓 구매 링크는 공식 관광지 플랫폼으로 연결됩니다.',
+    icp: '吉ICP备10004131号-31',
   },
 };
 
@@ -205,6 +215,7 @@ const navLabelMap: Record<
     studyTours: string;
     route331: string;
     services: string;
+    food: string;
     guides: string;
     cooperation: string;
     ai: string;
@@ -218,6 +229,7 @@ const navLabelMap: Record<
     studyTours: '工业研学',
     route331: '自驾攻略',
     services: '官方服务入口',
+    food: '老字号餐饮',
     guides: '攻略与资讯',
     cooperation: '合作咨询',
     ai: 'AI助手',
@@ -230,6 +242,7 @@ const navLabelMap: Record<
     studyTours: 'Study Tours',
     route331: 'Route 331',
     services: 'Official Services',
+    food: 'Food Heritage',
     guides: 'Guides & News',
     cooperation: 'Cooperation',
     ai: 'AI Assistant',
@@ -242,6 +255,7 @@ const navLabelMap: Record<
     studyTours: '産業研修',
     route331: '自驾攻略',
     services: '公式サービス',
+    food: '老舗グルメ',
     guides: 'ガイド情報',
     cooperation: '協業相談',
     ai: 'AIアシスタント',
@@ -254,6 +268,7 @@ const navLabelMap: Record<
     studyTours: '산업 연수',
     route331: '331 국도',
     services: '공식 서비스',
+    food: '전통 음식',
     guides: '가이드 & 소식',
     cooperation: '협업 문의',
     ai: 'AI 도우미',
@@ -272,6 +287,7 @@ export const getNavItems = (locale: Locale) => {
     { href: localizePath('/themes', locale), label: labels.themes },
     { href: localizePath('/study-tours', locale), label: labels.studyTours },
     { href: localizePath('/self-drive', locale), label: labels.route331 },
+    { href: localizePath('/food', locale), label: labels.food },
     { href: localizePath('/ai-assistant', locale), label: labels.ai },
   ];
 };

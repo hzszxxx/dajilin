@@ -4,7 +4,8 @@ export type AIKnowledgeModule =
   | 'industrial_study_tours'
   | 'route_331'
   | 'official_services'
-  | 'cooperation';
+  | 'cooperation'
+  | 'self_drive';
 
 export interface AIWidgetContext {
   module: AIKnowledgeModule;

@@ -33,11 +33,10 @@ npm run dev
 
 ## 部署
 
-- 当前验证域名：`dajilin.renban.xyz`
 - 正式域名：`dajilin.net`
-- 统一 API：`https://api.renban.xyz`
-- 验证域名构建命令：
-  - `SITE_URL=https://dajilin.renban.xyz PUBLIC_GN_API_BASE_URL=https://api.renban.xyz npm run build`
+- 统一 API：`https://api.dajilin.net`
+- 构建命令：
+  - `SITE_URL=https://dajilin.net PUBLIC_GN_API_BASE_URL=https://api.dajilin.net npm run build`
 - 服务器切换版本时：
   - `/var/www/dajilin/current` 必须保持为 release symlink，不要作为实体目录直接覆盖
 - 部署清单：

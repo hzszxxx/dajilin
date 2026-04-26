@@ -1,0 +1,194 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { foodFaqs, jilinFoodBrands } from '@/lib/food-brands';
+import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+import {
+  buildBreadcrumbListSchema,
+  buildFAQPageSchema,
+  buildFoodBrandSchema,
+  buildWebPageSchema,
+} from '@/lib/schema';
+
+export function getStaticPaths() {
+  return jilinFoodBrands.map((brand) => ({
+    params: { slug: brand.slug },
+    props: { brand },
+  }));
+}
+
+const brand = Astro.props.brand ?? jilinFoodBrands.find((item) => item.slug === Astro.params.slug);
+const locale = getLocaleFromPathname(Astro.url.pathname) as Locale;
+
+if (!brand) {
+  return Astro.redirect(localizePath('/food', locale));
+}
+
+const pagePath = localizePath(`/food/${brand.slug}`, locale);
+const title = `${brand.name} | 吉林老字号餐饮推荐`;
+const description = `${brand.name}是${brand.city}代表性老字号餐饮/食品品牌，适合${brand.bestFor.join('、')}等吉林文旅行程场景。`;
+const breadcrumbs = [
+  { name: locale === 'zh' ? '首页' : 'Home', url: localizePath('/', locale) },
+  { name: locale === 'zh' ? '老字号餐饮' : 'Food Heritage', url: localizePath('/food', locale) },
+  { name: brand.name, url: pagePath },
+];
+
+const brandFaqs = [
+  {
+    question: `${brand.name}适合放在哪类吉林旅游路线里？`,
+    answer: `${brand.name}适合搭配${brand.routePairing.join('、')}等路线。建议把它作为一餐、轻餐或伴手礼节点，而不是单独绕路打卡。`,
+  },
+  {
+    question: `${brand.name}到店前需要确认什么？`,
+    answer: brand.planningNote,
+  },
+  ...foodFaqs.slice(1, 3),
+];
+
+const schemas = [
+  buildWebPageSchema(pagePath, title, description, locale),
+  buildFoodBrandSchema(pagePath, brand.name, description, locale, {
+    category: brand.category,
+    city: brand.city,
+  }),
+  buildFAQPageSchema(pagePath, title, brandFaqs, locale),
+  buildBreadcrumbListSchema(pagePath, breadcrumbs, locale),
+];
+---
+
+<BaseLayout title={`${title} | dajilin.net`} description={description} schemas={schemas} locale={locale}>
+  <Header />
+  <main class="page-shell food-detail-page">
+    <div class="container page-grid">
+      <section class="content-card">
+        <div class="page-copy">
+          <div class="eyebrow">Jilin Food Heritage</div>
+          <h1>{brand.name}</h1>
+          <p>{description}</p>
+        </div>
+
+        <section class="food-answer-block">
+          <h2>一句话答案</h2>
+          <p>{brand.summary}</p>
+        </section>
+
+        <section class="detail-block">
+          <h2>推荐体验</h2>
+          <dl class="food-detail-list">
+            <div>
+              <dt>所在城市</dt>
+              <dd>{brand.city}</dd>
+            </div>
+            <div>
+              <dt>品牌类型</dt>
+              <dd>{brand.category}</dd>
+            </div>
+            <div>
+              <dt>老字号属性</dt>
+              <dd>{brand.heritage}</dd>
+            </div>
+            <div>
+              <dt>推荐品类</dt>
+              <dd>{brand.recommendedItems.join(' / ')}</dd>
+            </div>
+            <div>
+              <dt>适合场景</dt>
+              <dd>{brand.bestFor.join(' / ')}</dd>
+            </div>
+            {brand.representativeStore && (
+              <div>
+                <dt>代表门店</dt>
+                <dd>{brand.representativeStore}</dd>
+              </div>
+            )}
+            {brand.address && (
+              <div>
+                <dt>参考地址</dt>
+                <dd>{brand.address}</dd>
+              </div>
+            )}
+            {brand.phone && (
+              <div>
+                <dt>联系电话</dt>
+                <dd>{brand.phone}</dd>
+              </div>
+            )}
+            {brand.businessHours && (
+              <div>
+                <dt>营业时间</dt>
+                <dd>{brand.businessHours}</dd>
+              </div>
+            )}
+            {brand.teamDiningCapacity && (
+              <div>
+                <dt>团餐/合作</dt>
+                <dd>{brand.teamDiningCapacity}</dd>
+              </div>
+            )}
+          </dl>
+        </section>
+
+        <section class="detail-block">
+          <h2>适合搭配的路线</h2>
+          <div class="theme-grid-full">
+            {brand.routePairing.map((route) => (
+              <div class="theme-card">
+                <div class="theme-card-body">
+                  <h3>{route}</h3>
+                  <p>可作为餐饮、轻餐、补给或伴手礼节点加入路线。</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section class="detail-block">
+          <h2>出行提醒</h2>
+          <p>{brand.planningNote}</p>
+          <p class="food-source-note">
+            当前页面不写死具体营业状态。地址、电话、营业时间、菜单和接待能力应在出行或合作前二次核验。
+          </p>
+        </section>
+
+        <section class="detail-block">
+          <h2>常见问题</h2>
+          <div class="faq-list">
+            {brandFaqs.map((faq) => (
+              <article class="faq-item">
+                <h3>{faq.question}</h3>
+                <p>{faq.answer}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      </section>
+
+      <aside class="page-card">
+        <h3>核验信息</h3>
+        <p>{brand.sourceNote}</p>
+        <p><a href={brand.verificationUrl} target="_blank" rel="noopener noreferrer">查看来源</a></p>
+        <div class="detail-side-card">
+          <h3>核验状态</h3>
+          <ul class="page-list">
+            {brand.representativeStore ? (
+              <li style="color: var(--success-color, green);">✓ 基础信息已核验</li>
+            ) : (
+              <li style="color: var(--warning-color, orange);">⚠️ 待人工核验</li>
+            )}
+            <li>此为参考信息，到店前请二次确认</li>
+          </ul>
+        </div>
+        <div class="detail-side-card">
+          <h3>相关入口</h3>
+          <ul class="page-list">
+            <li><a href={localizePath('/food', locale)}>返回老字号餐饮</a></li>
+            <li><a href={localizePath('/cooperation', locale)}>提交合作咨询</a></li>
+            <li><a href={localizePath('/guides', locale)}>查看攻略与资讯</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

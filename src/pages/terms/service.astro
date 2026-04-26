@@ -1,0 +1,22 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+
+const title = '服务条款 | dajilin.net';
+const description = 'dajilin.net 服务条款，适用于用户提交旅游、研学、自驾和合作咨询需求。';
+---
+
+<BaseLayout title={title} description={description}>
+  <Header />
+  <main class="page-shell legal-page">
+    <section class="section-card">
+      <p class="eyebrow">Service Terms</p>
+      <h1>服务条款</h1>
+      <p>平台提供信息咨询、路线建议、需求收集和合作对接服务，具体服务价格、档期和执行安排以顾问最终确认为准。</p>
+      <p>涉及门票、住宿、交通、企业参访或第三方资源时，官方规则和实际服务方确认结果优先。</p>
+      <p>用户应根据自身情况审慎决策，并确保提交的联系方式和需求信息真实有效。</p>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

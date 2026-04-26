@@ -44,8 +44,8 @@ dajilin.site → GN Gateway (API) → GN-Radar (External GEO Engine)
 | Service | URL |
 |---------|-----|
 | Production Site | https://dajilin.net |
-| GN Gateway API | https://api.renban.xyz |
-| n8n Webhooks | https://n.n8n.wang |
+| GN Gateway API | https://api.dajilin.net |
+| n8n Webhooks | https://n8n.dajilin.net |
 | Ghost CMS | http://localhost:2368 (local dev) |
 
 ### 1.4 Server Directory Structure
@@ -72,7 +72,7 @@ dajilin.site → GN Gateway (API) → GN-Radar (External GEO Engine)
   ```bash
   cd /Users/aqua/workspace/GEO-N8N-OpenClaw/websites/dajilin
   npm install
-  SITE_URL=https://dajilin.net PUBLIC_GN_API_BASE_URL=https://api.renban.xyz npm run build
+  SITE_URL=https://dajilin.net PUBLIC_GN_API_BASE_URL=https://api.dajilin.net npm run build
   ```
 
 - [ ] **Verify build output in `dist/`:**
@@ -118,7 +118,7 @@ Required environment variables for production (`/var/www/dajilin/shared/.env`):
 ```env
 # Site Configuration
 SITE_URL=https://dajilin.net
-PUBLIC_GN_API_BASE_URL=https://api.renban.xyz
+PUBLIC_GN_API_BASE_URL=https://api.dajilin.net
 PUBLIC_GN_SITE_ID=dajilin
 
 # AI Assistant (if configured)
@@ -134,17 +134,17 @@ GHOST_ADMIN_API_KEY=<from-ghost-admin>
 GHOST_WEBHOOK_SECRET=<generated>
 
 # n8n Webhooks (dajilin-specific)
-PUBLIC_GN_N8N_STATION_APPLY_WEBHOOK_URL=https://n.n8n.wang/webhook/dajilin-station-application
-PUBLIC_GN_N8N_ORDER_PROCESSING_WEBHOOK_URL=https://n.n8n.wang/webhook/dajilin-order-processing
-PUBLIC_GN_N8N_AI_HANDOFF_WEBHOOK_URL=https://n.n8n.wang/webhook/dajilin-ai-handoff
+PUBLIC_GN_N8N_STATION_APPLY_WEBHOOK_URL=https://n8n.dajilin.net/webhook/dajilin-station-application
+PUBLIC_GN_N8N_ORDER_PROCESSING_WEBHOOK_URL=https://n8n.dajilin.net/webhook/dajilin-order-processing
+PUBLIC_GN_N8N_AI_HANDOFF_WEBHOOK_URL=https://n8n.dajilin.net/webhook/dajilin-ai-handoff
 
 # Shared Radar Workflows
-GN_N8N_MONITOR_TRIGGER_URL=https://n.n8n.wang/webhook/radar-monitor-trigger
-GN_N8N_BOOKING_SUBMIT_URL=https://n.n8n.wang/webhook/booking-submit
-GN_N8N_SITE_ASSESSMENT_URL=https://n.n8n.wang/webhook/radar-site-assessment
-GN_N8N_SITE_ONBOARDING_URL=https://n.n8n.wang/webhook/radar-site-onboarding
-GN_N8N_FAILURE_NOTIFY_URL=https://n.n8n.wang/webhook/radar-failure-notify
-GN_N8N_DAILY_SUMMARY_URL=https://n.n8n.wang/webhook/radar-daily-summary
+GN_N8N_MONITOR_TRIGGER_URL=https://n8n.dajilin.net/webhook/radar-monitor-trigger
+GN_N8N_BOOKING_SUBMIT_URL=https://n8n.dajilin.net/webhook/booking-submit
+GN_N8N_SITE_ASSESSMENT_URL=https://n8n.dajilin.net/webhook/radar-site-assessment
+GN_N8N_SITE_ONBOARDING_URL=https://n8n.dajilin.net/webhook/radar-site-onboarding
+GN_N8N_FAILURE_NOTIFY_URL=https://n8n.dajilin.net/webhook/radar-failure-notify
+GN_N8N_DAILY_SUMMARY_URL=https://n8n.dajilin.net/webhook/radar-daily-summary
 ```
 
 ### 2.3 n8n Workflow Status Verification
@@ -164,7 +164,7 @@ Verify these workflows are active in n8n:
 **Test n8n webhooks before deployment:**
 ```bash
 # Test station application webhook
-curl -X POST https://n.n8n.wang/webhook/dajilin-station-application \
+curl -X POST https://n8n.dajilin.net/webhook/dajilin-station-application \
   -H "Content-Type: application/json" \
   -d '{
     "site_id": "dajilin",
@@ -210,7 +210,7 @@ npm install
 
 # 3. Run production build with correct environment
 SITE_URL=https://dajilin.net \
-PUBLIC_GN_API_BASE_URL=https://api.renban.xyz \
+PUBLIC_GN_API_BASE_URL=https://api.dajilin.net \
 npm run build
 
 # 4. Verify build output
@@ -229,7 +229,7 @@ mkdir -p /var/www/dajilin/{current,shared,releases,backups}
 # 2. Create environment file
 cat > /var/www/dajilin/shared/.env << 'EOF'
 SITE_URL=https://dajilin.net
-PUBLIC_GN_API_BASE_URL=https://api.renban.xyz
+PUBLIC_GN_API_BASE_URL=https://api.dajilin.net
 PUBLIC_GN_SITE_ID=dajilin
 PUBLIC_GN_AI_SESSION_ENDPOINT=
 PUBLIC_GN_AI_CHAT_ENDPOINT=
@@ -239,15 +239,15 @@ GHOST_API_URL=http://localhost:2368
 GHOST_CONTENT_API_KEY=<your-key>
 GHOST_ADMIN_API_KEY=<your-key>
 GHOST_WEBSHOT_SECRET=<your-secret>
-PUBLIC_GN_N8N_STATION_APPLY_WEBHOOK_URL=https://n.n8n.wang/webhook/dajilin-station-application
-PUBLIC_GN_N8N_ORDER_PROCESSING_WEBHOOK_URL=https://n.n8n.wang/webhook/dajilin-order-processing
-PUBLIC_GN_N8N_AI_HANDOFF_WEBHOOK_URL=https://n.n8n.wang/webhook/dajilin-ai-handoff
-GN_N8N_MONITOR_TRIGGER_URL=https://n.n8n.wang/webhook/radar-monitor-trigger
-GN_N8N_BOOKING_SUBMIT_URL=https://n.n8n.wang/webhook/booking-submit
-GN_N8N_SITE_ASSESSMENT_URL=https://n.n8n.wang/webhook/radar-site-assessment
-GN_N8N_SITE_ONBOARDING_URL=https://n.n8n.wang/webhook/radar-site-onboarding
-GN_N8N_FAILURE_NOTIFY_URL=https://n.n8n.wang/webhook/radar-failure-notify
-GN_N8N_DAILY_SUMMARY_URL=https://n.n8n.wang/webhook/radar-daily-summary
+PUBLIC_GN_N8N_STATION_APPLY_WEBHOOK_URL=https://n8n.dajilin.net/webhook/dajilin-station-application
+PUBLIC_GN_N8N_ORDER_PROCESSING_WEBHOOK_URL=https://n8n.dajilin.net/webhook/dajilin-order-processing
+PUBLIC_GN_N8N_AI_HANDOFF_WEBHOOK_URL=https://n8n.dajilin.net/webhook/dajilin-ai-handoff
+GN_N8N_MONITOR_TRIGGER_URL=https://n8n.dajilin.net/webhook/radar-monitor-trigger
+GN_N8N_BOOKING_SUBMIT_URL=https://n8n.dajilin.net/webhook/booking-submit
+GN_N8N_SITE_ASSESSMENT_URL=https://n8n.dajilin.net/webhook/radar-site-assessment
+GN_N8N_SITE_ONBOARDING_URL=https://n8n.dajilin.net/webhook/radar-site-onboarding
+GN_N8N_FAILURE_NOTIFY_URL=https://n8n.dajilin.net/webhook/radar-failure-notify
+GN_N8N_DAILY_SUMMARY_URL=https://n8n.dajilin.net/webhook/radar-daily-summary
 EOF
 
 # 3. Create release timestamp
@@ -279,9 +279,7 @@ Copy and configure Nginx:
 # 1. Copy Nginx configuration
 cp /path/to/dajilin/deploy/dajilin.conf /etc/nginx/sites-available/dajilin.conf
 
-# 2. Update server_name if needed (currently set to dajilin.renban.xyz)
-# Edit /etc/nginx/sites-available/dajilin.conf and change:
-# server_name dajilin.renban.xyz;  →  server_name dajilin.net;
+# 2. Verify Nginx server_name is set to dajilin.net (already configured in dajilin.conf)
 
 # 3. Enable site
 ln -s /etc/nginx/sites-available/dajilin.conf /etc/nginx/sites-enabled/
@@ -474,21 +472,21 @@ systemctl stop dajilin && \
 
 | Workflow | Full URL |
 |----------|----------|
-| Station Application | `https://n.n8n.wang/webhook/dajilin-station-application` |
-| Order Processing | `https://n.n8n.wang/webhook/dajilin-order-processing` |
-| AI Handoff | `https://n.n8n.wang/webhook/dajilin-ai-handoff` |
-| Radar Monitor | `https://n.n8n.wang/webhook/radar-monitor-trigger` |
-| Booking Submit | `https://n.n8n.wang/webhook/booking-submit` |
+| Station Application | `https://n8n.dajilin.net/webhook/dajilin-station-application` |
+| Order Processing | `https://n8n.dajilin.net/webhook/dajilin-order-processing` |
+| AI Handoff | `https://n8n.dajilin.net/webhook/dajilin-ai-handoff` |
+| Radar Monitor | `https://n8n.dajilin.net/webhook/radar-monitor-trigger` |
+| Booking Submit | `https://n8n.dajilin.net/webhook/booking-submit` |
 
 ### 6.4 GN Gateway Endpoints
 
 | Service | Endpoint |
 |---------|----------|
-| API Base | `https://api.renban.xyz` |
-| AI Session | `https://api.renban.xyz/public/ai/session` |
-| AI Chat | `https://api.renban.xyz/public/ai/chat` |
-| Radar Dashboard | `https://api.renban.xyz/api/radar/dashboard` |
-| Radar Jobs | `https://api.renban.xyz/api/radar/jobs` |
+| API Base | `https://api.dajilin.net` |
+| AI Session | `https://api.dajilin.net/public/ai/session` |
+| AI Chat | `https://api.dajilin.net/public/ai/chat` |
+| Radar Dashboard | `https://api.dajilin.net/api/radar/dashboard` |
+| Radar Jobs | `https://api.dajilin.net/api/radar/jobs` |
 
 ---
 
@@ -562,7 +560,7 @@ tar -czf ghost_content_${TIMESTAMP}.tar.gz /var/www/dajilin/ghost/content/
 ```bash
 # Deploy new version
 cd /path/to/local/dajilin
-SITE_URL=https://dajilin.net PUBLIC_GN_API_BASE_URL=https://api.renban.xyz npm run build
+SITE_URL=https://dajilin.net PUBLIC_GN_API_BASE_URL=https://api.dajilin.net npm run build
 rsync -avz --delete dist/ user@server:/var/www/dajilin/releases/<timestamp>/
 ssh user@server "ln -sfn /var/www/dajilin/releases/<timestamp> /var/www/dajilin/current && systemctl restart dajilin && systemctl reload nginx"
 

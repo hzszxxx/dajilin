@@ -1,0 +1,17 @@
+---
+import FoodDetailPage from '@/pages/food/[slug].astro';
+import { jilinFoodBrands } from '@/lib/food-brands';
+import { supportedLocales } from '@/lib/i18n';
+
+export const getStaticPaths = () =>
+  supportedLocales
+    .filter((locale) => locale !== 'zh')
+    .flatMap((lang) =>
+      jilinFoodBrands.map((brand) => ({
+        params: { lang, slug: brand.slug },
+        props: { brand },
+      })),
+    );
+---
+
+<FoodDetailPage />

@@ -213,11 +213,6 @@ const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[loc
   data-locale={locale}
   data-fallback-summary={copy.fallbackSummary}
   data-fallback-detail={copy.fallbackDetail}
-  data-handoff-label={copy.handoffLabel}
-  data-handoff-success={copy.handoffSuccess}
-  data-handoff-success-detail={copy.handoffSuccessDetail}
-  data-handoff-fail={copy.handoffFail}
-  data-handoff-fail-detail={copy.handoffFailDetail}
   data-typing-label={copy.typingLabel}
   data-conversation-title={copy.conversationTitle}
   data-clear-history={copy.clearHistory}
@@ -264,18 +259,6 @@ const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[loc
         <span class="typing-label">{copy.typingLabel}</span>
       </div>
 
-      <form class="ai-widget-handoff" hidden>
-        <h3>{copy.handoffTitle}</h3>
-        <p>{copy.handoffDesc}</p>
-        <input name="name" type="text" placeholder={copy.namePlaceholder} required />
-        <input name="phone_or_wechat" type="text" placeholder={copy.contactPlaceholder} required />
-        <input name="organization" type="text" placeholder={copy.orgPlaceholder} />
-        <textarea name="message" rows="3" placeholder={copy.messagePlaceholder} required></textarea>
-        <div class="ai-widget-handoff-actions">
-          <button type="submit" class="button">{copy.submit}</button>
-          <button type="button" class="button-secondary" data-close-handoff>{copy.continueBrowsing}</button>
-        </div>
-      </form>
     </div>
 
     <form class="ai-widget-input">
@@ -289,7 +272,14 @@ const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[loc
   import DOMPurify from 'dompurify';
   import { getGNPublicEndpoints } from '@/lib/gn-public';
 
-  const endpoints = getGNPublicEndpoints();
+  (window as any).__aiWidgetScriptLoaded = true;
+
+  let endpoints;
+  try {
+    endpoints = getGNPublicEndpoints();
+  } catch(e) {
+    endpoints = { aiSession: '', aiChat: '', aiRecommendedQuestions: '', aiHandoff: '', apiBaseUrl: '' };
+  }
   const widgets = Array.from(document.querySelectorAll('.ai-widget'));
 
   // ---------------------------------------------------------------------------
@@ -363,8 +353,6 @@ const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[loc
     const followupsEl = root.querySelector('.ai-widget-followups');
     const typingEl = root.querySelector('.ai-widget-typing');
     const inputForm = root.querySelector('.ai-widget-input');
-    const handoffForm = root.querySelector('.ai-widget-handoff');
-    const handoffClose = root.querySelector('[data-close-handoff]');
 
     if (
       !(trigger instanceof HTMLButtonElement) ||
@@ -372,8 +360,7 @@ const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[loc
       !(recommendedEl instanceof HTMLElement) ||
       !(messagesEl instanceof HTMLElement) ||
       !(followupsEl instanceof HTMLElement) ||
-      !(inputForm instanceof HTMLFormElement) ||
-      !(handoffForm instanceof HTMLFormElement)
+      !(inputForm instanceof HTMLFormElement)
     ) {
       return;
     }
@@ -385,11 +372,6 @@ const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[loc
     const locale = rootEl.dataset.locale || 'zh';
     const fallbackSummary = rootEl.dataset.fallbackSummary || '';
     const fallbackDetail = rootEl.dataset.fallbackDetail || '';
-    const handoffLabel = rootEl.dataset.handoffLabel || '';
-    const handoffSuccess = rootEl.dataset.handoffSuccess || '';
-    const handoffSuccessDetail = rootEl.dataset.handoffSuccessDetail || '';
-    const handoffFail = rootEl.dataset.handoffFail || '';
-    const handoffFailDetail = rootEl.dataset.handoffFailDetail || '';
     const historyRestored = rootEl.dataset.historyRestored || '';
     const followupsLabel = rootEl.dataset.followupsLabel || '相关问题：';
     const clearHistoryLabel = rootEl.dataset.clearHistory || '清空对话';
@@ -398,6 +380,12 @@ const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[loc
     let sessionId = '';
     let currentMessages: StoredSession['messages'] = [];
     let suggestedFollowUps: string[] = [];
+
+    // Fold/unfold state: -1 = show intro only (no messages),
+    // -2 = show only latest AI message (folded mode),
+    // >= 0 = show N most recent messages (0 = all shown expanded)
+    let foldedMessageCount = -1;
+    let foldToggleEl: HTMLButtonElement | null = null;
 
     // ---------------------------------------------------------------------------
     // UI helpers
@@ -414,6 +402,68 @@ const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[loc
 
     const hideTypingIndicator = () => {
       if (typingEl) typingEl.setAttribute('hidden', '');
+    };
+
+    // Fold toggle button
+    const renderFoldToggle = () => {
+      if (foldToggleEl) foldToggleEl.remove();
+      foldToggleEl = document.createElement('button');
+      foldToggleEl.type = 'button';
+      foldToggleEl.className = 'ai-show-more-btn';
+
+      if (foldedMessageCount === -2) {
+        foldToggleEl.textContent = '▼ 展开对话';
+      } else {
+        foldToggleEl.textContent = `▲ 收起历史 (${foldedMessageCount} 条)`;
+      }
+
+      foldToggleEl.addEventListener('click', () => {
+        if (foldedMessageCount === -2) {
+          // Expand: show all messages
+          foldedMessageCount = currentMessages.length;
+        } else {
+          // Collapse: show only latest AI
+          foldedMessageCount = -2;
+        }
+        applyMessageFold();
+      });
+
+      messagesEl.insertBefore(foldToggleEl, messagesEl.firstChild);
+    };
+
+    // Apply current fold state to the message list
+    const applyMessageFold = () => {
+      if (foldedMessageCount === -2 || foldedMessageCount === -1) {
+        // Folded: show only latest AI message (if any messages exist)
+        const items = messagesEl.querySelectorAll(':scope > article');
+        const reversed = Array.from(items).reverse();
+        let latestAI: Element | null = null;
+        for (const item of reversed) {
+          if (item instanceof HTMLElement && item.classList.contains('ai-message-assistant')) {
+            latestAI = item;
+            break;
+          }
+        }
+        items.forEach((item) => {
+          if (item instanceof HTMLElement) {
+            item.style.display = item === latestAI ? '' : 'none';
+          }
+        });
+      } else if (foldedMessageCount === 0) {
+        // Expanded: show all
+        messagesEl.querySelectorAll(':scope > article').forEach((item) => {
+          if (item instanceof HTMLElement) item.style.display = '';
+        });
+      } else {
+        // Show N most recent
+        const items = Array.from(messagesEl.querySelectorAll(':scope > article')).reverse();
+        items.forEach((item, i) => {
+          if (item instanceof HTMLElement) {
+            item.style.display = i < foldedMessageCount ? '' : 'none';
+          }
+        });
+      }
+      renderFoldToggle();
     };
 
     const renderTimestamp = (timestamp: number): string => {
@@ -438,6 +488,16 @@ const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[loc
       currentMessages.push({ id, role, content, timestamp });
       saveSession(storageKey, { sessionId, messages: currentMessages });
 
+      // Re-apply fold state (show latest AI only by default after first exchange)
+      if (currentMessages.length === 2) {
+        // First exchange complete: fold to show only latest AI
+        foldedMessageCount = -2;
+      } else if (currentMessages.length > 2 && foldedMessageCount === -2) {
+        // Subsequent exchange while folded: expand to show all
+        foldedMessageCount = currentMessages.length;
+      }
+      applyMessageFold();
+
       return id;
     };
 
@@ -456,9 +516,6 @@ const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[loc
               if (action.type === 'open_page' && action.target) {
                 return `<a class="button-secondary" href="${action.target}">${action.label}</a>`;
               }
-              if (action.type === 'handoff') {
-                return `<button type="button" class="button-secondary" data-handoff-trigger>${action.label}</button>`;
-              }
               if (action.type === 'suggested_question' && action.label) {
                 return `<button type="button" class="ai-followup-chip" data-followup="${action.label}">${action.label}</button>`;
               }
@@ -469,14 +526,6 @@ const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[loc
 
       const fullContent = summary ? `<strong>${summary}</strong><p>${detail}</p>` : `<p>${detail}</p>`;
       appendMessage('assistant', `${fullContent}<div class="ai-message-actions">${actions}</div>`);
-
-      // Bind handoff triggers
-      root.querySelectorAll('[data-handoff-trigger]').forEach((button) => {
-        button.addEventListener('click', () => {
-          handoffForm.hidden = false;
-          handoffForm.scrollIntoView({ block: 'nearest' });
-        });
-      });
 
       // Bind follow-up triggers
       root.querySelectorAll('[data-followup]').forEach((button) => {
@@ -513,15 +562,6 @@ const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[loc
 
       followupsEl.innerHTML = `<span class="followups-label">${followupsLabel}</span>${chips}`;
       followupsEl.removeAttribute('hidden');
-
-      followupsEl.querySelectorAll('[data-followup]').forEach((button) => {
-        button.addEventListener('click', async () => {
-          const question = String(button.getAttribute('data-followup') || '').trim();
-          if (question) {
-            await submitMessage(question);
-          }
-        });
-      });
     };
 
     const restoreConversation = () => {
@@ -543,6 +583,12 @@ const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[loc
         });
 
         scrollToBottom();
+
+        // Apply fold: show only latest AI message for restored history
+        if (currentMessages.length > 0) {
+          foldedMessageCount = -2;
+          applyMessageFold();
+        }
 
         // Show history restored notification
         const notification = document.createElement('div');
@@ -707,21 +753,15 @@ const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[loc
         const answer = result?.data?.answer;
         if (answer) {
           appendAssistantAnswer(answer);
-
-          if (result?.data?.handoff_suggested) {
-            handoffForm.hidden = false;
-            handoffForm.scrollIntoView({ block: 'nearest' });
-          }
         } else {
           throw new Error('Invalid response');
         }
       } catch (err) {
-        console.error('Failed to send message:', err);
+        console.error('[AIWidget] Failed to send message:', err);
         hideTypingIndicator();
         appendAssistantAnswer({
           summary: fallbackSummary || '当前无法回答这个问题。',
-          detail: fallbackDetail || '你可以尝试换一种问法，或直接提交咨询。',
-          next_actions: [{ type: 'handoff', label: handoffLabel || '提交咨询' }],
+          detail: fallbackDetail || '你可以尝试换一种问法。',
         });
       }
     };
@@ -755,61 +795,6 @@ const resolvedTitle = localizedTitleMap[locale][module] ?? localizedTitleMap[loc
         return;
       }
       await submitMessage(message);
-    });
-
-    handoffClose?.addEventListener('click', () => {
-      handoffForm.hidden = true;
-    });
-
-    handoffForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      if (!endpoints.aiHandoff) {
-        return;
-      }
-
-      const submitBtn = handoffForm.querySelector('button[type="submit"]');
-      if (submitBtn) submitBtn.setAttribute('disabled', '');
-
-      try {
-        const formData = new FormData(handoffForm);
-        const payload = {
-          site_id: siteId,
-          session_id: sessionId,
-          handoff_type: 'consultation',
-          contact: {
-            name: String(formData.get('name') || '').trim(),
-            phone_or_wechat: String(formData.get('phone_or_wechat') || '').trim(),
-            organization: String(formData.get('organization') || '').trim(),
-          },
-          message: String(formData.get('message') || '').trim(),
-        };
-
-        const response = await fetch(endpoints.aiHandoff, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-
-        const result = await response.json().catch(() => null);
-        if (result?.success) {
-          handoffForm.reset();
-          handoffForm.hidden = true;
-          appendMessage(
-            'assistant',
-            `<strong>${handoffSuccess || '咨询已提交'}</strong><p>${handoffSuccessDetail || '我们已经收到你的需求，后续会进一步跟进。'}</p>`,
-          );
-        } else {
-          throw new Error(result?.error || 'Handoff failed');
-        }
-      } catch (err) {
-        console.error('Handoff failed:', err);
-        appendMessage(
-          'assistant',
-          `<strong>${handoffFail || '提交失败'}</strong><p>${handoffFailDetail || '请稍后再试，或通过合作咨询页联系我们。'}</p>`,
-        );
-      } finally {
-        if (submitBtn) submitBtn.removeAttribute('disabled');
-      }
     });
 
     // Handle external trigger buttons

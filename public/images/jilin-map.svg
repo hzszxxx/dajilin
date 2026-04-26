@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 480" width="560" height="480" role="img" aria-label="吉林省地图">
+  <title>吉林省地图</title>
+  <desc>吉林省简略地图，标注长白山、延边、长春、吉林市四个核心目的地</desc>
+
+  <defs>
+    <!-- 省份轮廓：浅底深边 -->
+    <linearGradient id="provinceFill" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5f3ee"/>
+      <stop offset="100%" stop-color="#ede9e1"/>
+    </linearGradient>
+    <!-- 省份描边：Kenya Hara 墨线 -->
+    <filter id="provinceShadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#c8c0b0" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!--
+    吉林省轮廓（简化矢量路径）
+    地理特征：
+    - 西北接黑龙江，南接辽宁，东临俄罗斯、朝鲜
+    - 东部山区（长白山系），中部平原（长春、吉林市），东南边境（延边）
+    本路径为示意性闭合多边形，不代表精确边界
+  -->
+  <path class="province-boundary"
+    d="M 430 58
+       L 448 82 L 462 78 L 478 95
+       L 500 108 L 520 100 L 535 118
+       L 540 148 L 528 172 L 510 185
+       L 498 210 L 505 235 L 500 258
+       L 482 270 L 465 285 L 445 295
+       L 428 308 L 412 318 L 395 330
+       L 378 325 L 360 335 L 340 342
+       L 320 348 L 300 355 L 278 360
+       L 258 355 L 242 342 L 228 328
+       L 218 310 L 210 292 L 215 270
+       L 222 250 L 210 230 L 195 212
+       L 178 198 L 160 188 L 145 172
+       L 132 155 L 125 135 L 130 112
+       L 148 95 L 168 80 L 190 68
+       L 215 60 L 240 52 L 265 48
+       L 290 45 L 318 48 L 342 50
+       L 368 52 L 392 55 L 415 56 Z"
+    fill="url(#provinceFill)"
+    stroke="#b8b0a0"
+    stroke-width="1.5"
+    stroke-linejoin="round"
+    filter="url(#provinceShadow)"
+  />
+
+  <!--
+    地理分区示意线（轻量山系/平原分界）
+    长白山系：东部南北向山脉带
+  -->
+  <g class="mountain-range" opacity="0.18">
+    <line x1="435" y1="60" x2="455" y2="340" stroke="#7a8c6e" stroke-width="1" stroke-dasharray="4 6"/>
+    <line x1="455" y1="65" x2="470" y2="320" stroke="#7a8c6e" stroke-width="0.8" stroke-dasharray="3 8"/>
+    <!-- 松花江水系示意 -->
+    <path d="M 300 350 Q 330 300 310 250 Q 290 200 320 150 Q 350 110 400 90"
+          fill="none" stroke="#7ab8d4" stroke-width="1.2" stroke-dasharray="5 4" opacity="0.5"/>
+  </g>
+
+  <!-- 省份名称 -->
+  <text x="290" y="210"
+    font-family="'Noto Serif SC', 'Songti SC', serif"
+    font-size="22"
+    font-weight="300"
+    fill="#c0b8a8"
+    letter-spacing="6"
+    opacity="0.6">吉林</text>
+
+  <!-- ===== 城市标注点 ===== -->
+  <!--
+    长白山（票务预约）— 东北部，松林绿
+    位置：吉林省东南，靠近朝鲜/俄罗斯边境
+  -->
+  <g class="pin-marker pin-ticket" transform="translate(462, 148)">
+    <!-- 针点圆 -->
+    <circle r="7" fill="#2D5016" stroke="#fff" stroke-width="2.5"/>
+    <!-- 呼吸光晕 -->
+    <circle r="7" fill="none" stroke="#2D5016" stroke-width="1" opacity="0.35">
+      <animate attributeName="r" values="7;12;7" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.35;0;0.35" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <!-- 标签 -->
+    <text y="-16" text-anchor="middle"
+      font-family="'Noto Sans SC', sans-serif"
+      font-size="10" font-weight="600" fill="#2D5016">长白山</text>
+    <!-- 连接线 -->
+    <line x1="0" y1="7" x2="0" y2="16" stroke="#2D5016" stroke-width="1" opacity="0.4"/>
+  </g>
+
+  <!--
+    延边/延吉（线路定制）— 东部边境，湖蓝
+    位置：吉林省东部中段，中朝边境
+  -->
+  <g class="pin-marker pin-route" transform="translate(488, 228)">
+    <circle r="7" fill="#3A6B8C" stroke="#fff" stroke-width="2.5"/>
+    <circle r="7" fill="none" stroke="#3A6B8C" stroke-width="1" opacity="0.35">
+      <animate attributeName="r" values="7;12;7" dur="3s" begin="0.8s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.35;0;0.35" dur="3s" begin="0.8s" repeatCount="indefinite"/>
+    </circle>
+    <text y="-16" text-anchor="middle"
+      font-family="'Noto Sans SC', sans-serif"
+      font-size="10" font-weight="600" fill="#3A6B8C">延边</text>
+    <line x1="0" y1="7" x2="0" y2="16" stroke="#3A6B8C" stroke-width="1" opacity="0.4"/>
+  </g>
+
+  <!--
+    长春（文旅年卡）— 中部偏西，枫红
+    位置：吉林省中部，省会
+  -->
+  <g class="pin-marker pin-card" transform="translate(268, 185)">
+    <circle r="7" fill="#C84B31" stroke="#fff" stroke-width="2.5"/>
+    <circle r="7" fill="none" stroke="#C84B31" stroke-width="1" opacity="0.35">
+      <animate attributeName="r" values="7;12;7" dur="3s" begin="1.6s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.35;0;0.35" dur="3s" begin="1.6s" repeatCount="indefinite"/>
+    </circle>
+    <text y="-16" text-anchor="middle"
+      font-family="'Noto Sans SC', sans-serif"
+      font-size="10" font-weight="600" fill="#C84B31">长春</text>
+    <line x1="0" y1="7" x2="0" y2="16" stroke="#C84B31" stroke-width="1" opacity="0.4"/>
+  </g>
+
+  <!--
+    吉林市（精选好物）— 北部偏东，金色/沙褐
+    位置：吉林省中部偏北，松花江畔
+  -->
+  <g class="pin-marker pin-specialty" transform="translate(358, 122)">
+    <circle r="7" fill="#7A6348" stroke="#fff" stroke-width="2.5"/>
+    <circle r="7" fill="none" stroke="#7A6348" stroke-width="1" opacity="0.35">
+      <animate attributeName="r" values="7;12;7" dur="3s" begin="2.4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.35;0;0.35" dur="3s" begin="2.4s" repeatCount="indefinite"/>
+    </circle>
+    <text y="-16" text-anchor="middle"
+      font-family="'Noto Sans SC', sans-serif"
+      font-size="10" font-weight="600" fill="#7A6348">吉林市</text>
+    <line x1="0" y1="7" x2="0" y2="16" stroke="#7A6348" stroke-width="1" opacity="0.4"/>
+  </g>
+
+  <!-- 边境线示意（东南部） -->
+  <g class="border-indicator" opacity="0.22">
+    <line x1="505" y1="130" x2="535" y2="118" stroke="#8a9080" stroke-width="1.5"/>
+    <line x1="510" y1="140" x2="540" y2="148" stroke="#8a9080" stroke-width="1.5"/>
+    <line x1="502" y1="155" x2="528" y2="172" stroke="#8a9080" stroke-width="1.5"/>
+    <!-- 俄罗斯/朝鲜边境三角标记 -->
+    <polygon points="535,118 540,110 548,118" fill="none" stroke="#8a9080" stroke-width="1"/>
+    <polygon points="540,148 548,148 540,158" fill="none" stroke="#8a9080" stroke-width="1"/>
+  </g>
+
+  <!-- 图例（右下角） -->
+  <g class="map-legend" transform="translate(430, 390)">
+    <text font-family="'Noto Sans SC', sans-serif" font-size="8" fill="#9a9280" opacity="0.7">— 省级行政区边界（示意）</text>
+  </g>
+
+  <style>
+    .province-boundary { transition: fill 0.3s ease; }
+    .province-boundary:hover { fill: #f0ede5; }
+    .pin-marker { cursor: default; }
+  </style>
+</svg>

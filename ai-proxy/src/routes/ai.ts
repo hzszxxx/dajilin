@@ -18,6 +18,7 @@ import {
   addUserMessage,
   addAssistantMessage,
 } from '../lib/session.js';
+import { formatKnowledgePrompt } from '../lib/knowledge.js';
 
 const router = Router();
 
@@ -101,16 +102,15 @@ export function attachMiniMaxClient(
   next: any
 ) {
   const apiKey = process.env.MINIMAX_API_KEY;
-  const groupId = process.env.MINIMAX_GROUP_ID;
 
-  if (!apiKey || !groupId) {
+  if (!apiKey) {
     return res.status(503).json({
       success: false,
-      error: 'MiniMax API credentials not configured',
+      error: 'MiniMax API key not configured',
     });
   }
 
-  res.locals.minimax = new MiniMaxClient(apiKey, groupId);
+  res.locals.minimax = new MiniMaxClient(apiKey);
   next();
 }
 
@@ -180,8 +180,11 @@ router.post('/chat', chatLimiter, (req, res) => {
 
   const minimax = res.locals.minimax as MiniMaxClient;
 
+  // Retrieve relevant knowledge base context
+  const knowledgeContext = formatKnowledgePrompt(message);
+
   // Build messages for MiniMax (system + history + current)
-  const systemPrompt = MiniMaxClient.buildSystemPrompt(locale);
+  const systemPrompt = MiniMaxClient.buildSystemPrompt(locale, knowledgeContext || undefined);
   const historyMessages = session.messages.map((m) => ({
     role: m.role,
     content: m.content,
@@ -189,7 +192,7 @@ router.post('/chat', chatLimiter, (req, res) => {
 
   minimax
     .chat({
-      model: 'MiniMax-Text-01',
+      model: 'MiniMax-M2.7',
       messages: [
         { role: 'system', content: systemPrompt },
         ...historyMessages,
@@ -200,10 +203,15 @@ router.post('/chat', chatLimiter, (req, res) => {
     })
     .then((response) => {
       const choice = response.choices[0];
-      const answer = choice.message.content;
+      // Strip MiniMax reasoning tags before returning to frontend
+      const rawAnswer = choice.message.content;
+      const answerText = rawAnswer
+        .replace(/<reply>[\s\S]*?<\/reply>/gi, '')
+        .replace(/<think>[\s\S]*?<\/think>/gi, '')
+        .trim();
 
       // Store assistant response
-      addAssistantMessage(session_id, answer);
+      addAssistantMessage(session_id, answerText);
 
       // Improved handoff detection - prevents simple prompt injection bypass
       function detectHandoffIntent(message: string): boolean {
@@ -250,9 +258,9 @@ router.post('/chat', chatLimiter, (req, res) => {
           message_id: uuidv4(),
           answer: {
             message_id: uuidv4(),
-            content: answer,
-            summary: answer.slice(0, 80) + (answer.length > 80 ? '...' : ''),
-            detail: answer,
+            content: answerText,
+            summary: answerText.slice(0, 80) + (answerText.length > 80 ? '...' : ''),
+            detail: answerText,
           },
           suggested_actions: shouldHandoff
             ? [{ type: 'handoff', label: '转接顾问' }]

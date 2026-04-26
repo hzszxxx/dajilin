@@ -35,7 +35,7 @@ const getRequiredEnv = (name: string): string => {
  * Get the GN API base URL for public endpoints.
  */
 export const getGnApiBaseUrl = (): string =>
-  getEnv('PUBLIC_GN_API_BASE_URL', 'https://api.renban.xyz');
+  getEnv('PUBLIC_GN_API_BASE_URL', 'https://api.dajilin.net');
 
 /**
  * Get the GN-Radar base URL.
@@ -47,7 +47,7 @@ export const getRadarBaseUrl = (): string =>
  * Get the n8n webhook base URL.
  */
 export const getN8nWebhookBaseUrl = (): string =>
-  getEnv('GN_N8N_WEBHOOK_BASE_URL', 'https://n.n8n.wang');
+  getEnv('GN_N8N_WEBHOOK_BASE_URL', 'https://n8n.dajilin.net');
 
 /**
  * Get the Signal Scout base URL.

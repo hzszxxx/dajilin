@@ -1,18 +1,18 @@
-# dajilin 验证域名部署清单
+# dajilin 正式域名部署清单
 
 ## 目标
 
-- 当前验证域名：`dajilin.renban.xyz`
 - 正式域名：`dajilin.net`
-- 统一 API：`https://api.renban.xyz`
+- 统一 API：`https://api.dajilin.net`
+- n8n Webhook：`https://n8n.dajilin.net`
 - 部署方式：Astro 混合部署（静态页面 + SSR）+ Nginx + Node.js systemd 服务
 
 ## 一、部署前检查
 
-- [ ] `dajilin.renban.xyz` 已解析到目标服务器
+- [ ] `dajilin.net` 已解析到目标服务器
 - [ ] 本地已完成：
   - `npm install`
-  - `SITE_URL=https://dajilin.renban.xyz PUBLIC_GN_API_BASE_URL=https://api.renban.xyz npm run build`
+  - `SITE_URL=https://dajilin.net PUBLIC_GN_API_BASE_URL=https://api.dajilin.net npm run build`
 - [ ] 已准备环境文件：
   - `.env.production.example`
 
@@ -33,8 +33,8 @@
 写入 `/var/www/dajilin/shared/.env`：
 
 ```env
-SITE_URL=https://dajilin.renban.xyz
-PUBLIC_GN_API_BASE_URL=https://api.renban.xyz
+SITE_URL=https://dajilin.net
+PUBLIC_GN_API_BASE_URL=https://api.dajilin.net
 PUBLIC_GN_SITE_ID=dajilin
 PUBLIC_GN_AI_SESSION_ENDPOINT=
 PUBLIC_GN_AI_CHAT_ENDPOINT=
@@ -51,9 +51,9 @@ PUBLIC_GN_AI_HANDOFF_ENDPOINT=
 
 验证域名阶段建议：
 
-- 先启用 `dajilin.renban.xyz`
+- 先启用 `dajilin.net`
 - DNS 生效后直接申请 HTTPS
-- 再用 `https://dajilin.renban.xyz` 做公网验收
+- 再用 `https://dajilin.net` 做公网验收
 
 ## 四.2、Systemd 服务（SSR 部分）
 
@@ -73,24 +73,23 @@ systemctl status dajilin
 
 ## 四.3、n8n Webhook 配置
 
-- **Station 申请 Webhook**：`https://n8n.renban.xyz/webhook/station-apply`
+- **Station 申请 Webhook**：`https://n8n.dajilin.net/webhook/station-apply`
 - 在 `.env` 中设置：
   ```env
-  PUBLIC_GN_N8N_STATION_APPLY_WEBHOOK_URL=https://n8n.renban.xyz/webhook/station-apply
+  PUBLIC_GN_N8N_STATION_APPLY_WEBHOOK_URL=https://n8n.dajilin.net/webhook/station-apply
   ```
 
 ## 五、上线验收
 
-- [ ] `http://dajilin.renban.xyz` 可访问
-- [ ] `https://dajilin.renban.xyz` 可访问
-- [ ] `http://dajilin.renban.xyz` 已 301 跳转到 HTTPS
+- [ ] `https://dajilin.net` 可访问
+- [ ] `http://dajilin.net` 已 301 跳转到 HTTPS
 - [ ] 首页、一级栏目页、12 个详细页可访问
 - [ ] AI 浮层可打开
 - [ ] AI 推荐问题能正常返回
-- [ ] `api.renban.xyz/public/ai/*` 可用
+- [ ] `api.dajilin.net/public/ai/*` 可用
 - [ ] `robots.txt` 与 `sitemap.xml` 正常
-- [ ] 页面源码中的 `canonical` 指向 `https://dajilin.renban.xyz`
-- [ ] 页面源码中的 `connect-src` 已包含 `https://api.renban.xyz`
+- [ ] 页面源码中的 `canonical` 指向 `https://dajilin.net`
+- [ ] 页面源码中的 `connect-src` 已包含 `https://api.dajilin.net`
 
 ## 六、后续切正式域名
 
@@ -101,8 +100,6 @@ systemctl status dajilin
 
 ## 七、注意事项
 
-- 当前用于验证的是 `dajilin.renban.xyz`
-- 正式域名备案完成前，不建议在大陆服务器上直接切 `dajilin.net`
-- 构建验证域名版本时，必须显式传入：
-  - `SITE_URL=https://dajilin.renban.xyz`
-  - `PUBLIC_GN_API_BASE_URL=https://api.renban.xyz`
+- 构建时必须显式传入：
+  - `SITE_URL=https://dajilin.net`
+  - `PUBLIC_GN_API_BASE_URL=https://api.dajilin.net`

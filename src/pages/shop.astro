@@ -4,7 +4,13 @@ import Header from '@/components/astro/Header.astro';
 import Footer from '@/components/astro/Footer.astro';
 import { buildCollectionPageSchema } from '@/lib/schema';
 import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
-import { products, toShopProduct } from '@/lib/products';
+import {
+  products,
+  getCategoryLabel,
+  getPriceDisplay,
+  type Product,
+  type ConversionType,
+} from '@/lib/products';
 
 const locale = getLocaleFromPathname(Astro.url.pathname);
 
@@ -15,259 +21,466 @@ const copy: Record<
     description: string;
     schemaName: string;
     heading: string;
-    categories: {
-      tourism: string;
-      creative: string;
-      specialty: string;
-    };
-    addToCart: string;
+    subheading: string;
+    consultCta: string;
+    formCta: string;
+    externalCta: string;
+    viewDetails: string;
     inStock: string;
     outOfStock: string;
-    viewDetails: string;
+    suitableFor: string;
+    bookingNotes: string;
+    features: string;
+    ticketSection: { heading: string; desc: string };
+    routeSection: { heading: string; desc: string };
+    cardSection: { heading: string; desc: string };
+    specialtySection: { heading: string; desc: string };
   }
 > = {
   zh: {
-    title: '商城 | dajilin.net',
-    description: '商城展示文旅产品、地方文创和东北特产，支持购物车和咨询功能。',
-    schemaName: '商城',
-    heading: '吉林文旅好物',
-    categories: {
-      tourism: '文旅产品',
-      creative: '文创产品',
-      specialty: '东北特产',
-    },
-    addToCart: '加入购物车',
-    inStock: '有货',
-    outOfStock: '暂时缺货',
+    title: '文旅产品馆 | dajilin.net',
+    description: '长白山门票、延边联票、定制游、文旅年卡——吉林文旅产品一站式咨询入口。',
+    schemaName: '文旅产品馆',
+    heading: '文旅产品馆',
+    subheading: '票务预约 · 线路定制 · 文旅年卡 — 找到适合你的吉林之旅',
+    consultCta: '咨询详情',
+    formCta: '填写需求',
+    externalCta: '立即预订',
     viewDetails: '查看详情',
+    inStock: '可预约',
+    outOfStock: '暂不可预约',
+    suitableFor: '适合人群',
+    bookingNotes: '预约说明',
+    features: '产品亮点',
+    ticketSection: {
+      heading: '票务预约',
+      desc: '长白山、延边、吉林市等核心景区门票与套餐，官方实名预约通道。',
+    },
+    routeSection: {
+      heading: '线路定制',
+      desc: '深度游、边境游、自驾定制、研学营——专业顾问为你量身规划行程。',
+    },
+    cardSection: {
+      heading: '文旅年卡',
+      desc: '一张年卡玩转吉林，20+景区年内无限次进入，享合作商户专属折扣。',
+    },
+    specialtySection: {
+      heading: '精选好物',
+      desc: '东北特产、地方文创——把吉林的味道和文化带回家。',
+    },
   },
   en: {
-    title: 'Shop | dajilin.net',
-    description: 'Shop showcasing tourism services, local creative products, and northeast specialties.',
-    schemaName: 'Shop',
-    heading: 'Jilin Travel Shop',
-    categories: {
-      tourism: 'Tourism Products',
-      creative: 'Creative Products',
-      specialty: 'Northeast Specialties',
-    },
-    addToCart: 'Add to Cart',
-    inStock: 'In Stock',
-    outOfStock: 'Out of Stock',
+    title: 'Travel Shop | dajilin.net',
+    description: 'Changbai Mountain tickets, Yanbian passes, custom tours, and tourism cards — your one-stop Jilin travel shop.',
+    schemaName: 'Travel Shop',
+    heading: 'Travel Shop',
+    subheading: 'Tickets · Custom Routes · Tourism Cards — Find your perfect Jilin trip.',
+    consultCta: 'Inquire',
+    formCta: 'Fill Form',
+    externalCta: 'Book Now',
     viewDetails: 'View Details',
+    inStock: 'Available',
+    outOfStock: 'Unavailable',
+    suitableFor: 'Suitable For',
+    bookingNotes: 'Booking Notes',
+    features: 'Highlights',
+    ticketSection: {
+      heading: '🎟️ Tickets',
+      desc: 'Changbai Mountain, Yanbian, Jilin City scenic tickets and packages with official booking.',
+    },
+    routeSection: {
+      heading: '🗺️ Custom Routes',
+      desc: 'Deep tours, border tours, self-drive, study tours — consultant-customized itineraries.',
+    },
+    cardSection: {
+      heading: '🎴 Tourism Cards',
+      desc: '20+ attractions, unlimited visits within one year, plus merchant discounts.',
+    },
+    specialtySection: {
+      heading: '🎁 Specialties',
+      desc: 'Northeast specialties and local creative products — take Jilin home with you.',
+    },
   },
   ja: {
-    title: 'ショップ | dajilin.net',
-    description: '観光サービス、地域文創、東北特産を取り扱うショップです。',
-    schemaName: 'ショップ',
-    heading: '吉林 旅のセレクト',
-    categories: {
-      tourism: '観光商品',
-      creative: '文創商品',
-      specialty: '東北特産',
-    },
-    addToCart: 'カートに追加',
-    inStock: '在庫あり',
-    outOfStock: '在庫切れ',
+    title: '観光商品館 | dajilin.net',
+    description: '長白山チケット、延辺パス、定制ツアー、旅游年カード — 吉林旅游商品の一括相談入口。',
+    schemaName: '観光商品館',
+    heading: '観光商品館',
+    subheading: 'チケット予約 · ルート定制 · 観光年カード — あなたの吉林旅行を見つけよう。',
+    consultCta: '詳細を相談',
+    formCta: '必要情報を記入',
+    externalCta: '今すぐ予約',
     viewDetails: '詳細を見る',
+    inStock: '予約可',
+    outOfStock: '予約不可',
+    suitableFor: 'こんな方におすすめ',
+    bookingNotes: '予約の説明',
+    features: '产品的亮点',
+    ticketSection: {
+      heading: '🎟️ チケット予約',
+      desc: '長白山、延辺、吉林市など核心景区のチケットと套餐。公式实名予約通道。',
+    },
+    routeSection: {
+      heading: '🗺️ ルート定制',
+      desc: '深度ツアー、国境ツアー、自驾定制、研修ツアー — 専門カウンセラーが行程を量身定制。',
+    },
+    cardSection: {
+      heading: '🎴 観光年カード',
+      desc: '1枚のカードで吉林の景区を巡る、20+景区年内無制限进入、協力商家割引き付き。',
+    },
+    specialtySection: {
+      heading: '🎁 精选，好物',
+      desc: '東北特産、地域文創 — 吉林の味と文化を家に持ち帰る。',
+    },
   },
   ko: {
-    title: '샵 | dajilin.net',
-    description: '관광 서비스, 지역 굿즈, 동북 특산품을 취급하는 샵입니다.',
-    schemaName: '샵',
-    heading: '지린 여행 셀렉션',
-    categories: {
-      tourism: '관광 상품',
-      creative: '문창 상품',
-      specialty: '동북 특산',
-    },
-    addToCart: '장바구니에 추가',
-    inStock: '재고있음',
-    outOfStock: '품절',
+    title: '관광 상품관 | dajilin.net',
+    description: '장백산 티켓, 연변 패스, 맞춤 투어, 관광 연간 카드 — 지린 관광 상품 원스톱 상담.',
+    schemaName: '관광 상품관',
+    heading: '관광 상품관',
+    subheading: '티켓 예약 · 노선定制 · 관광 연간 카드 — 당신의 지린 여행을 찾으세요.',
+    consultCta: '상담하기',
+    formCta: '요구사항 기입',
+    externalCta: '즉시 예약',
     viewDetails: '상세 보기',
+    inStock: '예약 가능',
+    outOfStock: '예약 불가',
+    suitableFor: '이런 분들에게 적합',
+    bookingNotes: '예약 안내',
+    features: '제품 하이라이트',
+    ticketSection: {
+      heading: '🎟️ 티켓 예약',
+      desc: '장백산, 연변, 지린시 등 핵심 관광지 티켓과 패키지. 공식 실명 예약.',
+    },
+    routeSection: {
+      heading: '🗺️ 노선定制',
+      desc: '심화 여행, 국경 여행, 자가운전定制, 연구여행 — 전문 카운슬러가 맞춤 일정 기획.',
+    },
+    cardSection: {
+      heading: '🎴 관광 연간 카드',
+      desc: '한 카드로 지린 관광지 20+ 곳, 연간 무제한 입장, 제휴 상가 할인.',
+    },
+    specialtySection: {
+      heading: '🎁精选 상품',
+      desc: '동북 특산품, 지역 창작품 — 지린의 맛과 문화를 집으로 가져가세요.',
+    },
   },
 };
 
 const t = copy[locale];
 
-// Group products by category (food → specialty, service → tourism)
-const tourismProducts = products.filter((p) => p.category === 'service').map(toShopProduct);
-const creativeProducts = products.filter((p) => p.category === 'creative').map(toShopProduct);
-const specialtyProducts = products.filter((p) => p.category === 'food').map(toShopProduct);
+const tickets = products.filter((p) => p.category === 'ticket');
+const routes = products.filter((p) => p.category === 'route');
+const cards = products.filter((p) => p.category === 'card');
+const specialties = products.filter((p) => p.category === 'specialty');
+const creatives = products.filter((p) => p.category === 'creative');
 
-const categoryProducts = [
-  { key: 'tourism', label: t.categories.tourism, products: tourismProducts },
-  { key: 'creative', label: t.categories.creative, products: creativeProducts },
-  { key: 'specialty', label: t.categories.specialty, products: specialtyProducts },
-].filter((c) => c.products.length > 0);
+const sections = [
+  { key: 'ticket', label: t.ticketSection.heading, desc: t.ticketSection.desc, products: tickets },
+  { key: 'route', label: t.routeSection.heading, desc: t.routeSection.desc, products: routes },
+  { key: 'card', label: t.cardSection.heading, desc: t.cardSection.desc, products: cards },
+].filter((s) => s.products.length > 0);
+
+const legacySections = [
+  { key: 'specialty', label: t.specialtySection.heading, desc: t.specialtySection.desc, products: specialties },
+  { key: 'creative', label: '地方文创', desc: t.specialtySection.desc, products: creatives },
+].filter((s) => s.products.length > 0);
+
+function getCtaLabel(type: ConversionType): string {
+  if (type === 'consult') return t.consultCta;
+  if (type === 'form') return t.formCta;
+  return t.externalCta;
+}
+
+function getCtaHref(product: Product): string {
+  if (product.conversionType === 'external' && product.externalUrl) {
+    return product.externalUrl;
+  }
+  return localizePath('/cooperation', locale);
+}
+
+const REGION_LABELS: Record<string, Record<'zh' | 'en', string>> = {
+  changbaishan: { zh: '长白山', en: 'Changbai' },
+  yanbian: { zh: '延边', en: 'Yanbian' },
+  changchun: { zh: '长春', en: 'Changchun' },
+  jilin: { zh: '吉林市', en: 'Jilin City' },
+  hunchun: { zh: '珲春', en: 'Hunchun' },
+  tumen: { zh: '图们', en: 'Tumen' },
+  all: { zh: '全部', en: 'All' },
+};
+
+function getRegionLabel(region: string, locale: Locale): string {
+  return REGION_LABELS[region]?.[locale as 'zh' | 'en'] ?? region;
+}
 ---
 
-<BaseLayout title={t.title} description={t.description} schemas={[buildCollectionPageSchema('/shop', t.schemaName, t.description, locale)]} locale={locale}>
+<BaseLayout
+  title={t.title}
+  description={t.description}
+  schemas={[buildCollectionPageSchema('/shop', t.schemaName, t.description, locale)]}
+  locale={locale}
+>
   <Header />
+
   <main class="page-shell shop-shell">
     <div class="container">
+
+      <!-- B+A Hero: 吉林省地图 + Kenya Hara 极简留白 -->
+      <section class="shop-hero">
+        <!-- 吉林省矢量地图（极简底图 + 功能色标注点） -->
+        <div class="shop-hero-map" aria-hidden="true">
+          <img src="/images/jilin-map.svg" alt="吉林省地图" class="jilin-map-img" />
+        </div>
+        <!-- 文字区：极简留白 -->
+        <div class="shop-hero-copy">
+          <p class="shop-hero-eyebrow">文旅产品馆</p>
+          <h1 class="shop-hero-title">票务预约 · 线路定制 · 文旅年卡</h1>
+          <p class="shop-hero-lead">找到适合你的吉林之旅</p>
+          <div class="shop-hero-actions">
+            <a href="#tickets" class="btn-consult" data-category-link="ticket">
+              <span class="btn-dot pine-green"></span>票务预约
+            </a>
+            <a href="#routes" class="btn-consult" data-category-link="route">
+              <span class="btn-dot lake-blue"></span>线路定制
+            </a>
+            <a href="#cards" class="btn-consult" data-category-link="card">
+              <span class="btn-dot maple-red"></span>文旅年卡
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Page Header -->
       <div class="page-copy">
         <div class="eyebrow">Shop</div>
         <h1>{t.heading}</h1>
-        <p>{t.description}</p>
+        <p class="page-lead">{t.subheading}</p>
       </div>
 
-      <div class="shop-categories">
-        {categoryProducts.map((category) => (
-          <section class="category-section">
-            <h2 class="category-title">{category.label}</h2>
-            <div class="product-grid">
-              {category.products.map((product) => (
-                <article class="product-card">
-                  <div class="product-visual">
-                    <img
-                      src={product.imageUrl}
-                      alt={locale === 'zh' ? product.name : product.nameEn}
-                      class="product-image"
-                      loading="lazy"
-                    />
-                    {!product.inStock && (
-                      <span class="product-out-badge">{t.outOfStock}</span>
+      <!-- Core: Ticket / Route / Card with anchor IDs -->
+      {sections.map((section) => (
+        <section
+          id={section.key === 'ticket' ? 'tickets' : section.key === 'route' ? 'routes' : 'cards'}
+          class="shop-section"
+          data-category={section.key}
+        >
+          <!-- B+A Section Header: 地域色 + Kenya Hara 极简排版 -->
+          <div class={`section-header section-header--${section.key}`}>
+            <div class="section-header-accent" aria-hidden="true"></div>
+            <div class="section-header-content">
+              <h2>{section.label}</h2>
+              <p>{section.desc}</p>
+            </div>
+          </div>
+          <!-- 地域色 Tab 栏 -->
+          <div class="region-tabs" role="tablist" data-section={section.key}>
+            <button class="region-tab active" data-region="all" role="tab" aria-selected="true">全部</button>
+            <button class="region-tab" data-region="changbaishan" role="tab">长白山</button>
+            <button class="region-tab" data-region="yanbian" role="tab">延边</button>
+            <button class="region-tab" data-region="changchun" role="tab">长春</button>
+            <button class="region-tab" data-region="jilin-city" role="tab">吉林市</button>
+          </div>
+          <div class="product-grid">
+            {section.products.map((product) => (
+              <article class={`product-card product-card--${section.key}`} data-region={(product as any).region || 'all'}>
+                <div class="product-visual">
+                  <img
+                    src={product.imageUrl}
+                    alt={locale === 'zh' ? product.name : product.nameEn}
+                    class="product-image"
+                    loading="lazy"
+                  />
+                  {!product.inStock && (
+                    <span class="product-out-badge">{t.outOfStock}</span>
+                  )}
+                  <!-- 地域色圆点标识 -->
+                  {(product as any).region && (
+                    <span class={`product-region-dot region-${(product as any).region}`} title={(product as any).region}></span>
+                  )}
+                </div>
+
+                <div class="product-content">
+                  <!-- 地域信息行 -->
+                  <div class="product-region-line">
+                    <span class="product-tag-label">{product.tag}</span>
+                    {(product as any).region && (
+                      <span class="product-region-name">{getRegionLabel((product as any).region, locale)}</span>
                     )}
                   </div>
-                  <div class="product-content">
-                    <h3 class="product-name">{locale === 'zh' ? product.name : product.nameEn}</h3>
-                    <p class="product-desc">{locale === 'zh' ? product.description : product.descriptionEn}</p>
-                    <div class="product-footer">
-                      <div class="product-price">
-                        {product.price === 0 ? (
-                          <span class="price-note">{locale === 'zh' ? '价格待定' : 'Price TBD'}</span>
-                        ) : (
-                          <span class="price-value">¥{product.price.toFixed(2)}</span>
-                        )}
-                        <span class="price-unit">/{product.unit}</span>
-                      </div>
-                      <div class="product-actions">
-                        <a href={localizePath(`/shop/${product.slug}`, locale)} class="product-detail-link">
-                          {t.viewDetails}
-                        </a>
-                        <button
-                          type="button"
-                          class="add-to-cart-btn"
-                          data-product-id={product.id}
-                          data-product-slug={product.slug}
-                          data-product-name={product.name}
-                          data-product-name-en={product.nameEn}
-                          data-product-price={product.price}
-                          data-product-category={product.category}
-                          disabled={!product.inStock}
-                        >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="9" cy="21" r="1" />
-                            <circle cx="20" cy="21" r="1" />
-                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                          </svg>
-                          {t.addToCart}
-                        </button>
-                      </div>
+                  <!-- 产品名：B+A 排版 -->
+                  <h3 class="product-name">
+                    <a href={localizePath(`/shop/${product.slug}`, locale)}>
+                      {locale === 'zh' ? product.name : product.nameEn}
+                    </a>
+                  </h3>
+                  <!-- 极简描述 -->
+                  <p class="product-desc">
+                    {locale === 'zh' ? product.description : product.descriptionEn}
+                  </p>
+
+                  <!-- 关键特性：左边框列表 -->
+                  {product.features && product.features.length > 0 && (
+                    <ul class="product-features">
+                      {product.features.slice(0, 3).map((f) => (
+                        <li>{f}</li>
+                      ))}
+                    </ul>
+                  )}
+
+                  <!-- 价格+行动：两栏布局 -->
+                  <div class="product-footer">
+                    <div class="product-price">
+                      <span class="price-value">
+                        {getPriceDisplay(product, locale)}
+                      </span>
+                      <span class="price-label">{locale === 'zh' ? '起' : 'from'}</span>
+                    </div>
+                    <a
+                      href={getCtaHref(product)}
+                      class={`cta-btn cta-btn--${section.key}`}
+                      target={product.conversionType === 'external' ? '_blank' : '_self'}
+                      rel={product.conversionType === 'external' ? 'noopener noreferrer' : undefined}
+                    >
+                      {getCtaLabel(product.conversionType)}
+                    </a>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      <!-- Divider -->
+      {legacySections.length > 0 && sections.length > 0 && (
+        <div class="section-divider">
+          <span>{locale === 'zh' ? '更多精选好物' : 'More Specialties'}</span>
+        </div>
+      )}
+
+      <!-- Legacy: Specialty / Creative -->
+      {legacySections.map((section) => (
+        <section class="shop-section legacy-section">
+          <div class="section-header">
+            <h2>{section.label}</h2>
+            <p>{section.desc}</p>
+          </div>
+          <div class="product-grid">
+            {section.products.map((product) => (
+              <article class="product-card">
+                <div class="product-visual">
+                  <img
+                    src={product.imageUrl}
+                    alt={locale === 'zh' ? product.name : product.nameEn}
+                    class="product-image"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="product-content">
+                  <div class="product-eyebrow">
+                    <span class="category-tag">{getCategoryLabel(product.category, locale)}</span>
+                    <span class="product-tag-label">{product.tag}</span>
+                  </div>
+                  <h3 class="product-name">
+                    <a href={localizePath(`/shop/${product.slug}`, locale)}>
+                      {locale === 'zh' ? product.name : product.nameEn}
+                    </a>
+                  </h3>
+                  <p class="product-desc">
+                    {locale === 'zh' ? product.description : product.descriptionEn}
+                  </p>
+                  <div class="product-footer">
+                    <div class="product-price">
+                      <span class="price-value">¥{product.price.toFixed(0)}</span>
+                      <span class="price-unit">/{product.priceUnit}</span>
+                    </div>
+                    <div class="product-actions">
+                      <a
+                        href={localizePath(`/shop/${product.slug}`, locale)}
+                        class="view-detail-link"
+                      >
+                        {t.viewDetails}
+                      </a>
+                      <a
+                        href={getCtaHref(product)}
+                        class="cta-btn consult"
+                      >
+                        {t.consultCta}
+                      </a>
                     </div>
                   </div>
-                </article>
-              ))}
-            </div>
-          </section>
-        ))}
-      </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
+
     </div>
   </main>
+
   <Footer />
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const buttons = document.querySelectorAll('.add-to-cart-btn');
-      buttons.forEach((btn) => {
-        btn.addEventListener('click', (e) => {
-          const target = e.currentTarget as HTMLButtonElement;
-          const productId = target.dataset.productId || '';
-          const slug = target.dataset.productSlug || '';
-          const name = target.dataset.productName || '';
-          const nameEn = target.dataset.productNameEn || '';
-          const price = parseFloat(target.dataset.productPrice || '0');
-          const category = target.dataset.productCategory || 'tourism';
-
-          // Get existing cart
-          const cartKey = 'dajilin_cart';
-          let cart = { items: [], updatedAt: Date.now() };
-          try {
-            const raw = localStorage.getItem(cartKey);
-            if (raw) cart = JSON.parse(raw);
-          } catch {}
-
-          // Check if item already in cart
-          const existing = cart.items.find((i: any) => i.productId === productId);
-          if (existing) {
-            existing.quantity += 1;
-          } else {
-            cart.items.push({ productId, slug, name, nameEn, price, quantity: 1, category });
-          }
-          cart.updatedAt = Date.now();
-
-          try {
-            localStorage.setItem(cartKey, JSON.stringify(cart));
-          } catch {}
-
-          // Dispatch update event
-          window.dispatchEvent(new Event('cart_updated'));
-
-          // Visual feedback
-          target.classList.add('is-added');
-          target.textContent = locale === 'zh' ? '已添加' : 'Added';
-          setTimeout(() => {
-            target.classList.remove('is-added');
-            target.innerHTML = `
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="9" cy="21" r="1" />
-                <circle cx="20" cy="21" r="1" />
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-              </svg>
-              ${locale === 'zh' ? '加入购物车' : 'Add to Cart'}
-            `;
-          }, 2000);
-        });
-      });
-    });
-
-    // Get locale for button text
-    const locale = document.documentElement.lang?.startsWith('zh') ? 'zh' :
-                    document.documentElement.lang?.startsWith('ja') ? 'ja' :
-                    document.documentElement.lang?.startsWith('ko') ? 'ko' : 'en';
-  </script>
 
   <style>
     .shop-shell {
       padding-bottom: 80px;
     }
 
-    .shop-categories {
-      margin-top: 32px;
-      display: flex;
-      flex-direction: column;
-      gap: 48px;
+    .page-copy {
+      text-align: center;
+      padding: 48px 0 40px;
     }
 
-    .category-section {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      padding: 28px;
-      box-shadow: var(--shadow);
+    .page-copy .eyebrow {
+      font-size: 0.8rem;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 600;
+      margin-bottom: 8px;
     }
 
-    .category-title {
-      margin: 0 0 20px;
-      font-size: 1.4rem;
+    .page-copy h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
       color: var(--text-strong);
+      margin: 0 0 12px;
+    }
+
+    .page-lead {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .shop-section {
+      margin-top: 48px;
+    }
+
+    .section-header {
+      margin-bottom: 24px;
+    }
+
+    .section-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-strong);
+      margin: 0 0 8px;
+    }
+
+    .section-header p {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.6;
     }
 
     .product-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
     }
 
     .product-card {
@@ -276,33 +489,49 @@ const categoryProducts = [
       overflow: hidden;
       background: #fff;
       transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+      display: flex;
+      flex-direction: column;
     }
 
     .product-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.1);
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
       border-color: rgba(15, 118, 110, 0.2);
     }
 
     .product-visual {
       position: relative;
-      height: 160px;
+      height: 180px;
+      overflow: hidden;
       background: linear-gradient(145deg, #e8f5f3 0%, #e0f2fe 56%, #f0fdf4 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
-    .product-image-placeholder.travel {
-      background: linear-gradient(145deg, #dbeafe 0%, #e0f2fe 50%, #f0fdf4 100%);
+    .product-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
-    .product-image-placeholder.creative {
-      background: linear-gradient(145deg, #fce7f3 0%, #fdf2f8 50%, #faf5ff 100%);
+    .product-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
     }
 
-    .product-image-placeholder.specialty {
-      background: linear-gradient(145deg, #fef3c7 0%, #fffbeb 50%, #fef9c3 100%);
+    .product-badge.hot {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    .product-badge.new {
+      background: #3b82f6;
+      color: #fff;
     }
 
     .product-out-badge {
@@ -313,36 +542,94 @@ const categoryProducts = [
       border-radius: 999px;
       background: rgba(239, 68, 68, 0.9);
       color: #fff;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 600;
     }
 
     .product-content {
-      padding: 18px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .product-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .category-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--primary);
+      background: var(--primary-bg);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .product-tag-label {
+      font-size: 0.72rem;
+      color: var(--muted);
     }
 
     .product-name {
-      margin: 0 0 8px;
       font-size: 1.05rem;
+      font-weight: 700;
       color: var(--text-strong);
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .product-name a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .product-name a:hover {
+      color: var(--primary);
     }
 
     .product-desc {
-      margin: 0 0 14px;
       font-size: 0.88rem;
       color: var(--muted);
-      line-height: 1.6;
+      line-height: 1.65;
+      margin: 0;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
 
+    .product-features {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .product-features li {
+      font-size: 0.75rem;
+      color: var(--primary);
+      background: var(--primary-bg);
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
     .product-footer {
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: space-between;
       gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+      margin-top: auto;
     }
 
     .product-price {
@@ -351,82 +638,542 @@ const categoryProducts = [
       gap: 4px;
     }
 
+    .price-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
     .price-value {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: var(--primary);
     }
 
-    .price-note {
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-
     .price-unit {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: var(--muted);
     }
 
     .product-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
-    .product-detail-link {
-      padding: 8px 12px;
+    .view-detail-link {
+      padding: 8px 14px;
       border: 1px solid var(--line);
       border-radius: 999px;
       color: var(--muted);
       font-size: 0.82rem;
+      text-decoration: none;
       transition: all 0.2s ease;
+      white-space: nowrap;
     }
 
-    .product-detail-link:hover {
+    .view-detail-link:hover {
       border-color: rgba(15, 118, 110, 0.32);
       color: var(--primary);
     }
 
-    .add-to-cart-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
-      border: none;
+    .cta-btn {
+      padding: 8px 18px;
       border-radius: 999px;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%);
-      color: #fff;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       font-weight: 600;
-      cursor: pointer;
+      text-decoration: none;
       transition: all 0.2s ease;
+      white-space: nowrap;
+      cursor: pointer;
     }
 
-    .add-to-cart-btn:hover:not(:disabled) {
+    .cta-btn.consult,
+    .cta-btn.consultation {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%);
+      color: #fff;
+    }
+
+    .cta-btn.consult:hover,
+    .cta-btn.consultation:hover {
       transform: translateY(-1px);
       box-shadow: 0 6px 16px rgba(15, 118, 110, 0.3);
     }
 
-    .add-to-cart-btn:disabled {
-      background: var(--muted);
-      cursor: not-allowed;
+    .cta-btn.form {
+      background: #3b82f6;
+      color: #fff;
     }
 
-    .add-to-cart-btn.is-added {
-      background: #059669;
+    .cta-btn.form:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
     }
 
-    .product-image {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      border-radius: 8px;
+    .cta-btn.external {
+      background: #7c3aed;
+      color: #fff;
+    }
+
+    .cta-btn.external:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(124, 58, 237, 0.3);
+    }
+
+    /* Legacy section style */
+    .legacy-section .product-visual {
+      height: 160px;
+    }
+
+    .legacy-section .cta-btn {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%);
+      color: #fff;
+    }
+
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 56px 0 0;
+    }
+
+    .section-divider::before,
+    .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+
+    .section-divider span {
+      font-size: 0.85rem;
+      color: var(--muted);
+      white-space: nowrap;
     }
 
     @media (max-width: 768px) {
       .product-grid {
         grid-template-columns: 1fr;
       }
+
+      .page-copy h1 {
+        font-size: 1.8rem;
+      }
+
+      .product-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .product-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
     }
+
+    /* ================================================
+       B+A 重构样式：地域功能色 + Kenya Hara 极简美学
+       ================================================ */
+
+    /* --- B+A Hero: 吉林省 SVG 地图 + Kenya Hara 极简留白 --- */
+    .shop-hero {
+      position: relative;
+      min-height: 420px;
+      margin: 0 -20px 64px;
+      padding: 64px 20px 56px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--paper);
+    }
+
+    .shop-hero-map {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .jilin-map-img {
+      width: 100%;
+      max-width: 680px;
+      height: auto;
+      opacity: 0.7;
+    }
+
+    .shop-hero-copy {
+      position: relative;
+      z-index: 1;
+      max-width: 640px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .shop-hero-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      margin: 0 0 16px;
+    }
+
+    .shop-hero-title {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800;
+      color: var(--text-strong);
+      margin: 0 0 16px;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+    }
+
+    .shop-hero-lead {
+      font-size: 1rem;
+      color: var(--muted);
+      margin: 0 0 36px;
+      line-height: 1.6;
+    }
+
+    .shop-hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-consult {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 999px;
+      background: var(--paper-strong);
+      border: 1.5px solid var(--line);
+      color: var(--text-strong);
+      font-size: 0.88rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-consult:hover {
+      border-color: var(--text-strong);
+      background: var(--text-strong);
+      color: #fff;
+    }
+
+    .btn-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .btn-dot.pine-green { background: var(--pine-green); }
+    .btn-dot.lake-blue { background: var(--lake-blue); }
+    .btn-dot.maple-red { background: var(--maple-red); }
+    .btn-dot.golden { background: var(--golden); }
+
+    /* --- B+A Section Header: 地域色 Accent --- */
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--line-light);
+    }
+
+    .section-header-accent {
+      width: 4px;
+      min-height: 48px;
+      border-radius: 2px;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    .section-header--ticket .section-header-accent { background: var(--pine-green); }
+    .section-header--route .section-header-accent { background: var(--lake-blue); }
+    .section-header--card .section-header-accent { background: var(--maple-red); }
+    .section-header--specialty .section-header-accent { background: var(--golden); }
+    .section-header--creative .section-header-accent { background: var(--sunset-orange); }
+
+    .section-header-content h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text-strong);
+      margin: 0 0 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .section-header-content p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    /* --- B+A 地域色 Tab 栏 --- */
+    .region-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .region-tab {
+      padding: 6px 16px;
+      border-radius: 999px;
+      border: 1.5px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .region-tab:hover {
+      border-color: var(--text);
+      color: var(--text);
+    }
+
+    .region-tab.active {
+      background: var(--text-strong);
+      border-color: var(--text-strong);
+      color: #fff;
+    }
+
+    /* --- B+A 产品卡片: 地域色边框标识 --- */
+    .product-card {
+      border: 1.5px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      background: #fff;
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+    }
+
+    /* 地域色左边框区分产品类型 */
+    .product-card--ticket { border-left: 4px solid var(--pine-green); }
+    .product-card--route { border-left: 4px solid var(--lake-blue); }
+    .product-card--card { border-left: 4px solid var(--maple-red); }
+    .product-card--specialty { border-left: 4px solid var(--golden); }
+    .product-card--creative { border-left: 4px solid var(--sunset-orange); }
+
+    .product-card--ticket:hover { border-color: var(--pine-green); }
+    .product-card--route:hover { border-color: var(--lake-blue); }
+    .product-card--card:hover { border-color: var(--maple-red); }
+
+    .product-visual {
+      position: relative;
+      height: 172px;
+      overflow: hidden;
+      background: linear-gradient(160deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+
+    .product-region-dot {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.9);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    }
+
+    .region-changbaishan { background: var(--pine-green); }
+    .region-yanbian { background: var(--lake-blue); }
+    .region-changchun { background: var(--maple-red); }
+    .region-jilin-city, .region-jilin { background: var(--golden); }
+
+    .product-content {
+      padding: 18px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    /* 地域信息行 */
+    .product-region-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .product-tag-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .product-region-name {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .product-name {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--text-strong);
+      margin: 0;
+      line-height: 1.4;
+      letter-spacing: -0.01em;
+    }
+
+    .product-name a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .product-name a:hover {
+      color: var(--primary);
+    }
+
+    .product-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .product-features {
+      list-style: none;
+      padding: 0;
+      margin: 4px 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .product-features li {
+      font-size: 0.78rem;
+      color: var(--muted);
+      padding-left: 12px;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .product-features li::before {
+      content: '·';
+      position: absolute;
+      left: 2px;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* B+A Footer: 价格左+按钮右 */
+    .product-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line-light);
+      margin-top: auto;
+    }
+
+    .product-price {
+      display: flex;
+      align-items: baseline;
+      gap: 5px;
+    }
+
+    .price-value {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text-strong);
+      letter-spacing: -0.02em;
+    }
+
+    .price-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .cta-btn {
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .cta-btn--ticket { background: var(--pine-green); }
+    .cta-btn--route { background: var(--lake-blue); }
+    .cta-btn--card { background: var(--maple-red); }
+    .cta-btn--specialty { background: var(--golden); }
+    .cta-btn--creative { background: var(--sunset-orange); }
+
+    .cta-btn--ticket:hover { background: var(--pine-green-hover); }
+    .cta-btn--route:hover { background: var(--lake-blue-hover); }
+    .cta-btn--card:hover { background: var(--maple-red-hover); }
+    .cta-btn--specialty:hover { background: var(--golden-hover); }
+
+    .cta-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .legacy-section .cta-btn {
+      background: var(--text-strong);
+    }
+
+    /* B+A Tab 筛选逻辑 */
+    .product-card[data-region] { transition: opacity 0.2s ease, transform 0.2s ease; }
+    .product-card.dimmed { opacity: 0.25; transform: scale(0.97); pointer-events: none; }
   </style>
+
+  <script>
+    // B+A 地域 Tab 筛选
+    document.querySelectorAll('.region-tabs').forEach((tabBar) => {
+      const section = tabBar.closest('.shop-section');
+      if (!section) return;
+      const grid = section.querySelector('.product-grid');
+      if (!grid) return;
+
+      tabBar.querySelectorAll('.region-tab').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const region = btn.getAttribute('data-region');
+
+          // 更新 Tab active 状态
+          tabBar.querySelectorAll('.region-tab').forEach((b) => {
+            b.classList.toggle('active', b === btn);
+            b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+          });
+
+          // 筛选卡片
+          section.querySelectorAll('.product-card').forEach((card) => {
+            const r = card.getAttribute('data-region');
+            const show = region === 'all' || r === region || !r;
+            card.classList.toggle('dimmed', !show);
+          });
+        });
+      });
+    });
+  </script>
 </BaseLayout>

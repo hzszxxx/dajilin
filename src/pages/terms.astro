@@ -1,0 +1,30 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+
+const title = '使用条款 | dajilin.net';
+const description = 'dajilin.net 使用条款，说明平台内容、咨询服务、第三方入口和用户责任。';
+---
+
+<BaseLayout title={title} description={description}>
+  <Header />
+  <main class="page-shell legal-page">
+    <section class="section-card">
+      <p class="eyebrow">Terms of Use</p>
+      <h1>使用条款</h1>
+      <p>
+        dajilin.net 是吉林文旅资讯、咨询和合作服务入口。用户访问和使用本网站，即表示理解并接受以下条款。
+      </p>
+      <h2>平台定位</h2>
+      <p>本站提供目的地说明、路线建议、工业研学咨询、自驾服务咨询和资源合作对接，不直接替代官方预约、票务或合同流程。</p>
+      <h2>第三方服务</h2>
+      <p>涉及景区门票、酒店、交通、企业参访等事项时，以官方平台、实际服务方和最终确认为准。</p>
+      <h2>用户责任</h2>
+      <p>用户应保证提交信息真实有效，并根据实际情况自行确认出行安全、政策要求和服务细节。</p>
+      <h2>联系我们</h2>
+      <p>如对条款有疑问，可联系 info@dajilin.net。</p>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

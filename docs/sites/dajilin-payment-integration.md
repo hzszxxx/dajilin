@@ -207,7 +207,7 @@ export async function POST(request: Request) {
 
 **Trigger:** POST from WeChat/Alipay payment servers
 
-**Webhook URL:** `https://n.n8n.wang/webhook/dajilin-payment-callback`
+**Webhook URL:** `https://n8n.dajilin.net/webhook/dajilin-payment-callback`
 
 #### Request Format (WeChat)
 
@@ -305,9 +305,9 @@ PUBLIC_PAYMENT_CALLBACK_URL=https://dajilin.net/api/payment/callback
 # ===========================================
 
 SITE_URL=https://dajilin.net
-PUBLIC_GN_API_BASE_URL=https://api.renban.xyz
+PUBLIC_GN_API_BASE_URL=https://api.dajilin.net
 PUBLIC_GN_SITE_ID=dajilin
-PUBLIC_GN_N8N_ORDER_PROCESSING_WEBHOOK_URL=https://n.n8n.wang/webhook/dajilin-order-processing
+PUBLIC_GN_N8N_ORDER_PROCESSING_WEBHOOK_URL=https://n8n.dajilin.net/webhook/dajilin-order-processing
 ```
 
 ---

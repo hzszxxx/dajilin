@@ -35,6 +35,10 @@
   /* Borders & Lines */
   --line: rgba(30, 95, 138, 0.12);
   --line-strong: rgba(30, 95, 138, 0.24);
+  --line-light: rgba(30, 95, 138, 0.06);
+
+  /* Paper (Kenya Hara minimalism) */
+  --paper: #f8f6f1;
 
   /* Shadows - 蓝调阴影（替代原青绿） */
   --shadow-sm: 0 8px 16px rgba(21, 74, 106, 0.06);
@@ -64,6 +68,29 @@
   --travel-bg: var(--bg);
   --travel-text: var(--text);
   --travel-muted: var(--muted);
+
+  /* === B+A 地域功能色系统：色彩即语义 === */
+  /* 松林绿 · 票务预约（自然景区） */
+  --pine-green: #2D5016;
+  --pine-green-bg: #EAF0E4;
+  --pine-green-text: #2D5016;
+  /* 湖蓝 · 线路定制（边境/深度游） */
+  --lake-blue: #3A6B8C;
+  --lake-blue-bg: #E4EEF4;
+  --lake-blue-text: #3A6B8C;
+  /* 枫红 · 文旅年卡（节庆/一卡通） */
+  --maple-red: #C84B31;
+  --maple-red-bg: #F4EAE4;
+  --maple-red-text: #C84B31;
+  /* 路径沙褐 · 自驾/地质色 */
+  --trail-sand: #7A6348;
+  --trail-sand-bg: #F0EBE3;
+  --trail-sand-text: #7A6348;
+  /* 纸白 · 背景色 */
+  --paper-white: #FAF8F5;
+  /* CTA色：枫红用于高转化按钮 */
+  --cta-primary: var(--maple-red);
+  --cta-secondary: var(--lake-blue);
 }
 
 * {
@@ -759,6 +786,142 @@ img {
   margin: 0 0 8px;
 }
 
+.food-answer-block {
+  margin-top: 24px;
+  padding: 22px 24px;
+  border: 1px solid rgba(211, 139, 52, 0.28);
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(211, 139, 52, 0.14), rgba(255, 255, 255, 0.9));
+}
+
+.food-answer-block h2 {
+  margin: 0 0 8px;
+}
+
+.food-brand-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.food-brand-card {
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(249, 244, 235, 0.76));
+  scroll-margin-top: 110px;
+}
+
+.food-brand-card h2 {
+  margin: 10px 0 6px;
+  font-size: 1.25rem;
+}
+
+.food-brand-card h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.food-brand-card h2 a:hover {
+  color: var(--accent);
+}
+
+.food-brand-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.food-brand-meta span,
+.food-heritage {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  line-height: 1.2;
+}
+
+.food-brand-meta span {
+  background: var(--travel-ice);
+  color: var(--primary-strong);
+}
+
+.food-heritage {
+  margin: 0 0 10px;
+  background: rgba(168, 47, 43, 0.1);
+  color: var(--maple-red);
+}
+
+.food-brand-card dl {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0;
+}
+
+.food-brand-card dt {
+  margin-bottom: 2px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.food-brand-card dd {
+  margin: 0;
+  line-height: 1.7;
+}
+
+.food-brand-card dd a {
+  display: inline-flex;
+  margin-left: 8px;
+  color: var(--accent);
+}
+
+.food-source-note {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--golden);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--muted);
+}
+
+.food-detail-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 18px 0 0;
+}
+
+.food-detail-list div {
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.food-detail-list dt {
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.food-detail-list dd {
+  margin: 0;
+  line-height: 1.7;
+}
+
+@media (max-width: 760px) {
+  .food-detail-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .food-brand-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .detail-block + .detail-block {
   margin-top: 28px;
 }
@@ -1079,6 +1242,69 @@ img {
   margin: 0;
 }
 
+.ai-widget-handoff .handoff-header {
+  margin-bottom: 12px;
+}
+
+.ai-widget-handoff .handoff-header h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-strong);
+  margin: 0 0 4px;
+}
+
+.ai-widget-handoff .handoff-header p {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.ai-widget-handoff-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px;
+  margin: 8px 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface-soft);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.ai-widget-handoff-toggle span {
+  font-size: 0.88rem;
+  color: var(--primary-strong);
+  font-weight: 500;
+}
+
+.ai-widget-handoff-toggle:hover {
+  background: rgba(11, 79, 108, 0.08);
+}
+
+.handoff-expand-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--primary-strong);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.handoff-expand-btn:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
 /* Phase 2: Enhanced conversation features */
 
 .ai-widget-header-actions {
@@ -1215,6 +1441,26 @@ img {
   color: #fff;
 }
 
+/* Fold/unfold toggle button */
+.ai-show-more-btn {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border: none;
+  border-radius: 10px;
+  background: var(--surface-soft, #e8f4fa);
+  color: var(--primary, #1e5f8a);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.2s ease;
+}
+.ai-show-more-btn:hover {
+  background: var(--ice-blue, #cce8f4);
+}
+
 /* History notification */
 .ai-history-notification {
   padding: 8px 12px;
@@ -1310,6 +1556,20 @@ img {
 .footer-bottom {
   border-top: 1px solid rgba(232, 239, 236, 0.12);
   padding: 16px 0;
+}
+
+.footer-disclaimer {
+  border-top: 1px solid rgba(232, 239, 236, 0.08);
+  padding: 14px 0;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.footer-disclaimer p {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: rgba(232, 239, 236, 0.45);
+  text-align: center;
 }
 
 .footer-bottom .container {

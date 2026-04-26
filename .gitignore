@@ -19,6 +19,10 @@ pnpm-debug.log*
 data/*.json
 !data/.gitkeep
 
+# AI video generated assets
+ai-video/outputs/*
+!ai-video/outputs/.gitkeep
+
 # Ghost CMS (sensitive data - never commit)
 ghost/
 !ghost/README.md
@@ -29,3 +33,8 @@ ghost/
 # IDE
 .idea/
 .vscode/
+
+# Dev tool artifacts
+.opencode/
+.playwright-mcp/
+_temp/

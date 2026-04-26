@@ -3,7 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/astro/Header.astro';
 import Footer from '@/components/astro/Footer.astro';
 import DetailPage from '@/components/astro/DetailPage.astro';
-import { buildCollectionPageSchema } from '@/lib/schema';
+import { buildCollectionPageSchema, buildFAQPageSchema } from '@/lib/schema';
 import { findDetailPage, themePages } from '@/lib/content-pages';
 import { getLocaleFromPathname, localizePath } from '@/lib/i18n';
 
@@ -25,12 +25,16 @@ if (!page) {
 const localizedPath = localizePath(page.pathname, locale);
 const localizedTitle = locale === 'zh' ? page.title : page.eyebrow;
 const localizedDescription = locale === 'zh' ? page.description : `Details for ${localizedTitle}.`;
+const schemas: any[] = [buildCollectionPageSchema(localizedPath, localizedTitle, localizedDescription, locale)];
+if (page.faqs && page.faqs.length > 0) {
+  schemas.push(buildFAQPageSchema(localizedPath, localizedTitle, page.faqs, locale));
+}
 ---
 
 <BaseLayout
   title={`${localizedTitle} | dajilin.net`}
   description={localizedDescription}
-  schemas={[buildCollectionPageSchema(localizedPath, localizedTitle, localizedDescription, locale)]}
+  schemas={schemas}
   locale={locale}
 >
   <Header />

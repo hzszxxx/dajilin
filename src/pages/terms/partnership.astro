@@ -1,0 +1,22 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+
+const title = '合作条款 | dajilin.net';
+const description = 'dajilin.net 合作条款，适用于驿站、文旅资源方和服务方提交合作申请。';
+---
+
+<BaseLayout title={title} description={description}>
+  <Header />
+  <main class="page-shell legal-page">
+    <section class="section-card">
+      <p class="eyebrow">Partnership Terms</p>
+      <h1>合作条款</h1>
+      <p>资源方提交合作申请后，平台将根据资源类型、服务能力、合规情况和实际需求进行初步沟通。</p>
+      <p>提交申请不代表合作自动成立，具体服务范围、费用、责任和交付方式以双方后续书面确认为准。</p>
+      <p>资源方应保证提交信息真实、合法、有效，并具备提供对应服务所需的资质或授权。</p>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

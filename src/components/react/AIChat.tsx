@@ -260,17 +260,29 @@ export const AIChat: React.FC<AIChatProps> = (props) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const storageKey = `dajilin-ai-session:${props.siteId}`;
 
+  // How many messages to display (0 = show intro only)
+  // Special value -1 = show only latest AI message (no user message shown)
+  const [displayedMessageCount, setDisplayedMessageCount] = useState(0);
+  // Track if this is the first conversation (user msg + assistant response)
+  const [isFirstConversation, setIsFirstConversation] = useState(false);
+
   // Load session from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem(storageKey);
     if (stored) {
       try {
         const session = JSON.parse(stored);
+        const msgs = session.messages || [];
+        // If there are historical messages, show only the latest AI message
+        // with an "展开对话" button
         setState((prev) => ({
           ...prev,
           sessionId: session.sessionId || '',
-          messages: session.messages || [],
+          messages: msgs,
         }));
+        if (msgs.length > 0) {
+          setDisplayedMessageCount(-1);
+        }
       } catch {
         // Invalid session data, ignore
       }
@@ -385,6 +397,19 @@ export const AIChat: React.FC<AIChatProps> = (props) => {
             detail: answer.detail,
           };
 
+          const isFirst = state.messages.length === 0;
+          if (isFirst) {
+            setIsFirstConversation(true);
+            // Show only the AI response (user message hidden in first conversation mode)
+            setDisplayedMessageCount(-1);
+          } else if (displayedMessageCount === -1) {
+            // Was showing intro, now we have first exchange — show both messages
+            setDisplayedMessageCount(2);
+          } else {
+            // New exchange while already showing history — expand to show all
+            setDisplayedMessageCount(state.messages.length);
+          }
+
           setState((prev) => ({
             ...prev,
             isTyping: false,
@@ -460,6 +485,10 @@ export const AIChat: React.FC<AIChatProps> = (props) => {
       setState((prev) => ({ ...prev, handoffSubmitting: true }));
 
       try {
+        // Extract the last user message as user_question
+        const lastUserMessage =
+          [...state.messages].reverse().find((m) => m.role === 'user')?.content || '';
+
         const response = await fetch(props.endpoints.aiHandoff, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -467,6 +496,10 @@ export const AIChat: React.FC<AIChatProps> = (props) => {
             site_id: props.siteId,
             session_id: state.sessionId,
             handoff_type: 'consultation',
+            source_page: props.pageUrl,
+            module: props.module,
+            user_question: lastUserMessage,
+            locale: props.locale,
             contact: {
               name: data.name,
               phone_or_wechat: data.phoneOrWechat,
@@ -582,26 +615,69 @@ export const AIChat: React.FC<AIChatProps> = (props) => {
 
           {/* Messages */}
           <div className="ai-chat-messages">
-            {state.messages.map((msg) => (
-              <article
-                key={msg.id}
-                className={`ai-message ai-message-${msg.role}`}
+            {state.messages.length > 0 && displayedMessageCount !== 0 && (
+              <button
+                type="button"
+                className="ai-show-more-btn"
+                onClick={() => {
+                  if (displayedMessageCount === -1) {
+                    // First conversation: show both user + AI messages
+                    setDisplayedMessageCount(2);
+                  } else {
+                    // Show all messages
+                    setDisplayedMessageCount(state.messages.length);
+                  }
+                }}
               >
-                <div className="ai-message-content">
-                  {msg.role === 'assistant' && msg.summary && (
-                    <strong>{msg.summary}</strong>
-                  )}
-                  <p>{msg.content}</p>
-                  {msg.role === 'assistant' && msg.detail && (
-                    <p className="ai-message-detail">{msg.detail}</p>
-                  )}
-                </div>
-                <MessageTimestamp
-                  timestamp={msg.timestamp}
-                  locale={props.locale}
-                />
-              </article>
-            ))}
+                {displayedMessageCount === -1
+                  ? '▼ 展开对话'
+                  : `▲ 收起历史 (${displayedMessageCount} 条)`}
+              </button>
+            )}
+
+            {/* For first conversation with only AI visible: show just AI */}
+            {displayedMessageCount === -1 && state.messages.length >= 1 && (() => {
+              const lastAI = [...state.messages].reverse().find(m => m.role === 'assistant');
+              if (!lastAI) return null;
+              return (
+                <article className="ai-message ai-message-assistant">
+                  <div className="ai-message-content">
+                    {lastAI.summary && <strong>{lastAI.summary}</strong>}
+                    <p>{lastAI.content}</p>
+                    {lastAI.detail && (
+                      <p className="ai-message-detail">{lastAI.detail}</p>
+                    )}
+                  </div>
+                  <MessageTimestamp timestamp={lastAI.timestamp} locale={props.locale} />
+                </article>
+              );
+            })()}
+
+            {/* Normal message list — latest at top */}
+            {displayedMessageCount >= 0 && (() => {
+              const reversed = [...state.messages].reverse();
+              const shown = reversed.slice(0, displayedMessageCount > 0 ? displayedMessageCount : undefined);
+              return shown.map((msg) => (
+                <article
+                  key={msg.id}
+                  className={`ai-message ai-message-${msg.role}`}
+                >
+                  <div className="ai-message-content">
+                    {msg.role === 'assistant' && msg.summary && (
+                      <strong>{msg.summary}</strong>
+                    )}
+                    <p>{msg.content}</p>
+                    {msg.role === 'assistant' && msg.detail && (
+                      <p className="ai-message-detail">{msg.detail}</p>
+                    )}
+                  </div>
+                  <MessageTimestamp
+                    timestamp={msg.timestamp}
+                    locale={props.locale}
+                  />
+                </article>
+              ));
+            })()}
 
             {/* Typing indicator */}
             {state.isTyping && <TypingIndicator label={props.typingLabel} />}

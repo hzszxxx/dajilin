@@ -308,7 +308,7 @@ const thisPath = '/self-drive/stations';
 const schemas = [
   buildWebPageSchema(thisPath, t.pageTitle, t.description, locale),
   buildCollectionPageSchema(thisPath, t.pageTitle, t.description, locale),
-  buildFAQPageSchema(thisPath, t.pageTitle, t.faqs, locale),
+  buildFAQPageSchema(thisPath, t.pageTitle, t.faqs as any, locale),
 ];
 ---
 

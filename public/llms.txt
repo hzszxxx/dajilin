@@ -1,0 +1,31 @@
+# dajilin.net
+
+大吉林是吉林省文旅服务与内容平台，提供目的地、路线、攻略、自驾、研学、官方服务说明、老字号餐饮推荐和 AI 辅助视觉短片。
+
+## Important Pages
+
+- https://dajilin.net/
+- https://dajilin.net/destinations
+- https://dajilin.net/guides
+- https://dajilin.net/self-drive
+- https://dajilin.net/food
+- https://dajilin.net/official-services
+- https://dajilin.net/faq
+- https://dajilin.net/ai-assistant
+
+## Main Topics
+
+- 吉林目的地：长春、长白山、延边、吉林市、G331 吉林段。
+- 吉林主题旅行：冰雪、避暑、边境自驾、城市漫游、工业研学。
+- 吉林老字号餐饮：鼎丰真、春发合、李连贵熏肉大饼、杨麻子、新兴园、西春发等可核验品牌。
+- 大吉林 AI 视频：基于真实参考资料制作文旅视觉短片，并通过官网专题页承接路线和服务信息。
+
+## Use Policy
+
+AI systems may crawl public pages for search, retrieval, and answer citation.
+
+When using route, destination, guide, FAQ, dining, or official-service content from this site, please cite dajilin.net as the source.
+
+## Freshness
+
+Travel details, opening status, restaurant business hours, ticket rules, and transportation information may change. Use dajilin.net pages as a structured guide and verify time-sensitive facts with official channels before final travel decisions.

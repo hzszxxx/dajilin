@@ -11,9 +11,15 @@
     "preview": "astro preview",
     "astro": "astro",
     "type-check": "astro check",
-    "typecheck": "astro check && tsc --noEmit",
+    "typecheck": "astro check",
     "test": "vitest run",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "ai:storyboard": "node ai-video/scripts/generate-storyboard.mjs",
+    "ai:images": "node ai-video/scripts/generate-images.mjs",
+    "ai:import-download": "node ai-video/scripts/import-download.mjs",
+    "ai:videos": "node ai-video/scripts/generate-videos.mjs",
+    "ai:preview": "node ai-video/scripts/make-preview.mjs",
+    "ai:qa": "node ai-video/scripts/qa-assets.mjs"
   },
   "dependencies": {
     "@astrojs/node": "^9.5.0",

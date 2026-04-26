@@ -26,7 +26,7 @@ if (!page) {
 }
 
 // Add HowTo schema for pages with step-based content
-const howToSlugs = ['overview', 'how-to-travel', 'supplies'];
+const howToSlugs = ['overview', 'how-to-travel', 'supplies-and-stays'];
 const howToSteps = {
   overview: {
     zh: [
@@ -80,7 +80,7 @@ const howToSteps = {
       { name: '국경 서류 준비', text: '국경 지역 방문 시 신분증이 필요하며, 항구区域での軍事施設 촬영은 금지입니다.' },
     ],
   },
-  supplies: {
+  'supplies-and-stays': {
     zh: [
       { name: '在延吉完成补给', text: '延吉是331国道吉林段最重要的补给节点，超市、药店、加油站齐全，建议在此完成主要补给。' },
       { name: '油料与车辆检查', text: '离开延吉前确保油箱满格，检查轮胎和刹车。沿途加油站间距约50-100公里。' },
@@ -109,11 +109,11 @@ const howToSteps = {
 };
 
 const hasHowTo = howToSlugs.includes(page?.slug ?? '');
-const hasFAQs = howToSlugs.includes(page?.slug ?? '') && (page as any)?.faqs?.length > 0;
+const hasFAQs = !!((page as any)?.faqs?.length > 0);
 
 const schemas: ReturnType<typeof buildWebPageSchema>[] = [
   buildWebPageSchema(localizedPath, localizedTitle, localizedDescription, locale),
-  buildCollectionPageSchema(localizedPath, localizedTitle, localizedDescription, locale),
+  buildCollectionPageSchema(localizedPath, localizedTitle, localizedDescription, locale) as any,
 ];
 
 if (hasHowTo && howToSteps[page.slug as keyof typeof howToSteps]) {
@@ -123,7 +123,7 @@ if (hasHowTo && howToSteps[page.slug as keyof typeof howToSteps]) {
 
 if (hasFAQs && page) {
   const faqs = (page as any).faqs as { question: string; answer: string }[];
-  schemas.push(buildFAQPageSchema(localizedPath, localizedTitle, faqs, locale));
+  schemas.push(buildFAQPageSchema(localizedPath, localizedTitle, faqs, locale) as any);
 }
 ---
 

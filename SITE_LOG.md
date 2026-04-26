@@ -9,14 +9,14 @@
 
 | 项目 | 说明 |
 |---|---|
-| 域名 | https://dajilin.renban.xyz |
+| 域名 | https://dajilin.net（正式域名）|
 | 源码目录 | `/var/www/dajilin/releases/20260402153732/` |
 | 部署目录 | `/var/www/dajilin/current/` → `releases/20260402153732/` |
 | 技术栈 | Astro 5 + React 19 + Node.js SSR (端口 4321) |
 | 内容管理 | 通过 `src/lib/content-pages.ts` 定义所有页面内容（1,555 行） |
-| 构建命令 | `SITE_URL=https://dajilin.renban.xyz npm run build` |
+| 构建命令 | `SITE_URL=https://dajilin.net npm run build` |
 | Nginx 根目录 | `/var/www/dajilin/current/dist/client` |
-| AI 后端 | `https://api.renban.xyz/public/ai/*` |
+| AI 后端 | `https://api.dajilin.net/public/ai/*` |
 
 ---
 

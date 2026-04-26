@@ -8,7 +8,6 @@ import { buildCollectionPageSchema, buildBreadcrumbListSchema } from '@/lib/sche
 import { destinationPages } from '@/lib/content-pages';
 
 const locale = getLocaleFromPathname(Astro.url.pathname);
-const languageTagMap: Record<Locale, string> = { zh: 'zh-CN', en: 'en', ja: 'ja', ko: 'ko' };
 const localized: Record<Locale, { title: string; description: string; pageTitle: string; pageDesc: string }> = {
   zh: {
     title: '吉林目的地 | dajilin.net',

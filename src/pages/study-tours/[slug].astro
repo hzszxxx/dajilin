@@ -3,7 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/astro/Header.astro';
 import Footer from '@/components/astro/Footer.astro';
 import DetailPage from '@/components/astro/DetailPage.astro';
-import { buildCollectionPageSchema, buildWebPageSchema, buildTouristTripSchema, buildItemListSchema } from '@/lib/schema';
+import { buildCollectionPageSchema, buildWebPageSchema, buildTouristTripSchema, buildItemListSchema, buildFAQPageSchema } from '@/lib/schema';
 import { findDetailPage, studyTourPages, getPageLocalization } from '@/lib/content-pages';
 import type { Locale } from '@/lib/i18n';
 import { getLocaleFromPathname, localizePath } from '@/lib/i18n';
@@ -44,6 +44,10 @@ const schemas = [
     locale,
   ),
 ];
+
+if (page.faqs && page.faqs.length > 0) {
+  schemas.push(buildFAQPageSchema(localizedPath, localizedTitle, page.faqs, locale));
+}
 ---
 
 <BaseLayout title={`${localizedTitle} | dajilin.net`} description={localizedDescription} schemas={schemas} locale={locale}>

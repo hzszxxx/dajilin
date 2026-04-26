@@ -38,9 +38,170 @@ const enterprises: Record<Locale, { name: string; desc: string; href: string; ca
   ],
 };
 
+type ServiceCard = {
+  title: string;
+  body: string;
+  suitableFor: string;
+  suggestedSize: string;
+  suggestedDuration: string;
+  optionalResources: string;
+  deliverables: string;
+  cta: string;
+};
+
+const studyServiceCards: Record<Locale, ServiceCard[]> = {
+  zh: [
+    {
+      title: '长春工业研学 1 日营',
+      body: '走进一汽红旗、中车长客等工业标杆企业，适合学校、研学机构的当日往返研学活动。方向：一汽红旗 / 工业文明 / 城市产业认知。',
+      suitableFor: '中小学校、研学机构、教育旅行社',
+      suggestedSize: '20-60人',
+      suggestedDuration: '1 天（当日往返）',
+      optionalResources: '大巴交通、研学手册、带队老师培训',
+      deliverables: '企业参访接待、研学手册、结业证书（可选）',
+      cta: '提交研学需求',
+    },
+    {
+      title: '企业参访与政企考察',
+      body: '面向企业、商协会、政府机构的参访接待服务。方向：汽车（红旗/解放）、轨道交通（中车长客）、卫星（长光卫星）、化工（吉林石化）、农业（皓月集团）等产业。',
+      suitableFor: '企业参访、商协会考察、政府代表团',
+      suggestedSize: '10-40人',
+      suggestedDuration: '半天 ~ 1 天',
+      optionalResources: '接待规格确认、考察报告、座谈安排',
+      deliverables: '参访行程安排、接待方对接、考察纪要（可选）',
+      cta: '提交参访需求',
+    },
+    {
+      title: '工业文明主题定制线路',
+      body: '根据团队需求定制 1-3 日工业主题线路，组合多个产业资源方，支持行程安排、后勤保障与全程陪同服务。',
+      suitableFor: '定制团队、培训机构、企业年会团建',
+      suggestedSize: '20人以上',
+      suggestedDuration: '1-3 天',
+      optionalResources: '全程交通、酒店住宿、餐饮安排、领队导游',
+      deliverables: '专属行程方案、全程后勤支持、应急保障',
+      cta: '提交定制需求',
+    },
+  ],
+  en: [
+    {
+      title: 'Changchun Industrial Study Day Camp',
+      body: 'Visit industrial benchmark enterprises like FAW Hongqi and CRRC Changchun. Perfect for same-day school trips and study institutions. Directions: FAW Hongqi / Industrial Civilization / Urban Industry.',
+      suitableFor: 'Primary & Secondary Schools, Study Tour Agencies, Education Travel',
+      suggestedSize: '20-60 people',
+      suggestedDuration: '1 Day (same-day return)',
+      optionalResources: 'Coach transport, study manuals, accompanying teacher briefing',
+      deliverables: 'Enterprise visit reception, study manual, completion certificate (optional)',
+      cta: 'Submit Study Tour Request',
+    },
+    {
+      title: 'Enterprise Visits & Government Delegation Tours',
+      body: 'Services for enterprises, business associations, and government groups. Directions: Automotive (Hongqi/Jiefang), Rail Transit (CRRC), Satellite (Changguang), Petrochemical (Jilin), Agriculture (HaoYue).',
+      suitableFor: 'Corporate Visits, Business Associations, Government Delegations',
+      suggestedSize: '10-40 people',
+      suggestedDuration: 'Half-day ~ 1 Day',
+      optionalResources: 'Reception level confirmation, inspection report, seminar arrangement',
+      deliverables: 'Visit itinerary, partner coordination, inspection minutes (optional)',
+      cta: 'Submit Visit Request',
+    },
+    {
+      title: 'Industrial Heritage Custom Route',
+      body: 'Custom 1-3 day industrial-themed routes combining multiple industrial resource partners, with full logistics and accompaniment support.',
+      suitableFor: 'Custom Groups, Training Institutions, Corporate Annual Events',
+      suggestedSize: '20+ people',
+      suggestedDuration: '1-3 Days',
+      optionalResources: 'Full transport, hotel accommodation, meals, tour guide',
+      deliverables: 'Custom itinerary, full logistics support, emergency support',
+      cta: 'Submit Custom Request',
+    },
+  ],
+  ja: [
+    {
+      title: '長春産業研修 1 日营',
+      body: '一汽紅旗、中車長客などの産業标杆企業を訪れ、学校や研修機関の同日往返研修活動に最適。方向：一汽紅旗 / 産業文明 / 都市産業認知。',
+      suitableFor: '中小学校、研修機関、教育旅行会社',
+      suggestedSize: '20-60人',
+      suggestedDuration: '1日（同日往返）',
+      optionalResources: '大巴交通、研修マニュアル、带隊 선생님研修',
+      deliverables: '企業参観受付、研修マニュアル、修了証書（選択）',
+      cta: '研修ニーズを送信',
+    },
+    {
+      title: '企業訪問と政界視察',
+      body: '企業、商协会、政府機関の訪問接待サービス。方向：自動車（红旗/解放）、軌道交通（中車長客）、衛星（長光衛星）、化学（吉林石化）、農業（皓月グループ）などの産業。',
+      suitableFor: '企業訪問、商协会視察、政府代表团',
+      suggestedSize: '10-40人',
+      suggestedDuration: '半日〜1日',
+      optionalResources: '接待規格確認、視察レポート、座谈会安排',
+      deliverables: '訪問日程安排、受け入れ先との連携、視察記録（選択）',
+      cta: '訪問ニーズを送信',
+    },
+    {
+      title: '産業文明テーマ定制ルート',
+      body: 'チームのニーズに応じて1〜3日の産業テーマルートを定制し、複数の産業リソースを組み合わせ、行程安排・后勤保障・全程同行サービスを 지원。',
+      suitableFor: '定制チーム、培训構造、企業年会・チームビルディング',
+      suggestedSize: '20名以上',
+      suggestedDuration: '1〜3日',
+      optionalResources: '全程交通、ホテル宿泊、食事安排、引率导游',
+      deliverables: '专用行程方案、全程后勤サポート、应急保障',
+      cta: '定制ニーズを送信',
+    },
+  ],
+  ko: [
+    {
+      title: '창춘 산업 연수 1일 캠프',
+      body: '차이나 FAW 홍치, CRRC 창춘 등 산업 벤치마크 기업을 방문하여 학교, 연수 기관의 당일往返 연수 활동에 적합. 방향: FAW 홍치 / 산업 문명 / 도시 산업 인지.',
+      suitableFor: '중소학교, 연수 기관, 교육 여행사',
+      suggestedSize: '20-60명',
+      suggestedDuration: '1일（당일往返）',
+      optionalResources: '대형 버스 교통, 연수 메뉴얼,带队 선생님 교육',
+      deliverables: '기업 참관 접수, 연수 메뉴얼, 수료증（선택）',
+      cta: '연수 요청 제출',
+    },
+    {
+      title: '기업 방문과 정책 시찰',
+      body: '기업, 상업 협회, 정부 기관의 방문 접수 서비스. 방향: 자동차（홍치/해방）,轨道交通（CRRC 창춘）, 위성（장광위성）, 화학（지린石化）, 농업（호월그룹） 등 산업.',
+      suitableFor: '기업 참관, 상업 협회 시찰, 정부代表团',
+      suggestedSize: '10-40명',
+      suggestedDuration: '반일~1일',
+      optionalResources: '접대 규격 확인, 시찰 보고서, 토론会安排',
+      deliverables: '방문 일정安排, 접수처 연계, 시찰 기록（선택）',
+      cta: '방문 요청 제출',
+    },
+    {
+      title: '산업 문명 테마 커스텀 루트',
+      body: '팀 요구에 따라 1~3일 산업 테마 루트를 커스텀하여 복수의 산업 자원 파트너를 조합하고,行程安排・后勤 보장・全程 동행 서비스를 지원。',
+      suitableFor: '커스텀 팀,培训机构, 기업 연회・팀 빌딩',
+      suggestedSize: '20명 이상',
+      suggestedDuration: '1~3일',
+      optionalResources: '全程 교통, 호텔 숙박, 식사安排, 인솔 가이드',
+      deliverables: '전용 일정 계획,全程后勤サポート, 긴급 보장',
+      cta: '커스텀 요청 제출',
+    },
+  ],
+};
+
 const copy: Record<
   Locale,
-  { title: string; description: string; schemaName: string; eyebrow: string; heading: string; sideTitle: string }
+  {
+    title: string;
+    description: string;
+    schemaName: string;
+    eyebrow: string;
+    heading: string;
+    sideTitle: string;
+    serviceCardsHeading: string;
+    serviceCardsDesc: string;
+    suitableFor: string;
+    suggestedSize: string;
+    suggestedDuration: string;
+    optionalResources: string;
+    deliverables: string;
+    ctaCustomize: string;
+    ctaStudyTour: string;
+    ctaEnterprise: string;
+    ctaCustom: string;
+    note: string;
+  }
 > = {
   zh: {
     title: '工业研学 | dajilin.net',
@@ -49,6 +210,18 @@ const copy: Record<
     eyebrow: 'Industrial Study Tours',
     heading: '工业研学',
     sideTitle: '研学入口',
+    serviceCardsHeading: '三大服务类型',
+    serviceCardsDesc: '选择适合你的服务类型，提交需求后顾问将主动联系',
+    suitableFor: '适合对象',
+    suggestedSize: '建议人数',
+    suggestedDuration: '建议时长',
+    optionalResources: '可选资源',
+    deliverables: '交付内容',
+    ctaCustomize: '提交研学需求',
+    ctaStudyTour: '提交研学需求',
+    ctaEnterprise: '提交参访需求',
+    ctaCustom: '提交定制需求',
+    note: '注：涉及一汽、中车等企业时，文案保持"资源说明/参访咨询"措辞，不承诺未确认的开放权限。',
   },
   en: {
     title: 'Study Tours | dajilin.net',
@@ -57,6 +230,18 @@ const copy: Record<
     eyebrow: 'Industrial Study Tours',
     heading: 'Study Tours',
     sideTitle: 'Study Tour Entry',
+    serviceCardsHeading: 'Three Service Types',
+    serviceCardsDesc: 'Choose the service type that fits you — a consultant will follow up after you submit',
+    suitableFor: 'Suitable For',
+    suggestedSize: 'Suggested Size',
+    suggestedDuration: 'Suggested Duration',
+    optionalResources: 'Optional Resources',
+    deliverables: 'Deliverables',
+    ctaCustomize: 'Submit Study Tour Request',
+    ctaStudyTour: 'Submit Study Tour Request',
+    ctaEnterprise: 'Submit Visit Request',
+    ctaCustom: 'Submit Custom Request',
+    note: 'Note: Visits involving FAW, CRRC, etc. are framed as "resource information/visit consultation" — open access is not guaranteed.',
   },
   ja: {
     title: '産業研修 | dajilin.net',
@@ -65,6 +250,18 @@ const copy: Record<
     eyebrow: 'Industrial Study Tours',
     heading: '産業研修',
     sideTitle: '研修入口',
+    serviceCardsHeading: '三つのサービス類型',
+    serviceCardsDesc: 'あなたに最適なサービス類型を選択し、ニーズ送信後コンサルタントがご連絡します',
+    suitableFor: '適合対象',
+    suggestedSize: '建議人数',
+    suggestedDuration: '建議所要時間',
+    optionalResources: '任意リソース',
+    deliverables: '交付内容',
+    ctaCustomize: '研修ニーズを送信',
+    ctaStudyTour: '研修ニーズを送信',
+    ctaEnterprise: '訪問ニーズを送信',
+    ctaCustom: '定制ニーズを送信',
+    note: '注：一汽、中車などの企業に関連する訪問は「リソース説明/参観相談」という表現を保ち、未確認のアクセス許可を約束しません。',
   },
   ko: {
     title: '산업 연수 | dajilin.net',
@@ -73,6 +270,18 @@ const copy: Record<
     eyebrow: 'Industrial Study Tours',
     heading: '산업 연수',
     sideTitle: '연수 입구',
+    serviceCardsHeading: '세 가지 서비스 유형',
+    serviceCardsDesc: '사용자에게 적합한 서비스 유형을 선택하고, 요청 제출 후 컨설턴트가 연락드립니다',
+    suitableFor: '적합 대상',
+    suggestedSize: '권장 인원',
+    suggestedDuration: '권장 소요 시간',
+    optionalResources: '선택 자원',
+    deliverables: '제공 내용',
+    ctaCustomize: '연수 요청 제출',
+    ctaStudyTour: '연수 요청 제출',
+    ctaEnterprise: '방문 요청 제출',
+    ctaCustom: '커스텀 요청 제출',
+    note: '주의: FAW, CRRC 등 기업 관련 방문은 "자원 설명/참관 상담" 표현을 유지하며, 확인되지 않은 개방 권한을 약속하지 않습니다.',
   },
 };
 const t = copy[locale];
@@ -147,6 +356,137 @@ const ent = enterprises[locale];
 .cta-btn-secondary:hover {
   background: rgba(15, 118, 110, 0.06);
 }
+
+/* ── Service Cards ──────────────────────────── */
+.study-service-cards {
+  margin: 36px 0;
+}
+
+.service-cards-header {
+  margin-bottom: 24px;
+}
+
+.service-cards-header h2 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-strong, #1e293b);
+  margin: 0 0 6px;
+}
+
+.service-cards-header p {
+  font-size: .88rem;
+  color: var(--muted, #64748b);
+  margin: 0;
+}
+
+.service-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.service-card {
+  border-radius: 20px;
+  border: 1.5px solid var(--line, #e2e8f0);
+  background: var(--surface, #fff);
+  box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0,0,0,.1);
+}
+
+.service-card[data-color="lake-blue"]  { border-top: 4px solid var(--lake-blue, #1e5f8a); }
+.service-card[data-color="maple-red"]   { border-top: 4px solid var(--maple-red, #b5451b); }
+.service-card[data-color="golden"]      { border-top: 4px solid var(--golden, #c47d1a); }
+
+.service-card-header {
+  padding: 18px 20px 12px;
+}
+
+.service-card-header h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-strong, #1e293b);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.service-card-body {
+  padding: 0 20px 14px;
+  font-size: .83rem;
+  color: var(--muted, #64748b);
+  margin: 0;
+  line-height: 1.65;
+  flex: 1;
+}
+
+.service-card-details {
+  padding: 14px 20px;
+  background: var(--paper, #fafaf8);
+  border-top: 1px solid var(--line-light, #f1f5f9);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+
+.service-card-details > div {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 8px;
+}
+
+.service-card-details dt {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--muted, #64748b);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.service-card-details dd {
+  font-size: .8rem;
+  color: var(--text, #334155);
+  margin: 0;
+}
+
+.service-card-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 20px;
+  font-size: .85rem;
+  font-weight: 700;
+  text-decoration: none;
+  border-top: 1px solid var(--line, #e2e8f0);
+  transition: background .2s, color .2s;
+}
+
+.service-card[data-color="lake-blue"] .service-card-cta  { color: var(--lake-blue, #1e5f8a); }
+.service-card[data-color="maple-red"] .service-card-cta   { color: var(--maple-red, #b5451b); }
+.service-card[data-color="golden"] .service-card-cta      { color: var(--golden, #c47d1a); }
+
+.service-card-cta:hover {
+  background: var(--paper, #fafaf8);
+}
+
+.service-note {
+  margin-top: 14px;
+  font-size: .75rem;
+  color: var(--muted, #64748b);
+  font-style: italic;
+  padding: 10px 14px;
+  background: var(--paper, #fafaf8);
+  border-radius: 10px;
+  border: 1px dashed var(--line, #e2e8f0);
+}
 </style>
 
 <BaseLayout
@@ -167,6 +507,53 @@ const ent = enterprises[locale];
           <h1>{t.heading}</h1>
           <p>{t.description}</p>
         </div>
+
+        <!-- Service Cards -->
+        <section class="study-service-cards">
+          <div class="service-cards-header">
+            <h2>{t.serviceCardsHeading}</h2>
+            <p>{t.serviceCardsDesc}</p>
+          </div>
+          <div class="service-cards-grid">
+            {studyServiceCards[locale].map((card, idx) => (
+              <article class="service-card" data-color={['lake-blue', 'maple-red', 'golden'][idx]}>
+                <div class="service-card-header">
+                  <h3>{card.title}</h3>
+                </div>
+                <p class="service-card-body">{card.body}</p>
+                <dl class="service-card-details">
+                  <div>
+                    <dt>{t.suitableFor}</dt>
+                    <dd>{card.suitableFor}</dd>
+                  </div>
+                  <div>
+                    <dt>{t.suggestedSize}</dt>
+                    <dd>{card.suggestedSize}</dd>
+                  </div>
+                  <div>
+                    <dt>{t.suggestedDuration}</dt>
+                    <dd>{card.suggestedDuration}</dd>
+                  </div>
+                  <div>
+                    <dt>{t.optionalResources}</dt>
+                    <dd>{card.optionalResources}</dd>
+                  </div>
+                  <div>
+                    <dt>{t.deliverables}</dt>
+                    <dd>{card.deliverables}</dd>
+                  </div>
+                </dl>
+                <a href={localizePath('/cooperation', locale)} class="service-card-cta">
+                  {card.cta}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </a>
+              </article>
+            ))}
+          </div>
+          <p class="service-note">{t.note}</p>
+        </section>
 
         <div class="enterprise-grid">
           {ent.map((item) => (
@@ -198,7 +585,7 @@ const ent = enterprises[locale];
                 </svg>
                 AI 帮我规划研学路线
               </button>
-              <a href="/stations/cooperation" class="cta-btn cta-btn-secondary">
+              <a href={localizePath('/cooperation', locale)} class="cta-btn cta-btn-secondary">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                   <circle cx="9" cy="7" r="4"/>

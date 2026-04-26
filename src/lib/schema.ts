@@ -318,3 +318,37 @@ export const buildItemListSchema = (pathname: string, name: string, items: { url
     name: item.name,
   })),
 });
+
+export type LocalBusinessSchemaOptions = {
+  category?: string;
+  city?: string;
+  region?: string;
+  image?: string;
+};
+
+export const buildFoodBrandSchema = (
+  pathname: string,
+  name: string,
+  description: string,
+  locale: Locale = 'zh',
+  options: LocalBusinessSchemaOptions = {}
+) => ({
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  '@id': `${SITE_URL}${pathname}#business`,
+  url: `${SITE_URL}${pathname}`,
+  name,
+  description,
+  inLanguage: languageTagMap[locale],
+  isPartOf: {
+    '@id': WEBSITE_ID,
+  },
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: options.city ?? '吉林省',
+    addressRegion: options.region ?? '吉林省',
+    addressCountry: 'CN',
+  },
+  additionalType: options.category,
+  image: options.image,
+});

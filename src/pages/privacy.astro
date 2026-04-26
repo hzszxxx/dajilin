@@ -1,0 +1,30 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+
+const title = '隐私政策 | dajilin.net';
+const description = 'dajilin.net 隐私政策，说明平台如何收集、使用和保护用户提交的咨询信息。';
+---
+
+<BaseLayout title={title} description={description}>
+  <Header />
+  <main class="page-shell legal-page">
+    <section class="section-card">
+      <p class="eyebrow">Privacy Policy</p>
+      <h1>隐私政策</h1>
+      <p>
+        dajilin.net 仅在用户主动提交咨询、合作或服务需求时收集必要联系信息，用于顾问跟进、服务匹配和需求确认。
+      </p>
+      <h2>我们收集的信息</h2>
+      <p>包括联系人姓名、手机或微信、机构名称、出行时间、人数规模和需求描述等用户主动填写的信息。</p>
+      <h2>信息用途</h2>
+      <p>用于吉林文旅咨询、工业研学、自驾路线、资源合作等服务沟通，不会出售或出租给无关第三方。</p>
+      <h2>数据保护</h2>
+      <p>我们会采取合理措施保护用户提交的信息，并仅向处理对应需求的工作人员或合作服务方披露必要内容。</p>
+      <h2>联系我们</h2>
+      <p>如需查询、更正或删除已提交信息，可联系 info@dajilin.net。</p>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

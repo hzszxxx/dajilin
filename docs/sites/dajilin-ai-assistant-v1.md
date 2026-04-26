@@ -215,13 +215,13 @@ websites/dajilin/
 
 ```bash
 # n8n Webhook 端点
-GN_AI_SESSION_ENDPOINT=https://n.n8n.wang/public/ai/session
-GN_AI_CHAT_ENDPOINT=https://n.n8n.wang/public/ai/chat
-GN_AI_RECOMMENDED_QUESTIONS_ENDPOINT=https://n.n8n.wang/public/ai/recommended-questions
-GN_AI_HANDOFF_ENDPOINT=https://n.n8n.wang/public/ai/handoff
+GN_AI_SESSION_ENDPOINT=https://n8n.dajilin.net/public/ai/session
+GN_AI_CHAT_ENDPOINT=https://n8n.dajilin.net/public/ai/chat
+GN_AI_RECOMMENDED_QUESTIONS_ENDPOINT=https://n8n.dajilin.net/public/ai/recommended-questions
+GN_AI_HANDOFF_ENDPOINT=https://n8n.dajilin.net/public/ai/handoff
 
 # GN API 配置
-PUBLIC_GN_API_BASE_URL=https://api.renban.xyz
+PUBLIC_GN_API_BASE_URL=https://api.dajilin.net
 ```
 
 ## 后续规划

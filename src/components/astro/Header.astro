@@ -20,13 +20,14 @@ const brandMark = locale === 'zh' ? '大' : 'D';
     </a>
     <div class="header-right">
       <div class="header-badge">{headerText.badge}</div>
-      <div class="lang-switcher" aria-label="Language switcher">
+      {/* Lang switcher hidden — CN-only mode }
+      {/* <div class="lang-switcher" aria-label="Language switcher">
         {languageItems.map((item) => (
           <a href={item.href} class={item.active ? 'is-active' : ''}>
             {item.label}
           </a>
         ))}
-      </div>
+      </div> */}
     </div>
   </div>
   <nav class="main-nav">

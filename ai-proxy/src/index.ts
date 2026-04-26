@@ -56,7 +56,7 @@ app.use((req, _res, next) => {
 // ---------------------------------------------------------------------------
 
 app.get('/health', (_req, res) => {
-  const hasCredentials = Boolean(process.env.MINIMAX_API_KEY && process.env.MINIMAX_GROUP_ID);
+  const hasCredentials = Boolean(process.env.MINIMAX_API_KEY);
   res.json({
     status: hasCredentials ? 'ok' : 'missing_credentials',
     timestamp: new Date().toISOString(),
@@ -99,6 +99,8 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
 // Start
 // ---------------------------------------------------------------------------
 
+console.log('[DEBUG] MINIMAX_API_KEY:', process.env.MINIMAX_API_KEY?.slice(0, 8));
+console.log('[DEBUG] NODE_ENV:', process.env.NODE_ENV);
 app.listen(PORT, () => {
   console.log(`\n🚀 AI Proxy running on http://localhost:${PORT}`);
   console.log(`   Mode: ${process.env.NODE_ENV || 'development'}`);

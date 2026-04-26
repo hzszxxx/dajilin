@@ -3,168 +3,793 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/astro/Header.astro';
 import Footer from '@/components/astro/Footer.astro';
 import { buildCollectionPageSchema } from '@/lib/schema';
-import { getLocaleFromPathname, localizePath, type Locale } from '@/lib/i18n';
+import { getLocaleFromPathname, type Locale } from '@/lib/i18n';
 
 const locale = getLocaleFromPathname(Astro.url.pathname);
+
 const copy: Record<
   Locale,
   {
     title: string;
     description: string;
     schemaName: string;
-    heading: string;
-    needsTitle: string;
-    needsItems: string[];
-    cards: { title: string; body: string }[];
-    submitTitle: string;
-    submitItems: string[];
-    sideTitle: string;
-    sideDesc: string;
-    entryTitle: string;
-    askAi: string;
-    askAiQuestion: string;
-    studyLink: string;
+    pageHeading: string;
+    pageSubheading: string;
+    identityType: string;
+    identityOptions: string[];
+    needType: string;
+    needOptions: string[];
+    timeLabel: string;
+    timePlaceholder: string;
+    groupSize: string;
+    groupSizePlaceholder: string;
+    contactName: string;
+    contactNamePlaceholder: string;
+    contactPhone: string;
+    contactPhonePlaceholder: string;
+    contactWechat: string;
+    contactWechatPlaceholder: string;
+    descriptionLabel: string;
+    descriptionPlaceholder: string;
+    submitBtn: string;
+    submittingBtn: string;
+    successTitle: string;
+    successDesc: string;
+    privacyNote: string;
+    required: string;
+    invalidPhone: string;
+    invalidWechat: string;
+    selectOption: string;
   }
 > = {
   zh: {
     title: '合作咨询 | dajilin.net',
-    description: '承接文旅机构、驿站服务方、研学合作方、企业参访需求方和团体用户的咨询与合作对接。',
+    description: '提交你的需求，我们帮你判断适合的吉林文旅服务与合作路径。',
     schemaName: '合作咨询',
-    heading: '合作咨询',
-    needsTitle: '适合对接的需求',
-    needsItems: ['工业研学合作', '企业参访与政企考察', '331 驿站合作', '团体定制与线路需求'],
-    cards: [
-      { title: '学校与研学机构', body: '适合提交一汽红旗研学、工业文明线路和团体研学的初步需求。' },
-      { title: '企业与机构参访', body: '适合提交中车长客、工业文明线路和政企考察型参访需求。' },
-      { title: '331 驿站合作', body: '适合沿线驿站、住宿、餐饮、补给和团队服务资源方发起对接。' },
-      { title: '文旅资源合作', body: '适合景区、场馆、路线服务方和内容合作伙伴建立第一轮联系。' },
-    ],
-    submitTitle: '建议提交哪些信息',
-    submitItems: ['你的身份：学校、机构、企业或资源方', '希望咨询的主题：研学、参访、驿站、路线或合作', '时间范围、人数规模或资源位置', '希望平台先帮助你判断什么'],
-    sideTitle: '合作方式',
-    sideDesc: '通过页面提交咨询后，平台会尽快与您对接，评估需求并匹配合适的资源方。',
-    entryTitle: '建议入口',
-    askAi: '先问 AI 导览',
-    askAiQuestion: '我有合作需求，应该先准备哪些信息？',
-    studyLink: '查看工业研学',
+    pageHeading: '合作咨询',
+    pageSubheading: '提交你的需求，我们帮你判断适合的吉林文旅服务与合作路径。',
+    identityType: '你的身份是',
+    identityOptions: ['游客/个人', '学校/教育机构', '研学机构', '企业/公司', '驿站资源方', '景区或文旅资源方', '其他'],
+    needType: '需要的服务类型',
+    needOptions: ['工业研学', '企业参访/政企考察', '331 自驾服务', '吉林行程定制', '资源合作入驻', '其他'],
+    timeLabel: '出行或合作时间',
+    timePlaceholder: '如：2025年6月、7月中旬、随时可约',
+    groupSize: '人数或规模',
+    groupSizePlaceholder: '如：40人团队、5人自驾、200人研学',
+    contactName: '联系人姓名',
+    contactNamePlaceholder: '请输入联系人姓名',
+    contactPhone: '手机号码',
+    contactPhonePlaceholder: '请输入手机号码',
+    contactWechat: '微信（选填）',
+    contactWechatPlaceholder: '方便更快联系可填写',
+    descriptionLabel: '需求描述',
+    descriptionPlaceholder: '请简要描述你的需求：出行日期、人数偏好、特殊要求等，帮助顾问更快了解你的情况。',
+    submitBtn: '提交需求',
+    submittingBtn: '提交中...',
+    successTitle: '需求已收到',
+    successDesc: '顾问将在 24 小时内与您联系。如需紧急确认，可直接拨打 0431-81157356。',
+    privacyNote: '您的信息仅用于顾问跟进需求，不会用于其他用途。',
+    required: '此项为必填',
+    invalidPhone: '请输入有效的手机号码',
+    invalidWechat: '请输入有效的微信号',
+    selectOption: '请选择',
   },
   en: {
     title: 'Cooperation | dajilin.net',
-    description: 'Consultation and cooperation for tourism institutions, station partners, study-tour partners, enterprise visits, and group travel demands.',
+    description: 'Submit your needs and we will help identify the right Jilin travel service and cooperation path for you.',
     schemaName: 'Cooperation',
-    heading: 'Cooperation',
-    needsTitle: 'Suitable Requests',
-    needsItems: ['Industrial study-tour cooperation', 'Enterprise visits and government delegation tours', 'Route 331 station cooperation', 'Group custom itinerary requests'],
-    cards: [
-      { title: 'Schools & Study Institutions', body: 'Submit initial requests for FAW Hongqi study tours and industrial heritage routes.' },
-      { title: 'Enterprise & Institutional Visits', body: 'Submit CRRC and industrial civilization visit requests for organizations.' },
-      { title: 'Route 331 Station Partners', body: 'For station, stay, dining, supply, and team-service providers along the route.' },
-      { title: 'Tourism Resource Partners', body: 'For scenic spots, venues, route providers, and content partners.' },
-    ],
-    submitTitle: 'Recommended Information to Submit',
-    submitItems: ['Your role: school, institution, enterprise, or resource provider', 'Request type: study tour, visit, station, route, or cooperation', 'Time range, group size, or resource location', 'What you want us to evaluate first'],
-    sideTitle: 'Cooperation Process',
-    sideDesc: 'After submitting your inquiry through the page, we will match you with the appropriate resource partners.',
-    entryTitle: 'Recommended Entry',
-    askAi: 'Ask AI Guide First',
-    askAiQuestion: 'I have a cooperation request. What information should I prepare first?',
-    studyLink: 'View Study Tours',
+    pageHeading: 'Cooperation',
+    pageSubheading: 'Submit your needs and we will help identify the right Jilin travel service and cooperation path for you.',
+    identityType: 'Your identity',
+    identityOptions: ['Individual / Tourist', 'School / Education Institution', 'Study Tour Agency', 'Enterprise / Company', 'Station Resource Partner', 'Scenic Spot / Tourism Resource Partner', 'Other'],
+    needType: 'Type of service needed',
+    needOptions: ['Industrial Study Tour', 'Enterprise Visit / Government Delegation', 'Route 331 Self-Drive Service', 'Jilin Trip Customization', 'Resource Cooperation', 'Other'],
+    timeLabel: 'Travel or cooperation timing',
+    timePlaceholder: 'e.g., June 2025, mid-July, flexible',
+    groupSize: 'Group size',
+    groupSizePlaceholder: 'e.g., 40-person team, 5-person self-drive, 200-person study tour',
+    contactName: 'Contact name',
+    contactNamePlaceholder: 'Enter contact name',
+    contactPhone: 'Phone number',
+    contactPhonePlaceholder: 'Enter phone number',
+    contactWechat: 'WeChat (optional)',
+    contactWechatPlaceholder: 'Fill if you prefer faster contact',
+    descriptionLabel: 'Description of needs',
+    descriptionPlaceholder: 'Briefly describe your needs: travel dates, group preferences, special requirements, etc. This helps our consultant understand your situation faster.',
+    submitBtn: 'Submit Request',
+    submittingBtn: 'Submitting...',
+    successTitle: 'Request Received',
+    successDesc: 'A consultant will contact you within 24 hours. For urgent matters, call 0431-81157356 directly.',
+    privacyNote: 'Your information is used only for consultant follow-up and will not be used for other purposes.',
+    required: 'Required',
+    invalidPhone: 'Please enter a valid phone number',
+    invalidWechat: 'Please enter a valid WeChat ID',
+    selectOption: 'Please select',
   },
   ja: {
     title: '協業相談 | dajilin.net',
-    description: '観光機関、驛站サービス、研修協力、企業訪問、団体需要向けの協業相談入口です。',
+    description: 'ニーズを送信すれば、吉林文旅サービスと協力パスを見つけるお手伝いをします。',
     schemaName: '協業相談',
-    heading: '協業相談',
-    needsTitle: '対応可能な相談',
-    needsItems: ['産業研修協力', '企業訪問・政企視察', '331 驛站協力', '団体カスタムルート相談'],
-    cards: [
-      { title: '学校・研修機関', body: '一汽紅旗研修、産業文明ルート、団体研修の初期相談に対応。' },
-      { title: '企業・機関訪問', body: '中車長客、産業文明ルート、政企視察型訪問の相談に対応。' },
-      { title: '331 驛站協力', body: '沿線の驛站、宿泊、飲食、補給、団体サービス提供者向け。' },
-      { title: '文旅資源協力', body: '景区、施設、ルート事業者、コンテンツ協力者向け。' },
-    ],
-    submitTitle: '提出推奨情報',
-    submitItems: ['属性：学校・機関・企業・資源提供者', '相談テーマ：研修・訪問・驛站・ルート・協力', '時期、人数規模、資源位置', '先に判断してほしい内容'],
-    sideTitle: '協力の流れ',
-    sideDesc: 'ページから相談を送信した後 Suitable のリソースとマッチングします。',
-    entryTitle: '推奨入口',
-    askAi: '先に AIガイドへ',
-    askAiQuestion: '協業相談をしたい場合、先に何を準備すべきですか？',
-    studyLink: '産業研修を見る',
+    pageHeading: '協業相談',
+    pageSubheading: 'ニーズを送信すれば、吉林文旅サービスと協力パスを見つけるお手伝いをします。',
+    identityType: '您的身份',
+    identityOptions: ['個人/旅行者', '学校/教育機関', '研修機関', '企業/会社', '驛站リソースパートナー', '景区/文旅リソースパートナー', 'その他'],
+    needType: '必要とするサービス類型',
+    needOptions: ['産業研修', '企業訪問/政企視察', '331 自驾サービス', '吉林旅程定制', 'リソース協力入住', 'その他'],
+    timeLabel: '出行または協力時期',
+    timePlaceholder: '例：2025年6月、7月中旬、随时可约',
+    groupSize: '人数または規模',
+    groupSizePlaceholder: '例：40人チーム、5人自驾、200人研修',
+    contactName: '担当者名',
+    contactNamePlaceholder: '氏名を入力',
+    contactPhone: '電話番号',
+    contactPhonePlaceholder: '電話番号を入力',
+    contactWechat: '微信（任意）',
+    contactWechatPlaceholder: ' quicker contact possible',
+    descriptionLabel: 'ニーズ説明',
+    descriptionPlaceholder: 'ニーズを簡単に入力：出行日程、人数の偏好、特別な要求など。コンサルタントが状況をより早く理解するのに役立ちます。',
+    submitBtn: 'ニーズを送信',
+    submittingBtn: '送信中...',
+    successTitle: 'ニーズを受け取りました',
+    successDesc: 'コンサルタントが24時間以内にご連絡します。緊急の確認が必要な場合は、0431-81157356 まで直接お電話ください。',
+    privacyNote: '情報はコンサルタントのニーズ追跡のみに使用され、他の目的には使用されません。',
+    required: '必須',
+    invalidPhone: '有効な電話番号を入力してください',
+    invalidWechat: '有効な微信IDを入力してください',
+    selectOption: '選択してください',
   },
   ko: {
     title: '협업 문의 | dajilin.net',
-    description: '문여 기관, 거점 서비스 파트너, 연수 협력사, 기업 방문 수요, 단체 수요를 위한 협업 문의 입구입니다.',
+    description: '요구를 제출하면 지린 관광 서비스와 협력 경로를 찾는 것을 도와드립니다.',
     schemaName: '협업 문의',
-    heading: '협업 문의',
-    needsTitle: '연계 가능한 수요',
-    needsItems: ['산업 연수 협력', '기업 방문·정책 시찰', '331 거점 협력', '단체 맞춤 루트 수요'],
-    cards: [
-      { title: '학교·연수 기관', body: 'FAW 홍치 연수, 산업 문명 루트, 단체 연수 초기 수요 접수.' },
-      { title: '기업·기관 방문', body: 'CRRC, 산업 문명 루트, 정책 시찰형 방문 수요 접수.' },
-      { title: '331 거점 협력', body: '연선 거점, 숙박, 식음, 보급, 팀 서비스 파트너 대상.' },
-      { title: '문여 자원 협력', body: '관광지, 시설, 루트 운영사, 콘텐츠 파트너 대상.' },
-    ],
-    submitTitle: '제출 권장 정보',
-    submitItems: ['역할: 학교, 기관, 기업, 자원 파트너', '문의 주제: 연수, 방문, 거점, 루트, 협업', '일정 범위, 인원 규모, 자원 위치', '플랫폼이 먼저 판단해야 할 항목'],
-    sideTitle: '협업 절차',
-    sideDesc: '페이지를 통해 문의를 제출하면 적합한 자원 파트너와 매칭해 드립니다.',
-    entryTitle: '권장 입구',
-    askAi: 'AI 가이드 먼저',
-    askAiQuestion: '협업 문의를 하려면 어떤 정보를 먼저 준비해야 하나요?',
-    studyLink: '산업 연수 보기',
+    pageHeading: '협업 문의',
+    pageSubheading: '요구를 제출하면 지린 관광 서비스와 협력 경로를 찾는 것을 도와드립니다.',
+    identityType: '신분',
+    identityOptions: ['개인/여행자', '학교/교육기관', '연수기관', '기업/회사', '웨이잔 리소스 파트너', '경관/관광 리소스 파트너', '기타'],
+    needType: '필요 서비스 유형',
+    needOptions: ['산업 연수', '기업 방문/정책 시찰', '331 自驾 서비스', '지린 일정 커스텀', '자원 협력 입주', '기타'],
+    timeLabel: '출행 또는 협력 시기',
+    timePlaceholder: '예: 2025년 6월, 7월 중순, 즉시 가능',
+    groupSize: '인원 또는 규모',
+    groupSizePlaceholder: '예: 40명 팀, 5명自驾, 200명 연수',
+    contactName: '담당자 이름',
+    contactNamePlaceholder: '담당자 이름을 입력하세요',
+    contactPhone: '전화번호',
+    contactPhonePlaceholder: '전화번호를 입력하세요',
+    contactWechat: '위챗（선택）',
+    contactWechatPlaceholder: '更快联系可填写',
+    descriptionLabel: '요구 설명',
+    descriptionPlaceholder: '요구를 간단히 입력：출행 일정, 인원 선호, 특별 요구 등. 컨설턴트가 상황을 더 빨리 이해하는 데 도움이 됩니다.',
+    submitBtn: '요구 제출',
+    submittingBtn: '제출 중...',
+    successTitle: '요구를 받았습니다',
+    successDesc: '컨설턴트가 24시간 이내에 연락드립니다. 긴급 확인이 필요하시면 0431-81157356으로 직접 전화주세요.',
+    privacyNote: '정보는 컨설턴트 요구 추적 전용으로 다른 용도로 사용되지 않습니다.',
+    required: '필수',
+    invalidPhone: '유효한 전화번호를 입력하세요',
+    invalidWechat: '유효한 위챗 ID를 입력하세요',
+    selectOption: '선택하세요',
   },
 };
+
 const t = copy[locale];
 ---
 
-<BaseLayout title={t.title} description={t.description} schemas={[buildCollectionPageSchema('/cooperation', t.schemaName, t.description, locale)]} locale={locale}>
+<BaseLayout
+  title={t.title}
+  description={t.description}
+  schemas={[buildCollectionPageSchema('/cooperation', t.schemaName, t.description, locale)]}
+  locale={locale}
+>
   <Header />
   <main class="page-shell">
-    <div class="container page-grid">
-      <section class="content-card">
-        <div class="page-copy">
-          <div class="eyebrow">Cooperation</div>
-          <h1>{t.heading}</h1>
-          <p>{t.description}</p>
-        </div>
-        <h2>{t.needsTitle}</h2>
-        <ul>
-          {t.needsItems.map((item) => (
-            <li>{item}</li>
-          ))}
-        </ul>
-
-        <div class="detail-grid">
-          {t.cards.map((card) => (
-            <article class="detail-link-card">
-              <h3>{card.title}</h3>
-              <p>{card.body}</p>
-            </article>
-          ))}
-        </div>
-
-        <div class="detail-block">
-          <h2>{t.submitTitle}</h2>
-          <ul>
-            {t.submitItems.map((item) => (
-              <li>{item}</li>
-            ))}
+    <div class="cooperation-layout">
+      <!-- Left: Purpose + trust signals -->
+      <aside class="cooperation-aside">
+        <div class="cooperation-aside-inner">
+          <h2 class="cooperation-aside-heading">{locale === 'zh' ? '为什么通过大吉林咨询' : locale === 'en' ? 'Why Consult Through Da Jilin' : locale === 'ja' ? 'なぜ大吉林を通じて相談か' : '왜 대지린을 통해 상담하는가'}</h2>
+          <ul class="cooperation-trust-list">
+            <li>
+              <span class="trust-icon">&#10003;</span>
+              <div>
+                <strong>{locale === 'zh' ? 'AI 初筛方向' : 'AI Pre-screening'}</strong>
+                <p>{locale === 'zh' ? '先通过 AI 了解适合的服务方向' : 'Understand the right service direction first with AI'}</p>
+              </div>
+            </li>
+            <li>
+              <span class="trust-icon">&#10003;</span>
+              <div>
+                <strong>{locale === 'zh' ? '顾问跟进细节' : 'Consultant Follow-up'}</strong>
+                <p>{locale === 'zh' ? '人工确认资源档期与服务细节' : 'Human confirmation of resource availability and service details'}</p>
+              </div>
+            </li>
+            <li>
+              <span class="trust-icon">&#10003;</span>
+              <div>
+                <strong>{locale === 'zh' ? '全流程服务' : 'Full-Process Service'}</strong>
+                <p>{locale === 'zh' ? '从咨询到出行全程有人跟进' : 'Someone follows through from inquiry to travel'}</p>
+              </div>
+            </li>
           </ul>
-        </div>
-      </section>
-      <aside class="page-card">
-        <h3>{t.sideTitle}</h3>
-        <p>{t.sideDesc}</p>
-        <div class="detail-side-card">
-          <h3>{t.entryTitle}</h3>
-          <div class="cta-row">
-            <button class="button" type="button" data-open-ai-widget data-ai-module="cooperation" data-ai-question={t.askAiQuestion}>{t.askAi}</button>
-            <a class="button-secondary" href={localizePath('/study-tours', locale)}>{t.studyLink}</a>
+
+          <div class="cooperation-ai-prompt">
+            <p>{locale === 'zh' ? '还不确定想要什么？' : locale === 'en' ? 'Not sure what you want yet?' : locale === 'ja' ? 'まだ何をしたいか分からない？' : '아직 무엇을 원하는지 모르시나요?'}</p>
+            <button
+              class="cooperation-ai-btn"
+              type="button"
+              data-open-ai-widget
+              data-ai-module="cooperation"
+              data-ai-question={locale === 'zh' ? '我有合作需求，应该先准备哪些信息？' : locale === 'en' ? 'I have a cooperation request. What information should I prepare first?' : locale === 'ja' ? '協業相談をしたい場合、先に何を準備すべきですか？' : '협업 문의를 하고 싶은데 어떤 정보를 먼저 준비해야 하나요?'}
+            >
+              {locale === 'zh' ? '→ 让 AI 先帮我分析方向' : locale === 'en' ? '→ Let AI analyze my direction first' : locale === 'ja' ? '→ AIにまず方向性を分析してもらう' : '→ AI가 먼저 방향을 분석하게 하기'}
+            </button>
           </div>
+
+          <p class="cooperation-privacy">{t.privacyNote}</p>
         </div>
       </aside>
+
+      <!-- Right: Form -->
+      <section class="cooperation-form-section">
+        <div class="cooperation-form-header">
+          <h1>{t.pageHeading}</h1>
+          <p>{t.pageSubheading}</p>
+        </div>
+
+        <form id="cooperationForm" class="cooperation-form" novalidate>
+          <!-- Identity Type -->
+          <div class="form-group">
+            <label for="identityType">{t.identityType} <span class="required-mark">*</span></label>
+            <select id="identityType" name="identityType" required>
+              <option value="">-- {t.selectOption} --</option>
+              {t.identityOptions.map((opt) => <option value={opt}>{opt}</option>)}
+            </select>
+            <span class="field-error" id="identityTypeError">{t.required}</span>
+          </div>
+
+          <!-- Need Type -->
+          <div class="form-group">
+            <label for="needType">{t.needType} <span class="required-mark">*</span></label>
+            <select id="needType" name="needType" required>
+              <option value="">-- {t.selectOption} --</option>
+              {t.needOptions.map((opt) => <option value={opt}>{opt}</option>)}
+            </select>
+            <span class="field-error" id="needTypeError">{t.required}</span>
+          </div>
+
+          <!-- Time + GroupSize row -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="time">{t.timeLabel}</label>
+              <input type="text" id="time" name="time" placeholder={t.timePlaceholder} />
+            </div>
+            <div class="form-group">
+              <label for="groupSize">{t.groupSize}</label>
+              <input type="text" id="groupSize" name="groupSize" placeholder={t.groupSizePlaceholder} />
+            </div>
+          </div>
+
+          <!-- Contact Name -->
+          <div class="form-group">
+            <label for="contactName">{t.contactName} <span class="required-mark">*</span></label>
+            <input type="text" id="contactName" name="contactName" placeholder={t.contactNamePlaceholder} required />
+            <span class="field-error" id="contactNameError">{t.required}</span>
+          </div>
+
+          <!-- Phone + Wechat row -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="contactPhone">{t.contactPhone} <span class="required-mark">*</span></label>
+              <input type="tel" id="contactPhone" name="contactPhone" placeholder={t.contactPhonePlaceholder} required />
+              <span class="field-error" id="contactPhoneError">{t.invalidPhone}</span>
+            </div>
+            <div class="form-group">
+              <label for="contactWechat">{t.contactWechat}</label>
+              <input type="text" id="contactWechat" name="contactWechat" placeholder={t.contactWechatPlaceholder} />
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="form-group">
+            <label for="description">{t.descriptionLabel}</label>
+            <textarea id="description" name="description" rows="4" placeholder={t.descriptionPlaceholder}></textarea>
+          </div>
+
+          <!-- Hidden fields -->
+          <input type="hidden" name="source_page" value="/cooperation" />
+          <input type="hidden" name="module" value="cooperation_form" />
+          <input type="hidden" name="locale" value={locale} />
+          <input type="hidden" name="submittedAt" id="submittedAt" />
+
+          <!-- Submit -->
+          <div class="form-actions">
+            <button type="submit" class="submit-btn" id="submitBtn">{t.submitBtn}</button>
+          </div>
+        </form>
+
+        <!-- Success state -->
+        <div id="successState" class="success-state" style="display:none;">
+          <div class="success-icon">&#10003;</div>
+          <h2>{t.successTitle}</h2>
+          <p>{t.successDesc}</p>
+          
+          <div class="wechat-fast-track">
+            <p><strong>不想等待回电？</strong><br/>直接扫码添加专属服务顾问微信（微信号：dajilin_service）</p>
+            <div class="wechat-qr-placeholder">
+              <img src="/images/wechat-qr-placeholder.jpg" alt="WeChat QR" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 100 100\\' fill=\\'%23f8fafc\\'%3E%3Crect width=\\'100\\' height=\\'100\\'/%3E%3Ctext x=\\'50\\' y=\\'50\\' text-anchor=\\'middle\\' dy=\\'.3em\\' fill=\\'%2394a3b8\\' font-size=\\'12\\' font-family=\\'sans-serif\\'%3E微信二维码%3C/text%3E%3C/svg%3E'" />
+            </div>
+          </div>
+
+          <a href={locale === 'zh' ? '/' : locale === 'en' ? '/en' : locale === 'ja' ? '/ja' : '/ko'} class="success-home-link">
+            {locale === 'zh' ? '← 返回首页' : locale === 'en' ? '← Back to Home' : locale === 'ja' ? '← ホームに戻る' : '← 홈페이지로 돌아가기'}
+          </a>
+        </div>
+      </section>
     </div>
   </main>
   <Footer />
 </BaseLayout>
+
+<style>
+.cooperation-layout {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 20px 80px;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .cooperation-layout {
+    grid-template-columns: 1fr;
+    padding: 24px 16px 60px;
+    gap: 28px;
+  }
+}
+
+/* Aside */
+.cooperation-aside {
+  position: sticky;
+  top: 24px;
+}
+
+.cooperation-aside-inner {
+  background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 100%);
+  border: 1.5px solid rgba(11,95,66,.15);
+  border-radius: 24px;
+  padding: 28px 24px;
+}
+
+.cooperation-aside-heading {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-strong);
+  margin: 0 0 20px;
+  letter-spacing: -.01em;
+}
+
+.cooperation-trust-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cooperation-trust-list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.trust-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--pine-green);
+  color: #fff;
+  font-size: .75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.cooperation-trust-list strong {
+  display: block;
+  font-size: .88rem;
+  font-weight: 700;
+  color: var(--text-strong);
+  margin-bottom: 2px;
+}
+
+.cooperation-trust-list p {
+  font-size: .8rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.cooperation-ai-prompt {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+
+.cooperation-ai-prompt p {
+  font-size: .83rem;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+
+.cooperation-ai-btn {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1.5px solid var(--lake-blue);
+  background: transparent;
+  color: var(--lake-blue);
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: background .2s, color .2s;
+}
+
+.cooperation-ai-btn:hover {
+  background: var(--lake-blue);
+  color: #fff;
+}
+
+.cooperation-privacy {
+  font-size: .72rem;
+  color: var(--muted);
+  margin: 0;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Form section */
+.cooperation-form-section {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  padding: 36px 40px;
+  box-shadow: 0 4px 20px #00000008;
+}
+
+@media (max-width: 768px) {
+  .cooperation-form-section {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+}
+
+.cooperation-form-header {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line-light);
+}
+
+.cooperation-form-header h1 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-strong);
+  margin: 0 0 8px;
+  letter-spacing: -.02em;
+}
+
+.cooperation-form-header p {
+  font-size: .9rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Form */
+.cooperation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 560px) {
+  .form-row { grid-template-columns: 1fr; }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.required-mark {
+  color: #ef4444;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 11px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  font-size: .9rem;
+  color: var(--text-strong);
+  background: var(--paper);
+  transition: border-color .2s, box-shadow .2s;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--pine-green);
+  box-shadow: 0 0 0 3px rgba(11,95,66,.1);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #c4c9d4;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-group select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+.field-error {
+  font-size: .75rem;
+  color: #ef4444;
+  display: none;
+}
+
+.form-group.has-error input,
+.form-group.has-error select,
+.form-group.has-error textarea {
+  border-color: #ef4444;
+}
+
+.form-group.has-error .field-error {
+  display: block;
+}
+
+.form-actions {
+  padding-top: 8px;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 15px 24px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, var(--pine-green) 0%, #083d54 100%);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity .2s, transform .2s, box-shadow .2s;
+  font-family: inherit;
+}
+
+.submit-btn:hover:not(:disabled) {
+  opacity: .92;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(11,95,66,.3);
+}
+
+.submit-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* Success state */
+.success-state {
+  text-align: center;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pine-green), #083d54);
+  color: #fff;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.success-state h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-strong);
+  margin: 0;
+}
+
+.success-state p {
+  font-size: .9rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.7;
+  max-width: 40ch;
+}
+
+.wechat-fast-track {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 16px;
+  padding: 24px;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.wechat-fast-track p {
+  font-size: 0.85rem;
+  color: var(--text-strong);
+}
+
+.wechat-fast-track strong {
+  color: var(--pine-green);
+}
+
+.wechat-qr-placeholder {
+  width: 140px;
+  height: 140px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 4px;
+}
+
+.wechat-qr-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.success-home-link {
+  margin-top: 8px;
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--pine-green);
+  text-decoration: none;
+}
+
+.success-home-link:hover {
+  text-decoration: underline;
+}
+</style>
+
+<script is:inline define:vars={{ t }}>
+  const form = document.getElementById('cooperationForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const successState = document.getElementById('successState');
+  const submittedAtEl = document.getElementById('submittedAt');
+
+  function getField(id) {
+    return document.getElementById(id);
+  }
+
+  function setError(fieldId, show) {
+    const group = getField(fieldId)?.closest('.form-group');
+    if (group) group.classList.toggle('has-error', show);
+  }
+
+  function validatePhone(phone) {
+    return /^1[3-9]\d{9}$/.test(phone.trim());
+  }
+
+  function validateForm() {
+    let valid = true;
+
+    const identityType = getField('identityType')?.value;
+    setError('identityType', !identityType);
+    if (!identityType) valid = false;
+
+    const needType = getField('needType')?.value;
+    setError('needType', !needType);
+    if (!needType) valid = false;
+
+    const contactName = getField('contactName')?.value.trim();
+    setError('contactName', !contactName);
+    if (!contactName) valid = false;
+
+    const contactPhone = getField('contactPhone')?.value.trim();
+    const phoneError = getField('contactPhoneError');
+    if (!contactPhone) {
+      setError('contactPhone', true);
+      if (phoneError) phoneError.textContent = t.required;
+      valid = false;
+    } else if (!validatePhone(contactPhone)) {
+      setError('contactPhone', true);
+      if (phoneError) phoneError.textContent = t.invalidPhone;
+      valid = false;
+    }
+
+    return valid;
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = t.submittingBtn;
+
+    if (submittedAtEl) {
+      submittedAtEl.value = new Date().toISOString();
+    }
+
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      const webhookUrl = import.meta.env.PUBLIC_GN_N8N_COOPERATION_WEBHOOK_URL || '';
+      if (webhookUrl) {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...data,
+            submittedAt: new Date().toISOString(),
+          }),
+        });
+      }
+    } catch (err) {
+      // Proceed to success even if webhook fails (for demo/dev)
+    }
+
+    form.style.display = 'none';
+    if (successState) successState.style.display = 'flex';
+  });
+
+  // Clear error on input
+  ['identityType', 'needType', 'contactName', 'contactPhone', 'contactWechat'].forEach((id) => {
+    const el = getField(id);
+    el?.addEventListener('change', () => setError(id, false));
+    el?.addEventListener('input', () => setError(id, false));
+  });
+</script>

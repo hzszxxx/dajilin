@@ -1,7 +1,9 @@
 ---
 import '@/styles/index.css';
 import PageAIWidget from '@/components/astro/PageAIWidget.astro';
-import { getHtmlLang, getLocaleFromPathname } from '@/lib/i18n';
+import { getHtmlLang, getLocaleFromPathname, supportedLocales, stripLocalePrefix, localizePath } from '@/lib/i18n';
+
+const baiduAnalyticsId = String((import.meta as any).env?.PUBLIC_BAIDU_ANALYTICS_ID || '').trim();
 
 interface Props {
   title: string;
@@ -31,6 +33,17 @@ const resolvedOgImage = ogImage
   : `${siteUrl}/images/home/hero-jilin.jpg`;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 
+const cleanPath = stripLocalePrefix(Astro.url.pathname);
+const alternateLinks = supportedLocales.map((loc) => ({
+  lang: getHtmlLang(loc),
+  href: new URL(localizePath(cleanPath, loc), Astro.site).href
+}));
+// Add x-default pointing to the default locale (zh)
+alternateLinks.push({
+  lang: 'x-default',
+  href: new URL(localizePath(cleanPath, 'zh'), Astro.site).href
+});
+
 const connectSources = new Set(["'self'"]);
 const publicApiBaseUrl = String(import.meta.env.PUBLIC_GN_API_BASE_URL || '').trim();
 
@@ -42,12 +55,23 @@ if (publicApiBaseUrl) {
   }
 }
 
+// Baidu Analytics domain
+const baiduHm = 'https://hm.baidu.com';
+
+const cspScriptSrc = baiduAnalyticsId
+  ? `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${baiduHm}`
+  : `script-src 'self' 'unsafe-inline' 'unsafe-eval'`;
+
+const cspConnectSrc = baiduAnalyticsId
+  ? `connect-src 'self' ${baiduHm} ${[...connectSources].filter(s => s !== "'self'").join(' ')}`
+  : `connect-src 'self' ${[...connectSources].filter(s => s !== "'self'").join(' ')}`;
+
 const csp = [
   "default-src 'self'",
   "img-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
-  "script-src 'self' 'unsafe-inline'",
-  `connect-src ${Array.from(connectSources).join(' ')}`,
+  cspScriptSrc,
+  cspConnectSrc,
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -65,6 +89,9 @@ const csp = [
     <meta http-equiv="Content-Security-Policy" content={csp} />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <link rel="canonical" href={canonicalUrl} />
+    {alternateLinks.map(({ lang, href }) => (
+      <link rel="alternate" hreflang={lang} href={href} />
+    ))}
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -88,5 +115,18 @@ const csp = [
       import { initScrollAnimations } from '@/scripts/scroll-animations';
       initScrollAnimations();
     </script>
+    {baiduAnalyticsId && (
+      <script is:inline define:vars={{ baiduAnalyticsId }}>
+        var _hmt = window._hmt || [];
+        (function() {
+          var hm = document.createElement('script');
+          hm.src = 'https://hm.baidu.com/hm.js?' + baiduAnalyticsId;
+          var s = document.getElementsByTagName('script')[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        // Track pageviews on navigation
+        window._hmt = window._hmt || [];
+      </script>
+    )}
   </body>
 </html>

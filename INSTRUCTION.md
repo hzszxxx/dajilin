@@ -11,7 +11,7 @@
 - **Astro SSR** — 端口 4321（`pm2` 管理）
 - **Nginx** — 根目录 `/var/www/dajilin/current/dist/client`
 - **Node.js 环境** — `node_modules` 在 `releases/20260402153732/`
-- **AI 后端** — `https://api.renban.xyz/public/ai/*`
+- **AI 后端** — `https://api.dajilin.net/public/ai/*`
 
 ### 内容管理
 - 所有页面内容定义在 `src/lib/content-pages.ts`（1,555 行）
@@ -19,14 +19,14 @@
 - 页面布局 `src/layouts/BaseLayout.astro`
 
 ### AI 引导功能
-- 前端 AI Widget 通过 `api.renban.xyz` 的 `/public/ai/*` 接口通信
+- 前端 AI Widget 通过 `api.dajilin.net` 的 `/public/ai/*` 接口通信
 - 环境变量在 `shared/.env` 和 `releases/20260402153732/.env`
 - 关键端点：`session` / `chat` / `recommended-questions` / `handoff`
 
 ### SEO / UI 维护
 - `og:image` 通过 `heroImage` props 注入 BaseLayout
 - 已有配图：`images/home/changbai.jpg`, `changchun.jpg`, `hero-jilin.jpg`, `yanbian.jpg`
-- 构建时必须指定 `SITE_URL=https://dajilin.renban.xyz`
+- 构建时必须指定 `SITE_URL=https://dajilin.net`
 
 ## 3. 工作流程要求
 
@@ -42,7 +42,7 @@ nano /var/www/dajilin/releases/20260402153732/src/lib/content-pages.ts
 
 # 2. 构建（必须带 SITE_URL）
 cd /var/www/dajilin/releases/20260402153732
-SITE_URL=https://dajilin.renban.xyz npm run build
+SITE_URL=https://dajilin.net npm run build
 
 # 3. 同步构建产物（用 Python 经临时目录，禁止 rsync 自引用）
 python3 /tmp/sync_destinations.py
@@ -94,5 +94,5 @@ pm2 restart <app-name>
 
 - ❌ 禁止在包含 `dist/` 的目录下执行 `rsync src/ dest/`（自引用会清空内容）
 - ❌ 禁止用 `cp -r dir/. dir/` 在同一目录自引用
-- ❌ 不得跳过 `SITE_URL=https://dajilin.renban.xyz` 直接执行 `npm run build`
+- ❌ 不得跳过 `SITE_URL=https://dajilin.net` 直接执行 `npm run build`
 - ❌ 不得删除 `releases/20260402153732/node_modules`

@@ -31,7 +31,7 @@ const sessions = new Map<string, Session>();
 const SESSION_TTL_MS = 24 * 60 * 60 * 1000;
 setInterval(() => {
   const now = Date.now();
-  for (const [id, session] of sessions) {
+  for (const [id, session] of Array.from(sessions)) {
     if (now - session.createdAt > SESSION_TTL_MS) {
       sessions.delete(id);
     }
