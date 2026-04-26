@@ -151,6 +151,26 @@ export const jilinFoodBrands: FoodBrand[] = [
     businessHours: '建议电话核实',
     teamDiningCapacity: '可接团',
   },
+  {
+    slug: 'zhenbutong',
+    name: '真不同',
+    city: '长春',
+    category: '熏酱 / 地方特色菜',
+    heritage: '中华老字号',
+    signature: '真不同熏肉、酱肉、长春传统菜',
+    summary: '长春极具代表性的老字号，以独特的熏酱工艺闻名，适合作为长春城市游的核心正餐推荐。',
+    bestFor: ['传统美食体验', '团队用餐', '城市游'],
+    routePairing: ['长春老街漫游', '伪满皇宫周边', '长春特色美食品鉴'],
+    recommendedItems: ['真不同熏肉', '酱肉', '熏酱拼盘'],
+    planningNote: '总店规模较大，适合团队和家庭聚餐；熏酱产品也可作为特色伴手礼购买。',
+    sourceNote: '商务部中华老字号名录可核验品牌。',
+    verificationUrl: 'https://zhlzh.mofcom.gov.cn/',
+    representativeStore: '长春四道街总店',
+    address: '吉林省长春市南关区永安弄1号(近四道街)',
+    phone: '0431-82865747',
+    businessHours: '10:00 - 21:00 (建议电话核实)',
+    teamDiningCapacity: '接团能力强',
+  },
 ];
 
 export const foodFaqs = [
