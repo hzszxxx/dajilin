@@ -1,0 +1,138 @@
+{
+  "name": "geo-external-backlink-checker",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 11 * * 0"            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "每周日11:00触发",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "backlinkConfig",
+              "type": "string",
+              "value": "={\"siteUrl\":\"https://dajilin.net\",\"knownBacklinks\":[{\"url\":\"https://jlx.gov.cn\",\"name\":\"吉林省文旅厅\",\"priority\":\"high\",\"type\":\"government\"},{\"url\":\"https://cct.cn\",\"name\":\"中国中央电视台\",\"priority\":\"high\",\"type\":\"media\"},{\"url\":\"https://163.com\",\"name\":\"网易\",\"priority\":\"medium\",\"type\":\"media\"},{\"url\":\"https://mafengwo.cn\",\"name\":\"马蜂窝\",\"priority\":\"medium\",\"type\":\"travel\"},{\"url\":\"https://baike.baidu.com/item/吉林省\",\"name\":\"百度百科\",\"priority\":\"medium\",\"type\":\"encyclopedia\"},{\"url\":\"https://gsxt.gov.cn\",\"name\":\"国家企业信用信息公示系统\",\"priority\":\"low\",\"type\":\"official\"}],\"targetKeywords\":[\"长春工业研学\",\"长白山生态游\",\"延吉边境自驾\",\"吉林雾凇\",\"查干湖冬捕\"]}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-config",
+      "name": "外链配置",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 生成需要检查的URL列表\nconst config = JSON.parse($json.backlinkConfig);\n\n// 添加已知外链\nconst checkList = config.knownBacklinks.map(bl => ({\n  url: bl.url,\n  name: bl.name,\n  priority: bl.priority,\n  type: bl.type,\n  checkType: 'known'\n}));\n\n// 添加搜索查询URL来发现新的外链机会\nfor (const keyword of config.targetKeywords) {\n  checkList.push({\n    url: `https://www.baidu.com/s?wd=${encodeURIComponent(keyword + ' site:dajilin.net')}`,\n    name: `关键词\"${keyword}\"外链检查`,\n    priority: 'medium',\n    type: 'keyword_search',\n    checkType: 'discover'\n  });\n}\n\nreturn checkList;",
+        "id": "prepare-check-list",
+        "name": "生成检查列表",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.url }}",
+        "options": {
+          "timeout": 20000,
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "check-url",
+      "name": "检查URL状态",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [660, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 分析外链有效性\nconst pageContent = $input.first().json.response || '';\nconst urlInfo = $('生成检查列表').first().json;\nconst siteUrl = 'dajilin.net';\n\nlet result = {\n  url: urlInfo.url,\n  name: urlInfo.name,\n  priority: urlInfo.priority,\n  type: urlInfo.type,\n  checkType: urlInfo.checkType,\n  isAlive: false,\n  hasOurLink: false,\n  pageTitle: '',\n  linkContext: '',\n  checkedAt: new Date().toISOString()\n};\n\n// 检查页面是否可访问\nif (pageContent && pageContent.length > 100) {\n  result.isAlive = true;\n  \n  // 检查是否包含我们的链接\n  if (pageContent.includes(siteUrl) || pageContent.includes('dajilin')) {\n    result.hasOurLink = true;\n    \n    // 提取链接上下文\n    const linkMatch = pageContent.match(new RegExp(`.{50}dajilin[^<]{0,100}`));\n    if (linkMatch) {\n      result.linkContext = linkMatch[0].substring(0, 150);\n    }\n    \n    // 提取页面标题\n    const titleMatch = pageContent.match(/<title[^>]*>([^<]+)<\\/title>/i);\n    if (titleMatch) {\n      result.pageTitle = titleMatch[1].trim();\n    }\n  }\n}\n\nreturn [result];",
+        "id": "analyze-backlink",
+        "name": "分析外链",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [880, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 聚合所有检查结果\nconst results = $input.all();\nconst config = JSON.parse($json.backlinkConfig);\n\nconst summary = {\n  reportTime: new Date().toLocaleString('zh-CN'),\n  siteUrl: config.siteUrl,\n  totalChecked: results.length,\n  aliveCount: 0,\n  deadCount: 0,\n  hasOurLinkCount: 0,\n  noLinkCount: 0,\n  byPriority: { high: [], medium: [], low: [] },\n  byType: {},\n  newOpportunities: [],\n  recommendations: []\n};\n\nfor (const r of results) {\n  if (r.isAlive) {\n    summary.aliveCount++;\n    \n    if (r.hasOurLink) {\n      summary.hasOurLinkCount++;\n      \n      // 按优先级分类\n      if (r.priority) {\n        summary.byPriority[r.priority].push(r);\n      }\n      \n      // 按类型分类\n      if (!summary.byType[r.type]) {\n        summary.byType[r.type] = [];\n      }\n      summary.byType[r.type].push(r);\n    } else if (r.checkType === 'known') {\n      summary.noLinkCount++;\n    }\n  } else {\n    summary.deadCount++;\n    summary.recommendations.push(`⚠️ 外链失效: ${r.name} (${r.url})`);\n  }\n}\n\n// 生成新机会\nif (summary.noLinkCount > 0) {\n  summary.recommendations.push(`📋 ${summary.noLinkCount}个已知平台尚未建立外链，需手动联系`);\n}\n\n// 总体建议\nif (summary.hasOurLinkCount === 0 && summary.aliveCount > 0) {\n  summary.recommendations.push('❌ 没有任何外链被检测到，建议：1) 确认外链URL正确 2) 联系平台添加外链');\n} else if (summary.hasOurLinkCount > 0) {\n  summary.recommendations.push(`✅ 已建立${summary.hasOurLinkCount}个有效外链`);\n}\n\nsummary.recommendations.push('📈 建议持续在马蜂窝、知乎、百度百科等平台发布内容并附带外链');\n\nreturn [summary];",
+        "id": "aggregate-results",
+        "name": "聚合结果",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [1100, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 生成外链检查报告\nconst summary = $input.first().json;\n\nlet html = `<h2>外部GEO外链监控报告</h2>\n<p><strong>检查时间:</strong> ${summary.reportTime}</p>\n<p><strong>监测网站:</strong> ${summary.siteUrl}</p>\n\n<h3>概览</h3>\n<ul>\n<li>总检查数: ${summary.totalChecked}</li>\n<li>有效页面: ${summary.aliveCount} ✅</li>\n<li>失效页面: ${summary.deadCount} ❌</li>\n<li>包含我们外链: ${summary.hasOurLinkCount} ✅</li>\n<li>尚无外链: ${summary.noLinkCount} ⚠️</li>\n</ul>\n\n<h3>高优先级外链状态</h3>`;\n\nif (summary.byPriority.high && summary.byPriority.high.length > 0) {\n  html += '<table border=\"1\"><tr><th>平台</th><th>状态</th><th>标题</th></tr>';\n  for (const link of summary.byPriority.high) {\n    html += `<tr><td>${link.name}</td><td>${link.hasOurLink ? '✅ 有外链' : '⚠️ 无外链'}</td><td>${link.pageTitle || '-'}</td></tr>`;\n  }\n  html += '</table>';\n} else {\n  html += '<p>暂无高优先级外链</p>';\n}\n\nhtml += `<h3>优化建议</h3>\n<ol>`;\nfor (const rec of summary.recommendations) {\n  html += `<li>${rec}</li>`;\n}\nhtml += '</ol>';\n\nhtml += `<h3>外链建设工作</h3>\n<ol>\n<li><strong>政府合作:</strong> 联系吉林省文旅厅、长春市文旅局获取外链</li>\n<li><strong>媒体合作:</strong> 与吉林日报、中国旅游报等建立内容合作</li>\n<li><strong>平台入驻:</strong> 在马蜂窝、携程、飞猪开设官方账号并发布内容</li>\n<li><strong>百科建设:</strong> 在百度百科、搜狗百科完善吉林景点词条</li>\n</ol>\n\n<p><small>由n8n自动生成 | ${new Date().toISOString()}</small></p>`;\n\nreturn [{ html, summary }];",
+        "id": "generate-report",
+        "name": "生成报告",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [1320, 0]
+    },
+    {
+      "parameters": {
+        "to": "={{$vars.NOTIFY_CHANNEL || 'info@dajilin.net'}}",
+        "subject": "【外部GEO周报】外链检查与建设建议",
+        "body": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "send-report",
+      "name": "发送报告",
+      "type": "n8n-nodes-base.email",
+      "typeVersion": 2,
+      "position": [1540, 0]
+    }
+  ],
+  "connections": {
+    "每周日11:00触发": {
+      "main": [["外链配置"]]
+    },
+    "外链配置": {
+      "main": [["生成检查列表"]]
+    },
+    "生成检查列表": {
+      "main": [["检查URL状态"]]
+    },
+    "检查URL状态": {
+      "main": [["分析外链"]]
+    },
+    "分析外链": {
+      "main": [["聚合结果"]]
+    },
+    "聚合结果": {
+      "main": [["生成报告"]]
+    },
+    "生成报告": {
+      "main": [["发送报告"]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "timezone": "Asia/Shanghai"
+  },
+  "staticData": null,
+  "tags": ["GEO", "外链检查", "自动化", "监控"]
+}

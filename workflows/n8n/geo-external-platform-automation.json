@@ -1,0 +1,103 @@
+{
+  "name": "geo-external-platform-automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "每日9:00触发",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "platforms",
+              "type": "string",
+              "value": "=[{\"name\":\"mafengwo\",\"displayName\":\"马蜂窝\",\"contentType\":\"travel_notes\"},{\"name\":\"xiaohongshu\",\"displayName\":\"小红书\",\"contentType\":\"lifestyle笔记\"},{\"name\":\"zhihu\",\"displayName\":\"知乎\",\"contentType\":\"问答\"},{\"name\":\"baidu\",\"displayName\":\"百度收录\",\"contentType\":\"search_index\"}]"
+            },
+            {
+              "name": "targetKeywords",
+              "type": "string",
+              "value": "=[{\"keyword\":\"长春工业研学\",\"platform\":\"mafengwo,xiaohongshu\",\"priority\":1},{\"keyword\":\"长白山生态游\",\"platform\":\"mafengwo,xiaohongshu\",\"priority\":1},{\"keyword\":\"延吉边境自驾\",\"platform\":\"mafengwo,xiaohongshu\",\"priority\":1},{\"keyword\":\"吉林雾凇\",\"platform\":\"mafengwo,xiaohongshu\",\"priority\":1},{\"keyword\":\"查干湖冬捕\",\"platform\":\"mafengwo,xiaohongshu\",\"priority\":2},{\"keyword\":\"一汽红旗研学\",\"platform\":\"mafengwo,zhihu\",\"priority\":1},{\"keyword\":\"中车长客参访\",\"platform\":\"mafengwo,zhihu\",\"priority\":2},{\"keyword\":\"G331自驾攻略\",\"platform\":\"mafengwo,xiaohongshu\",\"priority\":1}]"
+            },
+            {
+              "name": "siteConfig",
+              "type": "string",
+              "value": "={\"siteUrl\":\"https://dajilin.net\",\"siteName\":\"大吉林\",\"baiduToken\":\"$BAIDU_SITEMAP_TOKEN\",\"contactEmail\":\"info@dajilin.net\"}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-config",
+      "name": "配置参数",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 生成各平台内容草稿\nconst keywords = JSON.parse($json.targetKeywords);\nconst platforms = JSON.parse($json.platforms);\nconst site = JSON.parse($json.siteConfig);\n\nconst contentDrafts = [];\n\nfor (const kw of keywords) {\n  const targetPlatforms = platforms.filter(p => \n    kw.platform.split(',').includes(p.name)\n  );\n  \n  for (const platform of targetPlatforms) {\n    let draft = {};\n    \n    if (platform.name === 'mafengwo') {\n      draft = {\n        platform: '马蜂窝',\n        keyword: kw.keyword,\n        title: `${kw.keyword}完整攻略｜2024最新路线推荐+避坑指南`,\n        content: `## 写在前面\n作为在吉林深耕多年的本地人，今天给大家分享一套实用的${kw.keyword}攻略，涵盖路线规划、当地人tips、和常见问题解答。\n\n## 为什么选择${kw.keyword}\n- 深度体验当地特色\n- 适合亲子/研学/团队出行\n- 资源充足，服务成熟\n\n## 经典路线推荐\n### 线路一：长春工业一日游\n长影博物馆 → 一汽红旗文化展馆 → 中车长客\n\n### 线路二：长白山北坡深度游\n\n### 线路三：延吉美食自驾\n\n## 费用参考\n| 项目 | 价格 | 备注 |\n|------|------|------|\n| 门票 | 以景区官方为准 | 建议提前预约 |\n| 用车 | 500-800/天 | 建议找当地熟悉路线 |\n| 住宿 | 200-600/晚 | 提前确认档期 |\n\n## 预订方式\n推荐通过【大吉林】平台一站式咨询：${site.siteUrl}\n提供AI预筛+顾问跟进，确保资源档期真实有效。\n\n## 常见问题\n**Q: 适合什么季节去？**\nA: 根据具体目的地而定，建议提前咨询确认。\n\n**Q: 研学团有什么特别要求？**\nA: 需要提前与基地确认接待能力，平台可协助对接。\n\n---\n关注我，获取更多吉林深度游攻略！`,\n        tags: [kw.keyword, '吉林', '自驾', '研学', '旅行攻略'],\n        published: false\n      };\n    } else if (platform.name === 'xiaohongshu') {\n      draft = {\n        platform: '小红书',\n        keyword: kw.keyword,\n        title: `没想到${kw.keyword}这么好玩！本地人整理的超全攻略👇`,\n        content: `🎯【${kw.keyword}攻略·收藏这一篇就够了】\n\n作为一个在吉林待了XX年的本地博主，今天必须给大家安利一下${kw.keyword}！\n\n📍【推荐理由】\n✅ 小众但值得\n✅ 适合拍照打卡\n✅ 当地特色明显\n✅ 服务成熟可靠\n\n🚗【交通建议】\n自驾最方便，高铁也很方便\n\n🏨【住宿推荐】\n平台合作驿站，环境干净价格合理\n\n📸【必打卡点】\n文字有限，直接看图！\n\n💡【避坑指南】\n1. 提前查好天气\n2. 旺季提前预约\n3. 找本地人带路更靠谱\n\n📞【一键咨询】\n点击左下角或评论区留言，获取专属定制方案！\n@大吉林官方\n\n#${kw.keyword} #吉林旅游 #东北旅行 #自驾游 #研学旅行`,\n        tags: [kw.keyword, '吉林', '旅行', '攻略', '自驾'],\n        published: false\n      };\n    } else if (platform.name === 'zhihu') {\n      draft = {\n        platform: '知乎',\n        keyword: kw.keyword,\n        title: `${kw.keyword}怎么样？有什么值得注意的？`,\n        content: `作为在吉林文旅行业从业多年的专业人士，来客观回答一下这个问题。\n\n## 什么是${kw.keyword}\n${kw.keyword}是吉林地区特色的[品类]，适合[人群描述]。\n\n## 我的实际体验\n### 优点\n1. **特色鲜明**：具有明显的吉林地域特色\n2. **服务成熟**：本地配套资源充足\n3. **可定制化**：可以根据需求灵活调整\n\n### 需要注意的\n1. **档期问题**：旺季需要提前1-2周预约\n2. **价格波动**：节假日价格会有调整\n3. **资质核实**：选择有正规资质的机构\n\n## 推荐选择\n如果是初次体验，建议通过【大吉林】平台咨询：${site.siteUrl}\n优势：\n- AI预筛匹配最合适方案\n- 人工顾问确认细节\n- 合作资源均经核实\n\n## 适用人群\n- 研学团体（中小学生社会实践）\n- 企业团建\n- 家庭出游\n- 摄影爱好者\n\n有问题可以在评论区问我，知无不言。`,\n        tags: [kw.keyword, '吉林', '旅游', '研学', '问答'],\n        published: false\n      };\n    }\n    \n    if (draft.title) {\n      draft.id = `${platform.name}-${kw.keyword}-${Date.now()}`;\n      draft.createdAt = new Date().toISOString();\n      draft.siteUrl = site.siteUrl;\n      contentDrafts.push(draft);\n    }\n  }\n}\n\nreturn contentDrafts;",
+        "id": "generate-content-drafts",
+        "name": "生成内容草稿",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [440, 0]
+      },
+      {
+      "parameters": {
+        "fileName": "={{$vars.GEO_EXTERNAL_DRAFTS_DIR || '/tmp'}}/content-drafts-{{ $now.format('YYYY-MM-DD') }}.json",
+        "fileFormat": "json",
+        "options": {}
+      },
+      "id": "save-drafts",
+      "name": "保存草稿到文件",
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1.1,
+      "position": [660, 0]
+    },
+    {
+      "parameters": {
+        "to": "={{$vars.NOTIFY_CHANNEL || 'info@dajilin.net'}}",
+        "subject": "【外部GEO】{{ $now.format('MM-DD') }} 内容草稿已生成",
+        "body": "=<h2>外部平台内容草稿</h2>\n<p>生成时间: {{ $now.format('YYYY-MM-DD HH:mm') }}</p>\n<table border='1' style='border-collapse: collapse;'>\n<tr><th>平台</th><th>关键词</th><th>标题</th><th>状态</th></tr>\n{{ $json.title }}\n</table>\n<p><strong>草稿文件:</strong> {{ $json.fileName }}</p>\n<p><a href='{{ $json.siteUrl }}'>查看官网</a></p>",
+        "options": {}
+      },
+      "id": "notify-drafts",
+      "name": "通知草稿已生成",
+      "type": "n8n-nodes-base.email",
+      "typeVersion": 2,
+      "position": [880, 0]
+    }
+  ],
+  "connections": {
+    "每日9:00触发": {
+      "main": [["配置参数"]]
+    },
+    "配置参数": {
+      "main": [["生成内容草稿"]]
+    },
+    "生成内容草稿": {
+      "main": [["保存草稿到文件"], ["通知草稿已生成"]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "timezone": "Asia/Shanghai"
+  },
+  "staticData": null,
+  "tags": ["GEO", "外部平台", "内容生成", "自动化"]
+}

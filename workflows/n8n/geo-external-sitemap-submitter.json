@@ -1,0 +1,187 @@
+{
+  "name": "geo-external-sitemap-submitter",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "每日8:00触发",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "submitConfig",
+              "type": "string",
+              "value": "={\"siteUrl\":\"https://dajilin.net\",\"sitemapUrl\":\"https://dajilin.net/sitemap-index.xml\",\"baiduToken\":\"$BAIDU_SITEMAP_TOKEN\",\"googleSearchConsoleUrl\":\"https://search.google.com/search-console\",\"bingWebmasterUrl\":\"https://www.bing.com/webmasters\"}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-config",
+      "name": "提交配置",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.sitemapUrl }}",
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "fetch-sitemap",
+      "name": "获取Sitemap",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 解析sitemap，提取所有URL\nconst sitemapXml = $input.first().json.response || '';\nconst config = JSON.parse($json.submitConfig);\n\n// 提取sitemap中的所有URL\nconst urlRegex = /<loc>([^<]+)<\\/loc>/g;\nconst urls = [];\nlet match;\nwhile ((match = urlRegex.exec(sitemapXml)) !== null) {\n  urls.push(match[1]);\n}\n\n// 按优先级分类\nconst priorities = {\n  high: [],    // 首页、目的地页\n  medium: [],  // 研学、自驾页\n  low: []      // 其他页\n};\n\nfor (const url of urls) {\n  if (url.includes('/destinations/') || url === config.siteUrl + '/') {\n    priorities.high.push(url);\n  } else if (url.includes('/study-tours/') || url.includes('/self-drive/') || url.includes('/themes/')) {\n    priorities.medium.push(url);\n  } else {\n    priorities.low.push(url);\n  }\n}\n\nreturn [{\n  json: {\n    totalUrls: urls.length,\n    highPriority: priorities.high,\n    mediumPriority: priorities.medium,\n    lowPriority: priorities.low,\n    siteUrl: config.siteUrl,\n    fetchedAt: new Date().toISOString()\n  }\n}];",
+        "id": "parse-sitemap",
+        "name": "解析Sitemap",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [660, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://ziyuan.baidu.com/linksubmit/index",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "site",
+              "value": "={{ $json.siteUrl }}"
+            },
+            {
+              "name": "token",
+              "value": "={{ $vars.BAIDU_SITEMAP_TOKEN }}"
+            },
+            {
+              "name": "type",
+              "value": "sitemap"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "submit-baidu",
+      "name": "提交到百度",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [880, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 解析百度提交结果\nconst baiduResponse = $input.first().json;\n\nlet result = {\n  platform: '百度搜索资源平台',\n  success: false,\n  message: '',\n  remainingQuota: null,\n  submittedAt: new Date().toISOString()\n};\n\n// 解析百度API响应\nif (baiduResponse && baiduResponse.success !== undefined) {\n  result.success = baiduResponse.success;\n  result.message = baiduResponse.message || baiduResponse.remain || '提交完成';\n  result.remainingQuota = baiduResponse.remain;\n} else if (typeof baiduResponse === 'string') {\n  // 百度可能返回HTML，需要提取关键信息\n  if (baiduResponse.includes('成功') || baiduResponse.includes('success')) {\n    result.success = true;\n    result.message = '提交成功';\n  } else {\n    result.message = '提交完成（请手动确认）';\n  }\n} else {\n  result.message = '提交完成';\n  result.success = true;\n}\n\nreturn [result];",
+        "id": "parse-baidu-result",
+        "name": "解析百度结果",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [1100, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://www.google.com/ping?sitemap=",
+        "urlPath": "={{ $json.sitemapUrl }}",
+        "options": {
+          "timeout": 20000
+        }
+      },
+      "id": "submit-google",
+      "name": "提交到Google",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [880, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 记录提交结果\nconst sitemapInfo = $('解析Sitemap').first().json;\nconst baiduResult = $('解析百度结果').first().json;\nconst googleResult = $input.first().json;\n\nconst report = {\n  reportTime: new Date().toLocaleString('zh-CN'),\n  siteUrl: sitemapInfo.siteUrl,\n  sitemapUrl: sitemapInfo.sitemapUrl,\n  totalUrls: sitemapInfo.totalUrls,\n  submissions: [\n    {\n      platform: '百度搜索资源平台',\n      status: baiduResult.success ? '✅ 成功' : '⚠️ 待确认',\n      message: baiduResult.message,\n      remainingQuota: baiduResult.remainingQuota\n    },\n    {\n      platform: 'Google Search Console',\n      status: googleResult && (googleResult.success || googleResult.status === 200) ? '✅ 成功' : '⚠️ 待确认',\n      message: 'Sitemap自动提交'\n    }\n  ],\n  nextActions: [\n    '登录百度搜索资源平台确认抓取状态',\n    '检查Google Search Console中的覆盖率',\n    '监控新页面的收录速度'\n  ]\n};\n\nreturn [report];",
+        "id": "generate-report",
+        "name": "生成提交报告",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [1320, 0]
+      },
+      {
+      "parameters": {
+        "to": "={{$vars.NOTIFY_CHANNEL || 'info@dajilin.net'}}",
+        "subject": "【SEO】{{ $now.format('MM-DD') }} Sitemap自动提交完成",
+        "body": "=<h2>Sitemap自动提交报告</h2>\n<p><strong>提交时间:</strong> {{ $json.reportTime }}</p>\n<p><strong>网站:</strong> {{ $json.siteUrl }}</p>\n<p><strong>Sitemap:</strong> <a href='{{ $json.sitemapUrl }}'>{{ $json.sitemapUrl }}</a></p>\n<p><strong>检测到URL数:</strong> {{ $json.totalUrls }}</p>\n\n<h3>提交结果</h3>\n<table border='1' style='border-collapse: collapse;'>\n<tr><th>平台</th><th>状态</th><th>备注</th></tr>\n{{ $json.submissions.map(s => `<tr><td>${s.platform}</td><td>${s.status}</td><td>${s.message || '-'}</td></tr>`).join('') }}\n</table>\n\n<h3>后续操作</h3>\n<ol>\n{{ $json.nextActions.map(a => `<li>${a}</li>`).join('') }}\n</ol>\n\n<p><small>由n8n自动生成</small></p>",
+        "options": {}
+      },
+      "id": "send-report",
+      "name": "发送报告",
+      "type": "n8n-nodes-base.email",
+      "typeVersion": 2,
+      "position": [1540, 0]
+    }
+  ],
+  "connections": {
+    "每日8:00触发": {
+      "main": [["提交配置"]]
+    },
+    "提交配置": {
+      "main": [["获取Sitemap"]]
+    },
+    "获取Sitemap": {
+      "main": [["解析Sitemap"]]
+    },
+    "解析Sitemap": {
+      "main": [["提交到百度"]]
+    },
+    "提交到百度": {
+      "main": [["解析百度结果"]]
+    },
+    "解析百度结果": {
+      "main": [["提交到Google"], ["生成提交报告"]]
+    },
+    "提交到Google": {
+      "main": [["生成提交报告"]]
+    },
+    "生成提交报告": {
+      "main": [["发送报告"]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "timezone": "Asia/Shanghai"
+  },
+  "staticData": null,
+  "tags": ["SEO", "Sitemap", "自动提交", "百度"]
+}

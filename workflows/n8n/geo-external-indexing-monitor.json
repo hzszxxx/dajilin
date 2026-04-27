@@ -1,0 +1,147 @@
+{
+  "name": "geo-external-indexing-monitor",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 10 * * *"            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "每周一10:00触发",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "monitorConfig",
+              "type": "string",
+              "value": "={\"siteUrl\":\"https://dajilin.net\",\"siteName\":\"大吉林\",\"baiduIndexUrl\":\"https://ziyuan.baidu.com/linksubmit/index\",\"checkPages\":[\"/destinations/changchun\",\"destinations/changbai-mountain\",\"/destinations/yanbian\",\"/study-tours\",\"/self-drive\"],\"competitors\":[\"ljld.com\",\"jlfdc.com\",\"ccb.com\"]}"
+            },
+            {
+              "name": "keywords",
+              "type": "string",
+              "value": "=[\"长春工业研学\",\"长白山生态游\",\"延吉边境自驾\",\"吉林雾凇\",\"查干湖冬捕\",\"一汽红旗研学\",\"G331自驾\",\"吉林文旅\"]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-config",
+      "name": "监控配置",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 生成搜索查询列表\nconst config = JSON.parse($json.monitorConfig);\nconst keywords = JSON.parse($json.keywords);\n\nconst queries = [];\n\n// 百度收录查询\nqueries.push({\n  type: 'baidu_index',\n  searchUrl: `https://www.baidu.com/s?wd=site:${config.siteUrl}&rn=10`,\n  keyword: '全站收录'\n});\n\n// 关键词排名查询\nfor (const kw of keywords) {\n  queries.push({\n    type: 'keyword_rank',\n    searchUrl: `https://www.baidu.com/s?wd=${encodeURIComponent(kw + ' ' + config.siteName)}&rn=10`,\n    keyword: kw\n  });\n}\n\n// 竞品对比查询\nfor (const competitor of config.competitors) {\n  queries.push({\n    type: 'competitor_rank',\n    searchUrl: `https://www.baidu.com/s?wd=${encodeURIComponent(keywords[0] + ' ' + competitor)}&rn=5`,\n    keyword: keywords[0],\n    competitor: competitor\n  });\n}\n\nreturn queries;",
+        "id": "generate-queries",
+        "name": "生成查询列表",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [440, 0]
+      },
+      {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.searchUrl }}",
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "http-request-search",
+      "name": "抓取搜索结果",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [660, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 解析搜索结果，提取收录/排名信息\nconst responseText = $input.first().json.response || '';\nconst queryType = $json.type;\nconst keyword = $json.keyword;\nconst siteUrl = 'dajilin.net';\n\nlet result = {\n  type: queryType,\n  keyword: keyword,\n  competitor: $json.competitor || null,\n  indexed: false,\n  rank: null,\n  totalResults: null,\n  ourSitePresent: false,\n  competitorPresent: false,\n  checkedAt: new Date().toISOString(),\n  rawSnippet: ''\n};\n\n// 提取百度结果数量\nconst resultCountMatch = responseText.match(/百度为您找到相关结果约([0-9,，]+)个/);\nif (resultCountMatch) {\n  result.totalResults = parseInt(resultCountMatch[1].replace(/,/g, ''));\n}\n\n// 检查我们网站是否在结果中\nif (responseText.includes(siteUrl)) {\n  result.ourSitePresent = true;\n  // 提取我们网站出现的位置\n  const index = responseText.indexOf(siteUrl);\n  // 粗略估算排名（每个结果约100-150字符）\n  result.rank = Math.ceil(index / 130);\n}\n\n// 标记为已收录\nif (queryType === 'baidu_index') {\n  result.indexed = result.ourSitePresent;\n}\n\n// 提取相关 snippet 用于分析\nconst snippetMatch = responseText.match(new RegExp(`${siteUrl}[^<]{0,200}`));\nif (snippetMatch) {\n  result.rawSnippet = snippetMatch[0].substring(0, 200);\n}\n\nreturn [result];",
+        "id": "parse-search-result",
+        "name": "解析搜索结果",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [880, 0]
+      },
+      {
+      "parameters": {
+        "jsCode": "// 聚合所有监控结果\nconst results = $input.all();\nconst config = JSON.parse($json.monitorConfig);\n\nconst summary = {\n  reportDate: new Date().toLocaleString('zh-CN'),\n  siteUrl: config.siteUrl,\n  totalChecks: results.length,\n  indexed: results.filter(r => r.type === 'baidu_index' && r.indexed).length > 0,\n  keywordRankings: [],\n  competitorsTracked: config.competitors,\n  recommendations: []\n};\n\n// 统计关键词排名\nfor (const r of results) {\n  if (r.type === 'keyword_rank') {\n    summary.keywordRankings.push({\n      keyword: r.keyword,\n      rank: r.rank,\n      present: r.ourSitePresent\n    });\n  }\n}\n\n// 生成建议\nconst topKeywords = summary.keywordRankings.filter(k => k.rank && k.rank <= 10);\nif (topKeywords.length > 0) {\n  summary.recommendations.push(`✅ ${topKeywords.length}个关键词进入前10`);\n}\n\nconst midKeywords = summary.keywordRankings.filter(k => k.rank && k.rank > 10 && k.rank <= 50);\nif (midKeywords.length > 0) {\n  summary.recommendations.push(`📈 ${midKeywords.length}个关键词在11-50位，可通过外链提升`);\n}\n\nconst noRankKeywords = summary.keywordRankings.filter(k => !k.rank);\nif (noRankKeywords.length > 0) {\n  summary.recommendations.push(`⚠️ ${noRankKeywords.length}个关键词未找到排名，建议：1) 增加内容 2) 提交sitemap 3) 获取外链`);\n}\n\nreturn [summary];",
+        "id": "aggregate-results",
+        "name": "聚合结果",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [1100, 0]
+      },
+      {
+      "parameters": {
+        "jsCode": "// 生成监控报告\nconst summary = $input.first().json;\n\nlet html = `<h2>外部GEO收录监控报告</h2>\n<p><strong>监控时间:</strong> ${summary.reportDate}</p>\n<p><strong>监测网站:</strong> ${summary.siteUrl}</p>\n\n<h3>收录状态</h3>\n<p>${summary.indexed ? '✅ 已被百度收录' : '❌ 暂未被百度收录'}</p>\n\n<h3>关键词排名</h3>\n<table border='1' style='border-collapse: collapse;'>\n<tr><th>关键词</th><th>排名</th><th>状态</th></tr>`;\n\nfor (const kw of summary.keywordRankings) {\n  let status = '❌ 未收录';\n  if (kw.rank && kw.rank <= 10) status = '✅ 前10';\n  else if (kw.rank && kw.rank <= 50) status = '📈 11-50';\n  else if (kw.rank) status = `📍 第${kw.rank}位`;\n  \n  html += `<tr><td>${kw.keyword}</td><td>${kw.rank || '-'}</td><td>${status}</td></tr>`;\n}\nhtml += '</table>';\n\nhtml += `<h3>优化建议</h3>\n<ul>`;\nfor (const rec of summary.recommendations) {\n  html += `<li>${rec}</li>`;\n}\nhtml += '</ul>';\n\nhtml += `<h3>下一步行动</h3>\n<ol>\n<li>对于未收录关键词：在对应平台发布内容并获取外链</li>\n<li>对于排名11-50的关键词：加强内部链接和内容质量</li>\n<li>持续监控竞品外链策略</li>\n</ol>\n\n<p><small>由n8n自动生成 | ${new Date().toISOString()}</small></p>`;\n\nreturn [{ html, summary }];",
+        "id": "generate-report",
+        "name": "生成报告",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [1320, 0]
+      },
+      {
+      "parameters": {
+        "to": "={{$vars.NOTIFY_CHANNEL || 'info@dajilin.net'}}",
+        "subject": "【外部GEO周报】{{ $now.format('MM-DD') }} 收录与排名监控",
+        "body": "={{ $json.html }}",
+        "options": {
+          "attachments": {
+            "attachments": []
+          }
+        }
+      },
+      "id": "send-report",
+      "name": "发送监控报告",
+      "type": "n8n-nodes-base.email",
+      "typeVersion": 2,
+      "position": [1540, 0]
+    }
+  ],
+  "connections": {
+    "每周一10:00触发": {
+      "main": [["监控配置"]]
+    },
+    "监控配置": {
+      "main": [["生成查询列表"]]
+    },
+    "生成查询列表": {
+      "main": [["抓取搜索结果"]]
+    },
+    "抓取搜索结果": {
+      "main": [["解析搜索结果"]]
+    },
+    "解析搜索结果": {
+      "main": [["聚合结果"]]
+    },
+    "聚合结果": {
+      "main": [["生成报告"]]
+    },
+    "生成报告": {
+      "main": [["发送监控报告"]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "timezone": "Asia/Shanghai"
+  },
+  "staticData": null,
+  "tags": ["GEO", "收录监控", "排名追踪", "自动化"]
+}
