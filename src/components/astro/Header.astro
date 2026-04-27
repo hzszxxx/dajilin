@@ -7,14 +7,14 @@ const navItems = getNavItems(locale);
 const languageItems = getLanguageSwitcherItems(Astro.url.pathname);
 const headerText = getHeaderText(locale);
 const brandMark = locale === 'zh' ? '大' : 'D';
+const brandName = locale === 'zh' ? '大吉林' : 'Da Jilin';
 ---
-
 <header class="site-header">
   <div class="container topbar">
     <a class="brand" href={localizePath('/', locale)}>
       <span class="brand-mark">{brandMark}</span>
       <span class="brand-copy">
-        <strong>dajilin.net</strong>
+        <strong>{brandName}</strong>
         <small>{headerText.subtitle}</small>
       </span>
     </a>

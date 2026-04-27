@@ -1,6 +1,6 @@
-export const siteName = 'dajilin.net';
+export const siteName = '大吉林';
 export const siteDescription =
-  '整合吉林目的地、工业研学、331国道与官方服务说明的吉林文旅资源入口平台。';
+  '吉林研学与工业特色旅游平台，提供工业研学、自驾定制、行程咨询与合作资源服务。';
 
 export const navItems = [
   { href: '/', label: '首页' },

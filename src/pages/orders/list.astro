@@ -8,7 +8,7 @@ const locale = getLocaleFromPathname(Astro.url.pathname);
 ---
 
 <BaseLayout
-  title={locale === 'zh' ? '我的订单 | dajilin.net' : 'My Orders | dajilin.net'}
+  title={locale === 'zh' ? '我的订单  | 大吉林' : 'My Orders  | 大吉林'}
   description={locale === 'zh' ? '查看您的订单历史' : 'View your order history'}
   locale={locale}
 >
@@ -39,7 +39,7 @@ const locale = getLocaleFromPathname(Astro.url.pathname);
 
     const translations: Record<string, any> = {
       zh: {
-        title: '我的订单 | dajilin.net',
+        title: '我的订单  | 大吉林',
         heading: '我的订单',
         subtitle: '查看您的所有订单记录',
         empty: '暂无订单',
@@ -63,7 +63,7 @@ const locale = getLocaleFromPathname(Astro.url.pathname);
         total: '合计',
       },
       en: {
-        title: 'My Orders | dajilin.net',
+        title: 'My Orders  | 大吉林',
         heading: 'My Orders',
         subtitle: 'View all your order records',
         empty: 'No Orders',
@@ -87,7 +87,7 @@ const locale = getLocaleFromPathname(Astro.url.pathname);
         total: 'Total',
       },
       ja: {
-        title: '私の注文 | dajilin.net',
+        title: '私の注文  | 大吉林',
         heading: '私の注文',
         subtitle: 'すべての注文記録を見る',
         empty: '注文なし',
@@ -111,7 +111,7 @@ const locale = getLocaleFromPathname(Astro.url.pathname);
         total: '合計',
       },
       ko: {
-        title: '내 주문 | dajilin.net',
+        title: '내 주문  | 大吉林',
         heading: '내 주문',
         subtitle: '모든 주문 기록 보기',
         empty: '주문 없음',

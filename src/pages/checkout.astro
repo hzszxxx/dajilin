@@ -7,7 +7,7 @@ import { getLocaleFromPathname } from '@/lib/i18n';
 const locale = getLocaleFromPathname(Astro.url.pathname);
 ---
 
-<BaseLayout title={locale === 'zh' ? '结算 | dajilin.net' : 'Checkout | dajilin.net'} description={locale === 'zh' ? '完成订单结算' : 'Complete your order'} locale={locale}>
+<BaseLayout title={locale === 'zh' ? '结算  | 大吉林' : 'Checkout  | 大吉林'} description={locale === 'zh' ? '完成订单结算' : 'Complete your order'} locale={locale}>
   <Header />
   <main class="page-shell checkout-shell">
     <div class="container">

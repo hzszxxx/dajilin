@@ -4,6 +4,7 @@ import { getFooterText, getLocaleFromPathname, localizePath } from '@/lib/i18n';
 const locale = getLocaleFromPathname(Astro.url.pathname);
 const footerText = getFooterText(locale);
 const currentYear = new Date().getFullYear();
+const brandName = locale === 'zh' ? '大吉林' : 'Da Jilin';
 
 const footerLinks = {
   destinations: [
@@ -36,7 +37,7 @@ const socialLinks: Array<{ name: string; icon: string; href: string; label: stri
       <a href={localizePath('/', locale)} class="footer-logo">
         <span class="brand-mark">大</span>
         <span class="brand-text">
-          <strong>dajilin.net</strong>
+          <strong>{brandName}</strong>
           <small>{footerText.brandSubtitle}</small>
         </span>
       </a>
@@ -112,7 +113,7 @@ const socialLinks: Array<{ name: string; icon: string; href: string; label: stri
   <!-- Bottom Bar -->
   <div class="footer-bottom">
     <div class="container">
-      <p>© {currentYear} dajilin.net · <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">{footerText.icp}</a></p>
+      <p>© {currentYear} {brandName} · <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">{footerText.icp}</a></p>
       <div class="footer-legal">
         <a href={localizePath('/privacy', locale)}>{footerText.privacy}</a>
         <a href={localizePath('/terms', locale)}>{footerText.terms}</a>

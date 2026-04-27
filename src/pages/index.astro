@@ -10,20 +10,20 @@ const locale = getLocaleFromPathname(Astro.url.pathname);
 
 const localizedSeo: Record<Locale, { title: string; description: string }> = {
   zh: {
-    title: 'dajilin.net | 吉林文旅资源入口',
+    title: '大吉林 | 吉林研学与工业特色旅游平台',
     description: siteDescription,
   },
   en: {
-    title: 'dajilin.net | Jilin Travel Portal',
-    description: 'A travel gateway for Jilin destinations, Self-Drive Guide, study tours, official services, and AI planning.',
+    title: 'Da Jilin | Jilin Study Tours & Industrial Tourism Platform',
+    description: 'A platform for Jilin study tours and industrial tourism, featuring Self-Drive Guide, study tours, official services, and AI planning.',
   },
   ja: {
-    title: 'dajilin.net | 吉林観光ポータル',
-    description: '吉林の目的地、自驾攻略、産業研修、公式サービス、AI旅程提案をまとめた観光ポータル。',
+    title: '大吉林 | 吉林産業研修・工業観光プラットフォーム',
+    description: '吉林の産業研修・工業観光プラットフォーム。産業研修、旅程定制、協力リソースを提供します。',
   },
   ko: {
-    title: 'dajilin.net | 지린 관광 포털',
-    description: '지린 목적지, 自驾攻略, 산업 연수, 공식 서비스, AI 일정 추천을 제공하는 관광 포털.',
+    title: '대지린 | 지린 산업 연수 및 공업 관광 플랫폼',
+    description: '지린 산업 연수 및 공업 관광 플랫폼입니다. 산업 연수, 自驾定制, 협력 리소스를 제공합니다.',
   },
 };
 

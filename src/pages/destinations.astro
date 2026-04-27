@@ -10,25 +10,25 @@ import { destinationPages } from '@/lib/content-pages';
 const locale = getLocaleFromPathname(Astro.url.pathname);
 const localized: Record<Locale, { title: string; description: string; pageTitle: string; pageDesc: string }> = {
   zh: {
-    title: '吉林目的地 | dajilin.net',
+    title: '吉林目的地  | 大吉林',
     description: '按城市、景区和区域文化组织吉林旅游信息，帮助用户快速理解吉林不同目的地的玩法与适合人群。',
     pageTitle: '发现吉林的四季与目的地体验',
     pageDesc: '从城市文化到边境路线，找到适合你的旅行方式。先看懂核心目的地，再通过 AI 导览快速进入更匹配的内容路径。',
   },
   en: {
-    title: 'Destinations | dajilin.net',
+    title: 'Destinations  | 大吉林',
     description: 'Discover Jilin destinations by city, landscape, and culture to match your travel style.',
     pageTitle: 'Discover Jilin destinations in every season',
     pageDesc: 'From city culture to border routes, find the destination that fits your trip and use AI guide for next steps.',
   },
   ja: {
-    title: '目的地 | dajilin.net',
+    title: '目的地  | 大吉林',
     description: '都市・景観・地域文化から吉林の目的地情報を整理して紹介します。',
     pageTitle: '四季で見る吉林の目的地',
     pageDesc: '都市文化から国境ルートまで、あなたに合う目的地を見つけてAIガイドで次の行動へ。',
   },
   ko: {
-    title: '목적지 | dajilin.net',
+    title: '목적지  | 大吉林',
     description: '도시, 경관, 지역 문화를 기준으로 지린 목적지 정보를 제공합니다.',
     pageTitle: '사계절로 보는 지린 목적지',
     pageDesc: '도시 문화부터 국경 루트까지 맞는 목적지를 찾고 AI 가이드로 다음 단계를 진행하세요.',

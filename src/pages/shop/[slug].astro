@@ -173,7 +173,7 @@ function getCtaHref(product: Product): string {
 
 {isProduct ? (
   <BaseLayout
-    title={`${p.name} | dajilin.net`}
+    title={`${p.name} | 大吉林`}
     description={p.description}
     locale={locale}
     schemas={[buildCollectionPageSchema(
@@ -631,7 +631,7 @@ function getCtaHref(product: Product): string {
   // Content-page fallback
   contentPage ? (
     <BaseLayout
-      title={`${locale === 'zh' ? contentPage.title : contentPage.eyebrow} | dajilin.net`}
+      title={`${locale === 'zh' ? contentPage.title : contentPage.eyebrow} | 大吉林`}
       description={locale === 'zh' ? contentPage.description : `Details for ${contentPage.eyebrow}.`}
       schemas={[buildCollectionPageSchema(
         localizePath(contentPage.pathname, locale),
